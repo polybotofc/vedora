@@ -6,10 +6,10 @@ import AuthenticationStore from "../../stores/authentication";
 
 const tiers = [
     //{ amount: 5, name: "Saturn's Ring", img: '/img/DonatorItems/SaturnsRing.png', assetId: '764757', robux: 500 },
-    { amount: 10, name: "Peasant's Crown of Nihilus", img: 'https://cdn.pekora.zip/images/thumbnails/c53972802762289e105cf642060f7ecb751dd1eeff1a984194bf296e9bd42531.png', assetId: '957733', robux: 1100 },
-    { amount: 15, name: "Glacial Demise", img: 'https://cdn.pekora.zip/images/thumbnails/c40898c0f3cb805e24f78864c7e4a7ef88651c48760713ba5f8d6bedc2a41583.png', assetId: '957793', robux: 1750 },
-    { amount: 25, name: 'Doomspire Warhelm of Doom', img: 'https://cdn.pekora.zip/images/thumbnails/992a698e6f0aa56829c2c8cac1fa657e00eb7e4edaf387c655979349886e97e0.png', assetId: '661866', robux: 3100, popular: true },
-    { amount: 50, name: 'Living Art: Combat on the Scorched Heights', img: 'https://cdn.pekora.zip/images/thumbnails/99d4c0ad7942542dcc518da64ecc4a77c7ea0c40eeaf186a86c1f6a4369e641f.png', assetId: '957727', robux: 6000, bundle: true },
+    { amount: 10, name: "Peasant's Crown of Nihilus", img: 'https://cdn.vedora.xyz/images/thumbnails/c53972802762289e105cf642060f7ecb751dd1eeff1a984194bf296e9bd42531.png', assetId: '957733', robux: 1100 },
+    { amount: 15, name: "Glacial Demise", img: 'https://cdn.vedora.xyz/images/thumbnails/c40898c0f3cb805e24f78864c7e4a7ef88651c48760713ba5f8d6bedc2a41583.png', assetId: '957793', robux: 1750 },
+    { amount: 25, name: 'Doomspire Warhelm of Doom', img: 'https://cdn.vedora.xyz/images/thumbnails/992a698e6f0aa56829c2c8cac1fa657e00eb7e4edaf387c655979349886e97e0.png', assetId: '661866', robux: 3100, popular: true },
+    { amount: 50, name: 'Living Art: Combat on the Scorched Heights', img: 'https://cdn.vedora.xyz/images/thumbnails/99d4c0ad7942542dcc518da64ecc4a77c7ea0c40eeaf186a86c1f6a4369e641f.png', assetId: '957727', robux: 6000, bundle: true },
 ];
 
 const cryptoMethods = [
@@ -848,7 +848,7 @@ const getRedeemResultBody = result => {
         const assets = result.reward.assetIds?.length || 0;
         return `${result.message} You received ${result.reward.robux.toLocaleString()} Robux${assets ? ` and ${assets} item${assets === 1 ? '' : 's'}` : ''}.`;
     }
-    return result.message || 'Voucher redeemed, but rewards need manual review. Please contact support at https://support.korone.one/submit-request';
+    return result.message || 'Voucher redeemed, but rewards need manual review. Please contact support at https://support.vedora.xyz/submit-request';
 };
 
 const Donate = () => {
@@ -900,13 +900,13 @@ const Donate = () => {
 
     return <div className={`container ${s.wrapper}`}>
         <div className={s.hero}>
-            <h1 className={s.title}>Support Korone</h1>
+            <h1 className={s.title}>Support Vedora</h1>
             <p className={s.subTitle}>
-                Korone is a privately owned, community-based project, not a registered non-profit or charity.
-                Contributions help support the servers, development work, future expenses, and reserves that keep Korone running.
+                Vedora is a privately owned, community-based project, not a registered non-profit or charity.
+                Contributions help support the servers, development work, future expenses, and reserves that keep Vedora running.
             </p>
             <p className={s.subTitle} style={{ marginTop: '10px' }}>
-                While profit is not Korone's main purpose, it may receive more revenue than its operating costs.
+                While profit is not Vedora's main purpose, it may receive more revenue than its operating costs.
                 Pick a tier below to contribute and receive a limited in-game item as our thank-you.
             </p>
             <div className={s.heroHighlights}>
@@ -942,7 +942,7 @@ const Donate = () => {
 
         <div className={s.grid}>
             {tiers.map(tier => {
-                const itemUrl = tier.assetId ? `https://www.pekora.zip/catalog/${tier.assetId}/Donate` : null;
+                const itemUrl = tier.assetId ? `https://vedora.xyz/catalog/${tier.assetId}/Donate` : null;
                 const thumbInner = (
                     <>
                         <div className={s.badgeContainer}>
@@ -1003,7 +1003,7 @@ const Donate = () => {
                 <div className={s.stepCard}>
                     <span className={s.stepNumber}>3</span>
                     <p className={s.stepTitle}>Claim your rewards</p>
-                    <p className={s.stepText}>Log in, paste your voucher code below, and rewards are granted to your Korone account automatically.</p>
+                    <p className={s.stepText}>Log in, paste your voucher code below, and rewards are granted to your Vedora account automatically.</p>
                 </div>
             </div>
         </div>
@@ -1032,7 +1032,7 @@ const Donate = () => {
                 <div className={s.perkItem}>
                     <span className={s.perkBadge}>Discord</span>
                     <p className={s.perkText}>
-                        Get the <strong>Donator</strong> role in the Korone Discord server permanently.
+                        Get the <strong>Donator</strong> role in the Vedora Discord server permanently.
                     </p>
                 </div>
             </div>
@@ -1048,17 +1048,17 @@ const Donate = () => {
                 </p>
                 <p className={s.displayNameNotice}>
                     Buy a <strong>${selectedTier.amount} USD</strong> Rewarble voucher, then redeem it here while logged in.
-                    Rewards are granted to the Korone account currently signed in on this page.
+                    Rewards are granted to the Vedora account currently signed in on this page.
                 </p>
             </div>
             <div className={s.rewarbleGrid}>
                 <div className={s.tutorialCard}>
                     <ol className={s.tutorialList}>
-                        <li>Choose the Korone reward tier you want.</li>
+                        <li>Choose the Vedora reward tier you want.</li>
                         <li>Use one of the links below to buy a Rewarble gift card for the matching USD amount.</li>
-                        <li>Return to this page while logged into the Korone account that should receive the rewards.</li>
+                        <li>Return to this page while logged into the Vedora account that should receive the rewards.</li>
                         <li>Paste the voucher code into the redeem box and submit it once.</li>
-                        <li>If anything goes wrong, contact support at https://support.korone.one/submit-request</li>
+                        <li>If anything goes wrong, contact support at https://support.vedora.xyz/submit-request</li>
                     </ol>
                     <div className={s.tutorialLinks}>
                         {rewarbleGiftCardSources.map(source => (
@@ -1125,8 +1125,8 @@ const Donate = () => {
         <p className={s.disclaimer}>Donations are final and non-refundable.</p>
         <div className={s.claimBox}>
             <p className={s.claimTitle}>Need help?</p>
-            <p className={s.claimText}>If anything goes wrong, go to https://support.korone.one/submit-request for customer support.</p>
-            <p className={s.claimText}>Rewarble vouchers grant on-site items and Robux automatically when redeemed by a logged-in Korone account.</p>
+            <p className={s.claimText}>If anything goes wrong, go to https://support.vedora.xyz/submit-request for customer support.</p>
+            <p className={s.claimText}>Rewarble vouchers grant on-site items and Robux automatically when redeemed by a logged-in Vedora account.</p>
             <p className={s.claimText}>Claims are usually processed sooner, but please allow up to 24 hours.</p>
         </div>
     </div>;

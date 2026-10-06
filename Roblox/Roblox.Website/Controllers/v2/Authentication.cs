@@ -81,7 +81,7 @@ public class AuthenticationControllerV2 : ControllerBase
     // [HttpPost("login")]
     // public async Task Login([Required, FromBody] LoginRequest request)
     // {
-    //     throw new RobloxException(503, 0, "Please use https://pekora.zip/auth/accountlogin");
+    //     throw new RobloxException(503, 0, "Please use https://vedora.xyz/auth/accountlogin");
         // FeatureFlags.FeatureCheck(FeatureFlag.LoginEnabled);
         // if (request.ctype != "username")
         // {

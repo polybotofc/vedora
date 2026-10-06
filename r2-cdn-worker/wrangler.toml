@@ -3,9 +3,9 @@ main = "index.js"
 compatibility_date = "2025-03-01"
 
 routes = [
-  { pattern = "cdn.pekora.zip/*", zone_name = "pekora.zip" }
+  { pattern = "cdn.vedora.xyz/*", zone_name = "vedora.xyz" }
 ]
 
 [[r2_buckets]]
 binding = "R2_BUCKET"
-bucket_name = "pekora-cdn"   
+bucket_name = "vedora-cdn"   

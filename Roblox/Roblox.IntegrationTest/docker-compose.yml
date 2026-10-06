@@ -43,9 +43,9 @@ services:
       - postgres
       - redis
     environment:
-      KORONE_REQUIRE_DOCKER_TESTS: "true"
-      KORONE_TEST_POSTGRES: "Host=postgres;Port=5432;Database=roblox_integration_test;Username=roblox_integration_test_user;Password=docker"
-      KORONE_TEST_REDIS: "redis:6379"
+      VEDORA_REQUIRE_DOCKER_TESTS: "true"
+      VEDORA_TEST_POSTGRES: "Host=postgres;Port=5432;Database=roblox_integration_test;Username=roblox_integration_test_user;Password=docker"
+      VEDORA_TEST_REDIS: "redis:6379"
       Postgres: "Host=postgres;Port=5432;Database=roblox_integration_test;Username=roblox_integration_test_user;Password=docker"
       Redis: "redis:6379"
       Authorization: "AvatarRouteTestAuthorization"
@@ -60,9 +60,9 @@ services:
       - postgres
       - redis
     environment:
-      KORONE_REQUIRE_DOCKER_TESTS: "true"
-      KORONE_TEST_POSTGRES: "Host=postgres;Port=5432;Database=roblox_integration_test;Username=roblox_integration_test_user;Password=docker"
-      KORONE_TEST_REDIS: "redis:6379"
+      VEDORA_REQUIRE_DOCKER_TESTS: "true"
+      VEDORA_TEST_POSTGRES: "Host=postgres;Port=5432;Database=roblox_integration_test;Username=roblox_integration_test_user;Password=docker"
+      VEDORA_TEST_REDIS: "redis:6379"
       Postgres: "Host=postgres;Port=5432;Database=roblox_integration_test;Username=roblox_integration_test_user;Password=docker"
       Redis: "redis:6379"
       Authorization: "ApiRouteTestAuthorization"
@@ -77,9 +77,9 @@ services:
       - postgres
       - redis
     environment:
-      KORONE_REQUIRE_DOCKER_TESTS: "true"
-      KORONE_TEST_POSTGRES: "Host=postgres;Port=5432;Database=roblox_integration_test;Username=roblox_integration_test_user;Password=docker"
-      KORONE_TEST_REDIS: "redis:6379"
+      VEDORA_REQUIRE_DOCKER_TESTS: "true"
+      VEDORA_TEST_POSTGRES: "Host=postgres;Port=5432;Database=roblox_integration_test;Username=roblox_integration_test_user;Password=docker"
+      VEDORA_TEST_REDIS: "redis:6379"
       Postgres: "Host=postgres;Port=5432;Database=roblox_integration_test;Username=roblox_integration_test_user;Password=docker"
       Redis: "redis:6379"
       Authorization: "UsersRouteTestAuthorization"
@@ -95,9 +95,9 @@ services:
       - postgres
       - redis
     environment:
-      KORONE_REQUIRE_DOCKER_TESTS: "true"
-      KORONE_TEST_POSTGRES: "Host=postgres;Port=5432;Database=roblox_integration_test;Username=roblox_integration_test_user;Password=docker"
-      KORONE_TEST_REDIS: "redis:6379"
+      VEDORA_REQUIRE_DOCKER_TESTS: "true"
+      VEDORA_TEST_POSTGRES: "Host=postgres;Port=5432;Database=roblox_integration_test;Username=roblox_integration_test_user;Password=docker"
+      VEDORA_TEST_REDIS: "redis:6379"
       Postgres: "Host=postgres;Port=5432;Database=roblox_integration_test;Username=roblox_integration_test_user;Password=docker"
       Redis: "redis:6379"
       Authorization: "AdminRouteTestAuthorization"
@@ -113,9 +113,9 @@ services:
       - postgres
       - redis
     environment:
-      KORONE_REQUIRE_DOCKER_TESTS: "true"
-      KORONE_TEST_POSTGRES: "Host=postgres;Port=5432;Database=roblox_integration_test;Username=roblox_integration_test_user;Password=docker"
-      KORONE_TEST_REDIS: "redis:6379"
+      VEDORA_REQUIRE_DOCKER_TESTS: "true"
+      VEDORA_TEST_POSTGRES: "Host=postgres;Port=5432;Database=roblox_integration_test;Username=roblox_integration_test_user;Password=docker"
+      VEDORA_TEST_REDIS: "redis:6379"
       Postgres: "Host=postgres;Port=5432;Database=roblox_integration_test;Username=roblox_integration_test_user;Password=docker"
       Redis: "redis:6379"
       Authorization: "WebInfrastructureTestAuthorization"

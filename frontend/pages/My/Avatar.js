@@ -18,7 +18,7 @@ const AvatarPage = () => {
     const s = useStyles({theme: getTheme()});
     return <Theme2016>
         <Head>
-            <title>Avatar - Korone</title>
+            <title>Avatar - Vedora</title>
         </Head>
         <div className={`${s.avPageWrapper} container flex flex-column ssp`}>
             <AdBanner context="MyCharacterPage"/>

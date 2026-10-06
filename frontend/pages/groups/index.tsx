@@ -19,12 +19,12 @@ const GamePage = ({}: {}) => {
     return (
         <>
             <Head>
-                <title>Korone Groups</title>
-                <meta property="og:title" content='Korone Groups' />
-                <meta property="og:url" content={`https://pekora.zip/groups`} />
+                <title>Vedora Groups</title>
+                <meta property="og:title" content='Vedora Groups' />
+                <meta property="og:url" content={`https://vedora.xyz/groups`} />
                 <meta property="og:type" content="profile" />
                 <meta name="twitter:card" content="summary_large_image" />
-                <meta name="og:site_name" content="Korone" />
+                <meta name="og:site_name" content="Vedora" />
                 <meta name="theme-color" content="#E2231A" />
             </Head>
             <Theme2016>

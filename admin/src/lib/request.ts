@@ -1,6 +1,6 @@
 import axios, { AxiosHeaders } from 'axios';
 const configuredBaseUrl = (window as Window & { ADMIN_API_BASE_URL?: string }).ADMIN_API_BASE_URL;
-export const adminApiBaseUrl: string = configuredBaseUrl || 'https://admin.pekora.zip/v1/';
+export const adminApiBaseUrl: string = configuredBaseUrl || 'https://admin.vedora.xyz/v1/';
 let goodCsrf = '';
 
 export function adminApiUrl(path: string): string {

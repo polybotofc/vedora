@@ -8,7 +8,6 @@ public sealed class FrontendProxyOptions
 
     public string[] PublicHosts { get; set; } =
     [
-        "pekora.zip",
-        "www.pekora.zip",
+        "vedora.xyz",
     ];
 }

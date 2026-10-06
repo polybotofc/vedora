@@ -6,7 +6,7 @@ const UserTradeRoute = () => {
 
 UserTradeRoute.getInitialProps = () => {
   return {
-    title: "Trade - Korone",
+    title: "Trade - Vedora",
   };
 };
 

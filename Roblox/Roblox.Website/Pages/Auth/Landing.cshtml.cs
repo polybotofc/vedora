@@ -59,7 +59,7 @@ public class Landing : RobloxPageModel
         }
         catch (Exception)
         {
-            HttpContext.Response.Cookies.Delete("PEKORA-DISCORD");
+            HttpContext.Response.Cookies.Delete("VEDORA-DISCORD");
         }
     }
 
@@ -401,7 +401,7 @@ public class Landing : RobloxPageModel
             await services.games.CreateUniverse(asset.placeId);
         }
 
-        HttpContext.Response.Cookies.Delete("PEKORA-DISCORD");
+        HttpContext.Response.Cookies.Delete("VEDORA-DISCORD");
 
         return Redirect("/home");
     }

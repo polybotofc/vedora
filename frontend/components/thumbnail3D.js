@@ -179,7 +179,7 @@ export class Thumbnail3DHandler {
         this.scene.add(this.directionalLight);
         
         let mtlLoader = new THREE.MTLLoader();
-        // easy fix, just removed the cdn url, so now it will use the direct cdn url, not the hardcoded cdn.pekora.zip
+        // easy fix, just removed the cdn url, so now it will use the direct cdn url, not the hardcoded cdn.vedora.xyz
 
         // sorry david - neva
         mtlLoader.load(thumbJson.mtl, (materials) => {

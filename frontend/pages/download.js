@@ -8,7 +8,7 @@ const DownloadPage = () => {
 
 DownloadPage.getInitialProps = () => {
     return {
-        title: 'Download - Korone',
+        title: 'Download - Vedora',
     }
 }
 

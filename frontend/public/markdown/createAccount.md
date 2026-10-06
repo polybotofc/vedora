@@ -1,9 +1,9 @@
-Creating an account on Korone requires verifying your Discord account.
+Creating an account on Vedora requires verifying your Discord account.
 
 To create an account, you must meet these requirements:
 * You must be 13 years or older
 * You must have a Discord account
-* You cannot create more than **one account** on Korone without staff permission.
+* You cannot create more than **one account** on Vedora without staff permission.
 * You must have read and agreed to our Terms of Service and our Privacy Policy.
 
 ## Creating an account

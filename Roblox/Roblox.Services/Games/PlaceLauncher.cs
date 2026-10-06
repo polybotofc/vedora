@@ -89,7 +89,7 @@ public class PlaceLauncherService : ServiceBase
         using var sign = ServiceProvider.GetOrCreate<SignService>(this);
         dynamic? joinScript = null;
         PlaceEntry placeInfo = (await games.MultiGetPlaceDetails(new[] { placeId })).First();
-        if (placeInfo.moderationStatus != ModerationStatus.ReviewApproved || placeInfo.year == 2016)
+        if (placeInfo.moderationStatus != ModerationStatus.ReviewApproved || placeInfo.year != 2021)
         {
             return new PlaceLaunchResponse()
             {
@@ -150,8 +150,7 @@ public class PlaceLauncherService : ServiceBase
         using var sign = ServiceProvider.GetOrCreate<SignService>(this);
         string characterAppearanceUrl = $"https://api.{Configuration.ShortBaseUrl}/v1.1/avatar-fetch?userId={userId}&placeId={placeId}";
         PlaceEntry placeInfo = (await games.MultiGetPlaceDetails(new[] { placeId })).First();
-        // Block 2017 due to authentication issues
-        if (placeInfo.moderationStatus != ModerationStatus.ReviewApproved || placeInfo.year == 2017)
+        if (placeInfo.moderationStatus != ModerationStatus.ReviewApproved || placeInfo.year != 2021)
         {
             return new PlaceLaunchResponse()
             {

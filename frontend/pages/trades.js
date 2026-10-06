@@ -9,7 +9,7 @@ const TradesRoute = () => {
 
 TradesRoute.getInitialProps = () => {
   return {
-    title: "Trades - Korone",
+    title: "Trades - Vedora",
   };
 };
 

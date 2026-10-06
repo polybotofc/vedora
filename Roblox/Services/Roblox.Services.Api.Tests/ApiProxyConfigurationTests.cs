@@ -16,8 +16,8 @@ public class ApiProxyConfigurationTests
         Assert.Equal("api-cluster", apiRoute.GetProperty("ClusterId").GetString());
         Assert.Equal("{**catch-all}", apiRoute.GetProperty("Match").GetProperty("Path").GetString());
         var apiHosts = ReadStringArray(apiRoute.GetProperty("Match").GetProperty("Hosts"));
-        Assert.Contains("api.pekora.zip", apiHosts);
-        Assert.Contains("*.api.pekora.zip", apiHosts);
+        Assert.Contains("api.vedora.xyz", apiHosts);
+        Assert.Contains("*.api.vedora.xyz", apiHosts);
 
         Assert.True(clusters.TryGetProperty("api-cluster", out var apiCluster), "api-cluster should exist.");
         Assert.Equal(
@@ -38,7 +38,7 @@ public class ApiProxyConfigurationTests
 
             if (match.TryGetProperty("Hosts", out var hosts))
             {
-                Assert.DoesNotContain("assetgame.pekora.zip", ReadStringArray(hosts));
+                Assert.DoesNotContain("assetgame.vedora.xyz", ReadStringArray(hosts));
             }
         }
     }
@@ -49,8 +49,8 @@ public class ApiProxyConfigurationTests
         using var document = LoadApiProxyAppSettings();
         var root = document.RootElement;
 
-        Assert.Contains("api.pekora.zip", ReadStringArray(root.GetProperty("InternalServiceHosts")));
-        Assert.Contains("*.api.pekora.zip", ReadStringArray(root.GetProperty("InternalServiceHosts")));
+        Assert.Contains("api.vedora.xyz", ReadStringArray(root.GetProperty("InternalServiceHosts")));
+        Assert.Contains("*.api.vedora.xyz", ReadStringArray(root.GetProperty("InternalServiceHosts")));
 
         foreach (var route in root.GetProperty("InternalServiceRoutes").EnumerateArray())
         {
@@ -91,8 +91,8 @@ public class ApiProxyConfigurationTests
         var frontendProxy = document.RootElement.GetProperty("FrontendProxy");
 
         var hosts = ReadStringArray(frontendProxy.GetProperty("PublicHosts"));
-        Assert.Contains("pekora.zip", hosts);
-        Assert.Contains("www.pekora.zip", hosts);
+        Assert.Contains("vedora.xyz", hosts);
+        Assert.Contains("www.vedora.xyz", hosts);
     }
 
     [Fact]
@@ -103,12 +103,12 @@ public class ApiProxyConfigurationTests
         var routes = root.GetProperty("ReverseProxy").GetProperty("Routes");
         var clusters = root.GetProperty("ReverseProxy").GetProperty("Clusters");
 
-        Assert.Contains("admin.pekora.zip", ReadStringArray(root.GetProperty("InternalServiceHosts")));
+        Assert.Contains("admin.vedora.xyz", ReadStringArray(root.GetProperty("InternalServiceHosts")));
 
         Assert.True(routes.TryGetProperty("admin-host-route", out var adminRoute), "admin-host-route should exist.");
         Assert.Equal("admin-cluster", adminRoute.GetProperty("ClusterId").GetString());
         Assert.Equal("/v1/{**catch-all}", adminRoute.GetProperty("Match").GetProperty("Path").GetString());
-        Assert.Contains("admin.pekora.zip", ReadStringArray(adminRoute.GetProperty("Match").GetProperty("Hosts")));
+        Assert.Contains("admin.vedora.xyz", ReadStringArray(adminRoute.GetProperty("Match").GetProperty("Hosts")));
 
         Assert.True(clusters.TryGetProperty("admin-cluster", out var adminCluster), "admin-cluster should exist.");
         Assert.Equal(

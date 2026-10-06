@@ -1,3 +1,5 @@
-@echo STARTING SITE
-start cmd /k cd "2016-roblox-main" ^& call start.bat
-start cmd /k cd "Roblox/Roblox.Website" ^& call run.bat
+@echo off
+rem Vedora is started through the single root launcher.
+rem This wrapper exists so older shortcuts keep working.
+cd /d "%~dp0"
+call "%~dp0vedora.bat" %*

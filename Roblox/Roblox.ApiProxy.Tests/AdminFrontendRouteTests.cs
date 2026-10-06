@@ -23,7 +23,7 @@ public class AdminFrontendRouteTests : IDisposable
 
     public AdminFrontendRouteTests()
     {
-        _adminRoot = Path.Combine(Path.GetTempPath(), "korone-admin-proxy-tests", Guid.NewGuid().ToString("N"));
+        _adminRoot = Path.Combine(Path.GetTempPath(), "vedora-admin-proxy-tests", Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(Path.Combine(_adminRoot, "build"));
         File.WriteAllText(Path.Combine(_adminRoot, "index.html"), "<main>admin shell</main>");
         File.WriteAllText(Path.Combine(_adminRoot, "favicon.png"), "png");
@@ -39,8 +39,8 @@ public class AdminFrontendRouteTests : IDisposable
                 });
                 services.Configure<AdminApiOptions>(options =>
                 {
-                    options.PublicBaseUrl = "https://admin.pekora.zip/v1/";
-                    options.CorsAllowedOrigins = new[] { "https://www.pekora.zip" };
+                    options.PublicBaseUrl = "https://admin.vedora.xyz/v1/";
+                    options.CorsAllowedOrigins = new[] { "https://vedora.xyz" };
                 });
                 services.AddLogging();
                 services.AddSingleton<IAdminSessionResolver>(_sessionResolver);
@@ -73,7 +73,7 @@ public class AdminFrontendRouteTests : IDisposable
 
         Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
         Assert.Equal(
-            "https://admin.pekora.zip/v1/2fa?returnUrl=%2Fadmin%2Fusers%3Ftab%3Dstaff",
+            "https://admin.vedora.xyz/v1/2fa?returnUrl=%2Fadmin%2Fusers%3Ftab%3Dstaff",
             response.Headers.Location?.OriginalString);
     }
 
@@ -148,7 +148,7 @@ public class AdminFrontendRouteTests : IDisposable
     private HttpClient CreateClient()
     {
         var client = _server.CreateClient();
-        client.DefaultRequestHeaders.Host = "www.pekora.zip";
+        client.DefaultRequestHeaders.Host = "vedora.xyz";
         return client;
     }
 

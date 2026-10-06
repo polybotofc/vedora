@@ -12,7 +12,7 @@ const OnBoardingPage = () => {
 
 OnBoardingPage.getInitialProps = () => {
     return {
-        title: 'Onboarding - Korone',
+        title: 'Onboarding - Vedora',
     }
 }
 

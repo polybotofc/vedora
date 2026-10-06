@@ -88,7 +88,7 @@ public class FrontendProxyMiddlewareTests
     {
         var context = new DefaultHttpContext();
         context.Response.Body = new MemoryStream();
-        context.Request.Host = new HostString("www.pekora.zip");
+        context.Request.Host = new HostString("vedora.xyz");
         context.Request.Path = path;
         context.Connection.RemoteIpAddress = IPAddress.Parse("127.0.0.1");
         context.SetRobloxRequestContext(new RobloxRequestContext
@@ -104,7 +104,7 @@ public class FrontendProxyMiddlewareTests
             Options.Create(new FrontendProxyOptions
             {
                 DestinationPrefix = "http://127.0.0.1:3000/",
-                PublicHosts = new[] { "www.pekora.zip" },
+                PublicHosts = new[] { "vedora.xyz" },
             }),
             NullLogger<FrontendProxyMiddleware>.Instance);
 

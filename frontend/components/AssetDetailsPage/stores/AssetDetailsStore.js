@@ -91,7 +91,7 @@ const assetDetailsStore = createContainer(() => {
         let cursor = '';
         // might have to be do while instead of while
         while (cursor !== null && !isCancelled()) {
-            /** @type PekoraCollectionPaginated<ResellerData> */
+            /** @type VedoraCollectionPaginated<ResellerData> */
             const resellData = (await getResellers({ assetId: details.id, cursor: cursor, limit: 100 })).data;
             if (isCancelled()) return;
             if (!resellData || resellData.data.length === 0) {
@@ -118,7 +118,7 @@ const assetDetailsStore = createContainer(() => {
         let cursor = '';
         // might have to be do while instead of while
         while (cursor !== null && !isCancelled()) {
-            /** @type PekoraCollectionPaginated<OwnerEntry> */
+            /** @type VedoraCollectionPaginated<OwnerEntry> */
             const ownerData = (await getCollectibleOwners({ assetId: details.id, cursor: cursor, limit: 50, sort: "Asc" }));
             if (isCancelled()) return;
             if (ownerData.data.length === 0) {

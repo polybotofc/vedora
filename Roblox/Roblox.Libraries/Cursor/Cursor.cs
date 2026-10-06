@@ -9,8 +9,9 @@ namespace Roblox.Libraries.Cursor
     public static class Cursor
     {
 #if DEBUG==true
-        private static string cursorForwards { get; set; } = "DEBUG";
-        private static string cursorBackwards { get; set; } = "DEBUG";
+        // The two keys must differ or a sort mismatch cannot be detected.
+        private static string cursorForwards { get; set; } = "DEBUG-FORWARDS";
+        private static string cursorBackwards { get; set; } = "DEBUG-BACKWARDS";
 #else
         private static string cursorForwards { get; set; } = Guid.NewGuid().ToString();
         private static string cursorBackwards { get; set; } = Guid.NewGuid().ToString();

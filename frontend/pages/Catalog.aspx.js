@@ -56,7 +56,7 @@ const LegacyCatalogPage = () => {
 
 LegacyCatalogPage.getInitialProps = () => {
     return {
-        title: 'Catalog - Korone',
+        title: 'Catalog - Vedora',
     }
 }
 

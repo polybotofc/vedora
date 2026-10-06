@@ -72,7 +72,7 @@ const useStyles = createUseStyles({
         height: '95px',
         display: 'inline-block',
         verticalAlign: 'middle',
-        backgroundImage: 'url(/img/korone-icon-square.png)',
+        backgroundImage: 'url(/img/vedora-icon-square.png)',
         backgroundSize: '85px 85px',
         backgroundRepeat: 'no-repeat',
         backgroundPosition: '5px 0'
@@ -107,7 +107,7 @@ const useStyles = createUseStyles({
  * @returns
  */
 
-const downloadProjexModal = props => {
+const downloadVedoraModal = props => {
     const s = useStyles();
     const buttonStyles = useButtonStyles();
     const auth = AuthenticationStore.useContainer();
@@ -116,7 +116,7 @@ const downloadProjexModal = props => {
     const onClick = e => {
         e.preventDefault();
         setOpen(false);
-        window.location.href = "https://github.com/KoroneX/Korone-Bootstrapper/releases";
+        window.location.href = "https://github.com/VedoraX/Vedora-Bootstrapper/releases";
     }
 
     useEffect(() => {
@@ -156,10 +156,10 @@ const downloadProjexModal = props => {
                 <p className={s.loadingText}>You're moments away from getting into the game!</p>
             </div>
             <div className={s.buttons}>
-                <ActionButton onClick={onClick} buttonStyle={buttonStyles.newBuyButton} label="Download and Install Korone" className={s.button2} />
+                <ActionButton onClick={onClick} buttonStyle={buttonStyles.newBuyButton} label="Download and Install Vedora" className={s.button2} />
             </div>
         </NewModal>}
     </>
 }
 
-export default downloadProjexModal;
+export default downloadVedoraModal;

@@ -67,13 +67,13 @@ const useBadgeStyles = createUseStyles({
 const MembershipBadges = [
     {
         name: 'Welcome To The Club Badge',
-        desc: 'This badge is awarded to players who have ever belonged to the illustrious Builders Club. These players are part of a long tradition of Korone greatness.',
+        desc: 'This badge is awarded to players who have ever belonged to the illustrious Builders Club. These players are part of a long tradition of Vedora greatness.',
         iconOne: 2,
         iconTwo: 0,
     },
     {
         name: 'Builders Club Badge',
-        desc: 'Members of the illustrious Builders Club display this badge proudly. The Builders Club is a paid premium service. Members receive several benefits: they earn a daily income of 15 Robux, they can sell their creations to others in the Korone Catalog, they get the ability to browse the web site without external ads, and they receive the exclusive Builders Club construction hat.',
+        desc: 'Members of the illustrious Builders Club display this badge proudly. The Builders Club is a paid premium service. Members receive several benefits: they earn a daily income of 15 Robux, they can sell their creations to others in the Vedora Catalog, they get the ability to browse the web site without external ads, and they receive the exclusive Builders Club construction hat.',
         iconOne: 6,
         iconTwo: 0,
     },
@@ -88,19 +88,19 @@ const MembershipBadges = [
 const CommunityBadges = [
     {
         name: 'Administrator Badge',
-        desc: `This badge identifies an account as belonging to a Korone administrator. Only official Korone administrators will possess this badge. If someone claims to be an admin, but does not have this badge, they are potentially trying to mislead you. If this happens, please report abuse and we will delete the imposter's account.`,
+        desc: `This badge identifies an account as belonging to a Vedora administrator. Only official Vedora administrators will possess this badge. If someone claims to be an admin, but does not have this badge, they are potentially trying to mislead you. If this happens, please report abuse and we will delete the imposter's account.`,
         iconOne: 7,
         iconTwo: 1,
     },
     {
         name: 'Veteran Badge',
-        desc: 'This badge recognizes members who have played Korone for one year or more. They are stalwart community members who have stuck with us over countless releases, and have helped shape Korone into the game that it is today. These medalists are the true steel, the core of the Projexian history ... and its future.',
+        desc: 'This badge recognizes members who have played Vedora for one year or more. They are stalwart community members who have stuck with us over countless releases, and have helped shape Vedora into the game that it is today. These medalists are the true steel, the core of the Vedoraian history ... and its future.',
         iconOne: 8,
         iconTwo: 0,
     },
     {
         name: 'Friendship Badge',
-        desc: 'This badge is given to players who have embraced the Korone community and have made at least 20 friends. People who have this badge are good people to know and can probably help you out if you are having trouble.',
+        desc: 'This badge is given to players who have embraced the Vedora community and have made at least 20 friends. People who have this badge are good people to know and can probably help you out if you are having trouble.',
         iconOne: 0,
         iconTwo: 1,
     },
@@ -133,7 +133,7 @@ const DeveloperBadges = [
     },
     {
         name: 'Official Model Maker Badge',
-        desc: 'This badge is awarded to players whose creations are so awesome, Korone endorsed them. Owners of this badge probably have great scripting and building skills.',
+        desc: 'This badge is awarded to players whose creations are so awesome, Vedora endorsed them. Owners of this badge probably have great scripting and building skills.',
         iconOne: 5,
         iconTwo: 1,
     },

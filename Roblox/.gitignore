@@ -1,6 +1,8 @@
 **/obj
 **/Properties
 **/appsettings.json
+!Vedora.RccServiceArbiter/appsettings.json
+!Roblox.ApiProxy/appsettings.json
 **/appsettings.*.json
 **/bin
 *.DotSettings.user

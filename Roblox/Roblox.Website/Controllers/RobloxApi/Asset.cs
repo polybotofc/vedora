@@ -48,11 +48,11 @@ public class Asset : ControllerBase
         // The reason for this is so that cloudflare can cache assets without caching the response of this endpoint, which might be different depending on the client making the request (e.g. under 18 user, over 18 user, rcc, etc).
         if (id == 507766388)
         {
-            return PhysicalFile(@"C:\korone-revival\Roblox\FixJitter\507766388.rbxm", "application/octet-stream");
+            return PhysicalFile(ResolveFixJitterAsset("507766388.rbxm"), "application/octet-stream");
         }
         else if (id == 507766666)
         {
-            return PhysicalFile(@"C:\korone-revival\Roblox\FixJitter\507766666.rbxm", "application/octet-stream");
+            return PhysicalFile(ResolveFixJitterAsset("507766666.rbxm"), "application/octet-stream");
         }
         // If assetversionid isnt null, set id to assetveresionid
         id = assetversionid ?? id;
@@ -292,5 +292,25 @@ public class Asset : ControllerBase
     private async Task<bool> IsUserAuthorizedForAsset(MultiGetEntry details, long assetId, long userId)
     {
         return await services.assets.CanUserModifyItem(assetId, userId) || details.creatorType == CreatorType.User && details.creatorTargetId == 1;;
+    }
+
+    // FixJitter models ship next to the published binary. Older builds hardcoded an
+    // absolute path, which broke everywhere except the original developer machine.
+    private static string ResolveFixJitterAsset(string fileName)
+    {
+        var bundled = Path.Combine(AppContext.BaseDirectory, "FixJitter", fileName);
+        if (System.IO.File.Exists(bundled))
+            return bundled;
+
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+        while (directory != null)
+        {
+            var candidate = Path.Combine(directory.FullName, "Roblox", "FixJitter", fileName);
+            if (System.IO.File.Exists(candidate))
+                return candidate;
+            directory = directory.Parent;
+        }
+
+        return bundled;
     }
 }

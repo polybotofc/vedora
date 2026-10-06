@@ -5,7 +5,7 @@ const fallbackPublicRuntimeConfig = {
 };
 
 const parsePublicRuntimeConfig = () => {
-  const rawConfig = process.env.NEXT_PUBLIC_KORONE_PUBLIC_CONFIG;
+  const rawConfig = process.env.NEXT_PUBLIC_VEDORA_PUBLIC_CONFIG;
   if (typeof rawConfig !== 'string' || rawConfig.length === 0) {
     return fallbackPublicRuntimeConfig;
   }

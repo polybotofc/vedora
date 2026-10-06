@@ -23,7 +23,7 @@ module.exports = withBundleAnalyzer({
         root: __dirname,
     },
     env: {
-        NEXT_PUBLIC_KORONE_PUBLIC_CONFIG: JSON.stringify(publicRuntimeConfig),
+        NEXT_PUBLIC_VEDORA_PUBLIC_CONFIG: JSON.stringify(publicRuntimeConfig),
     },
     async redirects() {
         return [
@@ -58,7 +58,7 @@ module.exports = withBundleAnalyzer({
             },
             {
                 source: '/support',
-                destination: 'https://support.korone.one/',
+                destination: 'https://support.vedora.xyz/',
                 permanent: true,
             },
             // {

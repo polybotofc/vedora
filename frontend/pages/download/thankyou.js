@@ -51,7 +51,7 @@ function ThankYouPage() {
                         lineHeight: "1.3em",
                         fontSize: 48,
                         fontWeight: 300,
-                    }}>Thank you for installing vedora.</h1>
+                    }}>Thank you for installing Vedora.</h1>
                     <span style={{
                         width: "500px",
                         margin: "50px auto",
@@ -59,10 +59,10 @@ function ThankYouPage() {
                         fontWeight: 300,
                         textAlign: "center",
                         lineHeight: "1.5em",
-                    }}>It"s time to play! You can now browse and play the most popular games on vedora.</span>
+                    }}>It"s time to play! You can now browse and play the most popular games on Vedora.</span>
                     <Link href="/games">
                         <a href="/games">
-                            <ActionButton label="Browse Korone Games" buttonStyle={buttonStyles.newBuyButton}
+                            <ActionButton label="Browse Vedora Games" buttonStyle={buttonStyles.newBuyButton}
                                           className={s.gamesBtn}/>
                         </a>
                     </Link>

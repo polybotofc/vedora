@@ -22,8 +22,8 @@ jobs:
       WEB_SERVER_PORT: ${{ secrets.WEB_SERVER_PORT || '22' }}
       WEB_SERVER_HOST: ${{ secrets.WEB_SERVER_HOST }}
       WEB_SERVER_USER: ${{ secrets.WEB_SERVER_USER }}
-      DEPLOY_ROOT: ${{ vars.WEB_DEPLOY_ROOT || 'C:\KoroneServices' }}
-      STAGING_ROOT: ${{ vars.WEB_STAGING_ROOT || 'korone-deploy' }}
+      DEPLOY_ROOT: ${{ vars.WEB_DEPLOY_ROOT || 'C:\VedoraServices' }}
+      STAGING_ROOT: ${{ vars.WEB_STAGING_ROOT || 'vedora-deploy' }}
       APIPROXY_SERVICE: ${{ vars.WEB_APIPROXY_SERVICE || 'Roblox.ApiProxy' }}
       WEBSITE_SERVICE: ${{ vars.WEB_WEBSITE_SERVICE || 'Roblox.Website' }}
       DATA_SERVICE: ${{ vars.WEB_DATA_SERVICE || 'Roblox.Services.Data' }}
@@ -96,7 +96,7 @@ jobs:
           $sshDirectory = Join-Path $env:USERPROFILE ".ssh"
           New-Item -ItemType Directory -Force -Path $sshDirectory | Out-Null
 
-          $keyPath = Join-Path $sshDirectory "korone_deploy_key"
+          $keyPath = Join-Path $sshDirectory "vedora_deploy_key"
           $key = $env:WEB_SERVER_SSH_KEY
           if ([string]::IsNullOrWhiteSpace($key)) {
             throw "WEB_SERVER_SSH_KEY is empty."

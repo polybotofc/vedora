@@ -1,6 +1,6 @@
 # Windows Webserver GitHub Actions Deploy
 
-This repo now includes a deploy workflow at [.github/workflows/roblox-webserver-deploy.yml](/C:/Users/user/RiderProjects/korone-revival/.github/workflows/roblox-webserver-deploy.yml).
+This repo now includes a deploy workflow at [.github/workflows/roblox-webserver-deploy.yml](/C:/Users/user/RiderProjects/vedora-revival/.github/workflows/roblox-webserver-deploy.yml).
 
 It does this:
 
@@ -13,7 +13,7 @@ It does this:
    - `Roblox.Services.Donation`
 2. Uploads the publish output as a workflow artifact.
 3. Copies that bundle to the Windows webserver over SSH.
-4. Runs [Deploy-Roblox-WebServices.ps1](/C:/Users/user/RiderProjects/korone-revival/scripts/windows/Deploy-Roblox-WebServices.ps1) on the server.
+4. Runs [Deploy-Roblox-WebServices.ps1](/C:/Users/user/RiderProjects/vedora-revival/scripts/windows/Deploy-Roblox-WebServices.ps1) on the server.
 5. Stops the six Windows services, syncs the new files in, preserves server-local `appsettings*.json` and `game-servers.json`, and starts the services again.
 
 ## GitHub Side Setup
@@ -32,9 +32,9 @@ Create these repository secrets:
 Create these repository variables if you want to override defaults:
 
 - `WEB_DEPLOY_ROOT`
-  - Default: `C:\KoroneServices`
+  - Default: `C:\VedoraServices`
 - `WEB_STAGING_ROOT`
-  - Default: `korone-deploy`
+  - Default: `vedora-deploy`
 - `WEB_APIPROXY_SERVICE`
   - Default: `Roblox.ApiProxy`
   - Must match the actual Windows service name or display name.
@@ -65,12 +65,12 @@ Make sure the Windows server accepts SSH logins.
 Example:
 
 ```powershell
-New-Item -ItemType Directory -Force -Path 'C:\KoroneServices\Roblox.ApiProxy' | Out-Null
-New-Item -ItemType Directory -Force -Path 'C:\KoroneServices\Roblox.Website' | Out-Null
-New-Item -ItemType Directory -Force -Path 'C:\KoroneServices\Roblox.Services.Data' | Out-Null
-New-Item -ItemType Directory -Force -Path 'C:\KoroneServices\Roblox.Services.DataStore' | Out-Null
-New-Item -ItemType Directory -Force -Path 'C:\KoroneServices\Roblox.Services.Moderation' | Out-Null
-New-Item -ItemType Directory -Force -Path 'C:\KoroneServices\Roblox.Services.Donation' | Out-Null
+New-Item -ItemType Directory -Force -Path 'C:\VedoraServices\Roblox.ApiProxy' | Out-Null
+New-Item -ItemType Directory -Force -Path 'C:\VedoraServices\Roblox.Website' | Out-Null
+New-Item -ItemType Directory -Force -Path 'C:\VedoraServices\Roblox.Services.Data' | Out-Null
+New-Item -ItemType Directory -Force -Path 'C:\VedoraServices\Roblox.Services.DataStore' | Out-Null
+New-Item -ItemType Directory -Force -Path 'C:\VedoraServices\Roblox.Services.Moderation' | Out-Null
+New-Item -ItemType Directory -Force -Path 'C:\VedoraServices\Roblox.Services.Donation' | Out-Null
 ```
 
 ### 3. Put production config on the server
@@ -79,16 +79,16 @@ Because the deploy script preserves `appsettings*.json`, keep your production se
 
 At minimum:
 
-- `C:\KoroneServices\Roblox.ApiProxy\appsettings.Production.json`
-- `C:\KoroneServices\Roblox.Website\appsettings.Production.json`
-- `C:\KoroneServices\Roblox.Services.Data\appsettings.Production.json`
-- `C:\KoroneServices\Roblox.Services.DataStore\appsettings.Production.json`
-- `C:\KoroneServices\Roblox.Services.Moderation\appsettings.Production.json`
-- `C:\KoroneServices\Roblox.Services.Donation\appsettings.Production.json`
+- `C:\VedoraServices\Roblox.ApiProxy\appsettings.Production.json`
+- `C:\VedoraServices\Roblox.Website\appsettings.Production.json`
+- `C:\VedoraServices\Roblox.Services.Data\appsettings.Production.json`
+- `C:\VedoraServices\Roblox.Services.DataStore\appsettings.Production.json`
+- `C:\VedoraServices\Roblox.Services.Moderation\appsettings.Production.json`
+- `C:\VedoraServices\Roblox.Services.Donation\appsettings.Production.json`
 
 If you use website game server mappings, also keep this on the server:
 
-- `C:\KoroneServices\Roblox.Website\game-servers.json`
+- `C:\VedoraServices\Roblox.Website\game-servers.json`
 
 Recommended split:
 
@@ -146,7 +146,7 @@ Set the frontend destination in the server-local `Roblox.ApiProxy\appsettings.Pr
 }
 ```
 
-The frontend proxy only handles `pekora.zip` and `www.pekora.zip`. Specific `ReverseProxy` routes are evaluated first, then classic website APIs and assets continue to `Roblox.Website`, and remaining requests on those two hosts stream to the frontend.
+The frontend proxy only handles `vedora.xyz` and `vedora.xyz`. Specific `ReverseProxy` routes are evaluated first, then classic website APIs and assets continue to `Roblox.Website`, and remaining requests on those two hosts stream to the frontend.
 
 Add the data upload route and cluster to the server-local `Roblox.ApiProxy\appsettings.Production.json`:
 
@@ -155,7 +155,7 @@ Add the data upload route and cluster to the server-local `Roblox.ApiProxy\appse
   "ClusterId": "data-cluster",
   "Order": 3,
   "Match": {
-    "Hosts": [ "data.pekora.zip" ],
+    "Hosts": [ "data.vedora.xyz" ],
     "Methods": [ "POST" ],
     "Path": "/Data/Upload.ashx"
   }
@@ -174,7 +174,7 @@ Also add this entry to `InternalServiceRoutes` so the API proxy forwards the aut
 
 ```json
 {
-  "Hosts": [ "data.pekora.zip" ],
+  "Hosts": [ "data.vedora.xyz" ],
   "PathPrefixes": [ "/Data/Upload.ashx" ]
 }
 ```
@@ -205,7 +205,7 @@ Stop-Service -Name 'Roblox.Services.Stripe' -ErrorAction SilentlyContinue
 # Use NSSM or your service wrapper to unregister Roblox.Services.Stripe.
 ```
 
-Create the new `Roblox.Services.Donation` service after publishing and verifying its production config. Once the new service is verified, remove the old `C:\KoroneServices\Roblox.Services.Stripe` deploy folder.
+Create the new `Roblox.Services.Donation` service after publishing and verifying its production config. Once the new service is verified, remove the old `C:\VedoraServices\Roblox.Services.Stripe` deploy folder.
 
 ### 5. Register the six Windows services
 
@@ -230,17 +230,17 @@ Set environment variables per service:
 Example NSSM layout:
 
 - Application: `C:\Program Files\dotnet\dotnet.exe`
-- Arguments: `C:\KoroneServices\Roblox.ApiProxy\Roblox.ApiProxy.dll`
-- Startup directory: `C:\KoroneServices\Roblox.ApiProxy`
+- Arguments: `C:\VedoraServices\Roblox.ApiProxy\Roblox.ApiProxy.dll`
+- Startup directory: `C:\VedoraServices\Roblox.ApiProxy`
 
 Repeat for the other apps.
 
 Register the data upload service with NSSM:
 
 ```powershell
-New-Item -ItemType Directory -Force -Path 'C:\KoroneServices\Roblox.Services.Data' | Out-Null
-& 'C:\ProjectX\nssm.exe' install 'Roblox.Services.Data' 'C:\Program Files\dotnet\dotnet.exe' 'C:\KoroneServices\Roblox.Services.Data\Roblox.Services.Data.dll'
-& 'C:\ProjectX\nssm.exe' set 'Roblox.Services.Data' AppDirectory 'C:\KoroneServices\Roblox.Services.Data'
+New-Item -ItemType Directory -Force -Path 'C:\VedoraServices\Roblox.Services.Data' | Out-Null
+& 'C:\ProjectX\nssm.exe' install 'Roblox.Services.Data' 'C:\Program Files\dotnet\dotnet.exe' 'C:\VedoraServices\Roblox.Services.Data\Roblox.Services.Data.dll'
+& 'C:\ProjectX\nssm.exe' set 'Roblox.Services.Data' AppDirectory 'C:\VedoraServices\Roblox.Services.Data'
 & 'C:\ProjectX\nssm.exe' set 'Roblox.Services.Data' AppEnvironmentExtra 'ASPNETCORE_ENVIRONMENT=Production' 'ASPNETCORE_URLS=http://127.0.0.1:5206'
 & 'C:\ProjectX\nssm.exe' set 'Roblox.Services.Data' Start SERVICE_AUTO_START
 & 'C:\ProjectX\nssm.exe' start 'Roblox.Services.Data'
@@ -269,15 +269,15 @@ Public flow:
 
 - `nginx` -> `Roblox.ApiProxy`
 - `Roblox.ApiProxy` -> `Roblox.Website`
-- `Roblox.ApiProxy` -> frontend for non-backend requests on `pekora.zip` and `www.pekora.zip`
-- `Roblox.ApiProxy` -> `Roblox.Services.Data` for `POST /Data/Upload.ashx` on `data.pekora.zip`
-- `Roblox.ApiProxy` -> `Roblox.Services.DataStore` for `gamepersistence.pekora.zip`
-- `Roblox.ApiProxy` -> `Roblox.Services.Moderation` for `/moderation/*` on `assetgame.pekora.zip` and `www.pekora.zip`
+- `Roblox.ApiProxy` -> frontend for non-backend requests on `vedora.xyz` and `vedora.xyz`
+- `Roblox.ApiProxy` -> `Roblox.Services.Data` for `POST /Data/Upload.ashx` on `data.vedora.xyz`
+- `Roblox.ApiProxy` -> `Roblox.Services.DataStore` for `gamepersistence.vedora.xyz`
+- `Roblox.ApiProxy` -> `Roblox.Services.Moderation` for `/moderation/*` on `assetgame.vedora.xyz` and `vedora.xyz`
 - `Roblox.ApiProxy` -> `Roblox.Services.Donation` for `/stripe-api/*` and `/donation-api/*`
 
 Configure Ko-fi to send webhooks to:
 
-- `https://www.pekora.zip/donation-api/kofi/webhook`
+- `https://vedora.xyz/donation-api/kofi/webhook`
 
 Keep these headers:
 
@@ -294,12 +294,12 @@ The deploy workflow triggers on:
 
 The workflow always deploys all six web apps together. That is deliberate for now so the proxy, website, and extracted services stay in sync.
 
-The uploaded publish bundle is staged under `%USERPROFILE%\korone-deploy\<run id>` on the server, then synced into `C:\KoroneServices\...`.
+The uploaded publish bundle is staged under `%USERPROFILE%\vedora-deploy\<run id>` on the server, then synced into `C:\VedoraServices\...`.
 
 ## Recommended Rollout
 
 1. Set up the Windows services manually first.
-2. Confirm you can run all six apps from `C:\KoroneServices`.
+2. Confirm you can run all six apps from `C:\VedoraServices`.
 3. Switch nginx to `Roblox.ApiProxy`.
 4. Add the GitHub secrets and variables.
 5. Run the workflow manually once with `workflow_dispatch`.

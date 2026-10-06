@@ -170,7 +170,7 @@ namespace Roblox.Website.Controllers
         {
             FeatureFlags.FeatureCheck(FeatureFlag.GamesEnabled);
             long year = await services.games.GetYear(request.placeId);
-            if (year != 2020 && year != 2021)
+            if (year != 2021)
             {
                 return new PlaceLaunchResponse()
                 {
@@ -258,7 +258,7 @@ namespace Roblox.Website.Controllers
             var modInfo = (await services.assets.MultiGetAssetDeveloperDetails(new[] {placeId})).First();
             if (modInfo.moderationStatus != ModerationStatus.ReviewApproved) throw new BadRequestException();
             var bootstrapperArgs = $":1+launchmode:play+clientversion:{clientVer}+gameinfo:{PUPPYSECURITY}+placelauncherurl:{Configuration.BaseUrl}/Game/PlaceLauncher.ashx?request=RequestGameJob&placeId={placeId}&gameId={jobId}&isPartyLeader=false&gender=&isTeleport=true+k:l+client";
-            return Redirect($"pekora-player{bootstrapperArgs}");
+            return Redirect($"vedora-player{bootstrapperArgs}");
         }
 
         [HttpGetBypass("My/Places.aspx")]
@@ -434,7 +434,7 @@ namespace Roblox.Website.Controllers
             
             var accountAgeDays = DateTime.UtcNow.Subtract(userInfo.created).Days;
             string membership = await services.users.GetUserMemberShipAsString(userId);
-            if (placeInfo.year != 2020 && placeInfo.year != 2021 && membership == "Premium")
+            if (placeInfo.year != 2021 && membership == "Premium")
             {
                 membership = "OutrageousBuildersClub";
             }
@@ -528,7 +528,7 @@ namespace Roblox.Website.Controllers
                 IsSetPasswordNotificationEnabled = false,
                 ChangePasswordRequiresTwoStepVerification = false,
                 ChangeEmailRequiresTwoStepVerification = false,
-                UserEmail = "korone@pekora.zip",
+                UserEmail = "vedora@vedora.xyz",
                 UserEmailMasked = true,
                 UserEmailVerified = true,
                 CanHideInventory = true,

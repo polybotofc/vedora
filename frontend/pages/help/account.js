@@ -18,7 +18,7 @@ const AccountHelp = props => {
 export const getStaticProps = () => {
     return {
         props: {
-            title: 'Account Help - Korone',
+            title: 'Account Help - Vedora',
             disableWebsiteTheming: true,
         },
     };

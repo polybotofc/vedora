@@ -34,11 +34,11 @@ public class DiscordBotApi
         var result = await discordClient.PutAsync($"guilds/{guildId}/members/{discordId}", contentData);
         if (result.IsSuccessStatusCode)
         {
-            Writer.Info(LogGroup.DiscordApi, "Succcessfully added {0} to Korone", discordId);
+            Writer.Info(LogGroup.DiscordApi, "Succcessfully added {0} to Vedora", discordId);
         }
         else
         {
-            Writer.Info(LogGroup.DiscordApi, "Failed to add {0} to korone status: {1} with response: {2}", discordId, result.StatusCode, await result.Content.ReadAsStringAsync());
+            Writer.Info(LogGroup.DiscordApi, "Failed to add {0} to vedora status: {1} with response: {2}", discordId, result.StatusCode, await result.Content.ReadAsStringAsync());
         }
     }
     public async Task<bool> MessageUser(string discordId, string content, DiscordEmbed? discordEmbed = null)
@@ -69,11 +69,11 @@ public class DiscordBotApi
         var result = await discordClient.PostAsync($"channels/{channelId}/messages", contentData);
         if (result.IsSuccessStatusCode)
         {
-            Writer.Info(LogGroup.DiscordApi, "Succcessfully messaged {0} to Korone", channelId);
+            Writer.Info(LogGroup.DiscordApi, "Succcessfully messaged {0} to Vedora", channelId);
             return true;
         }
 
-        Writer.Info(LogGroup.DiscordApi, "Failed to message {0} to korone status: {1}", channelId, result.StatusCode);
+        Writer.Info(LogGroup.DiscordApi, "Failed to message {0} to vedora status: {1}", channelId, result.StatusCode);
         return false;
     }
 

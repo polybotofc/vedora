@@ -21,17 +21,14 @@ namespace Roblox.Website.Controllers
             return Content(GetFeatureFlags(applicationName), "application/json");
         }
 
-        // For modern clients
+        // Vedora only runs the 2021 client and 2021 RCCService.
         private static readonly HashSet<string> applicationNames = new HashSet<string>
         {
-            "RCCService2019",
-            "PCDesktopClient2019",
-            "RCCService2020",
             "PCStudioApp",
             "PCStudio221",
             "PCStudio223",
             "RCCService2021",
-            "RCCServiceGDASTGWG72713", // 2021 Too
+            "RCCServiceGDASTGWG72713", // 2021 too
             "PCDesktopClient",
             "PCDesktopClient2021",
             "PCDesktopCli223",

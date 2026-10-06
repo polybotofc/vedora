@@ -1,6 +1,6 @@
 /**
  * @template T
- * @typedef {Object} PekoraCollectionPaginated
+ * @typedef {Object} VedoraCollectionPaginated
  * @property {string|null} nextPageCursor
  * @property {string|null} previousPageCursor
  * @property {number|null} _total
@@ -9,7 +9,7 @@
 
 /**
  * @template T
- * @typedef {Object} PekoraCollection
+ * @typedef {Object} VedoraCollection
  * @property {T[]} data
  */
 

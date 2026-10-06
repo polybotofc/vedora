@@ -67,12 +67,12 @@ const InstallHelpPage = props => {
     const subpages = [
         {
             id: "play",
-            name: "How to Install and Play Korone",
+            name: "How to Install and Play Vedora",
             el: () => <MarkdownContent mdUrl="installPlay.md" />,
         },
         {
             id: "trojan",
-            name: "Korone detected as a trojan/virus",
+            name: "Vedora detected as a trojan/virus",
             el: () => <MarkdownContent mdUrl="trojan.md" />,
         },
         {
@@ -82,12 +82,12 @@ const InstallHelpPage = props => {
         },
         {
             id: "error6",
-            name: "An error occurred while starting Korone, Error Code: 6",
+            name: "An error occurred while starting Vedora, Error Code: 6",
             el: () => <MarkdownContent mdUrl="errorCode6.md" />,
         },
         /*{
             id: "makeaccount",
-            name: "How to make a Korone Account",
+            name: "How to make a Vedora Account",
             el: () => <MarkdownContent mdUrl="createAccount.md" />,
         },
         {
@@ -115,12 +115,12 @@ const InstallHelpPage = props => {
                 <ol className={s.breadcrumbs}>
                     <li>
                         <Link href="/help">
-                            <a className="link2018" style={{ fontWeight: 300, fontSize: '13px', lineHeight: 1.5 }} href="/help">Korone Support</a>
+                            <a className="link2018" style={{ fontWeight: 300, fontSize: '13px', lineHeight: 1.5 }} href="/help">Vedora Support</a>
                         </Link>
                     </li>
                     <li>
                         <Link href="/help/install">
-                            <a className="link2018" style={{ fontWeight: 300, fontSize: '13px', lineHeight: 1.5 }} href="/help/install">Playing Korone</a>
+                            <a className="link2018" style={{ fontWeight: 300, fontSize: '13px', lineHeight: 1.5 }} href="/help/install">Playing Vedora</a>
                         </Link>
                     </li>
                     <li>

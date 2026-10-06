@@ -121,7 +121,7 @@
 								<p>
 									<a href={`/users/${info.data.id}/profile`}>
 										<LinkIcon />
-										View Pekora Profile</a>
+										View Vedora Profile</a>
 								</p>
 							</div>
 						</div>

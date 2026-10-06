@@ -113,18 +113,18 @@ const HelpPage = props => {
 
     const articles = [
         {
-            name: "Playing Korone",
-            description: "I'm having trouble playing Korone",
+            name: "Playing Vedora",
+            description: "I'm having trouble playing Vedora",
             url: "/help/install",
         },
         {
-            name: "Creating on Korone",
-            description: "I'm having trouble creating on Korone", // include guides on how to make games, game limits, studios, etc
+            name: "Creating on Vedora",
+            description: "I'm having trouble creating on Vedora", // include guides on how to make games, game limits, studios, etc
             url: "/help/create",
         },
         {
-            name: "Korone Account",
-            description: "I need help with my Korone account",
+            name: "Vedora Account",
+            description: "I need help with my Vedora account",
             url: "/help/account",
         },
         {
@@ -138,7 +138,7 @@ const HelpPage = props => {
         <FakeNavBar />
         <div className={s.banner} />
         <div className={`container ${s.container}`}>
-            <span style={{ textAlign: 'center', fontSize: '48px', fontWeight: 800, marginBottom: '30px' }}>Korone Help Articles</span>
+            <span style={{ textAlign: 'center', fontSize: '48px', fontWeight: 800, marginBottom: '30px' }}>Vedora Help Articles</span>
             <div className={s.articleContainer}>
                 {// eventually put search here? for now, span
                 }

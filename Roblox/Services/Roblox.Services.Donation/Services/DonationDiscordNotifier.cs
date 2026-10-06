@@ -25,7 +25,7 @@ public sealed class DonationDiscordNotifier(
             var title = result.Status == "granted" ? "Donation rewards granted" : "Donation needs review";
             var donor = result.DonorDisplayName ?? "Unknown";
             if (result.UserId.HasValue)
-                donor = $"[{donor}](https://www.pekora.zip/users/{result.UserId.Value}/profile)";
+                donor = $"[{donor}](https://vedora.xyz/users/{result.UserId.Value}/profile)";
 
             var rewardStatus = result.Status == "granted"
                 ? $"{result.Tier!.Robux:N0} R$ and {result.Tier.AssetIds.Count} item(s)"

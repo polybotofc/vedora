@@ -22,6 +22,8 @@ public class UniversesRouteTests
         new("GET", "/universes/get-info", true),
         new("GET", "/universes/get-universe-places", true),
         new("GET", "/universes/get-aliases", false),
+        new("GET", "/v1/universes/{universeId:long}/symbolic-links", true),
+        new("POST", "/universes/create", true),
     };
 
     public static IEnumerable<object[]> SessionRoutes()

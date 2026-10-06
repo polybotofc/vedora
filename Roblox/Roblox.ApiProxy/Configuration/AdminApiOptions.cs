@@ -4,12 +4,11 @@ public sealed class AdminApiOptions
 {
     public const string SectionName = "AdminApi";
 
-    public string PublicBaseUrl { get; set; } = "https://admin.pekora.zip/v1/";
+    public string PublicBaseUrl { get; set; } = "https://admin.vedora.xyz/v1/";
 
     public string[] CorsAllowedOrigins { get; set; } =
     [
-        "https://www.pekora.zip",
-        "https://pekora.zip",
+        "https://vedora.xyz",
         "http://localhost:3000",
         "http://localhost:5200",
     ];

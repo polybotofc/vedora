@@ -146,7 +146,7 @@ export const purchaseItem = async ({ productId, assetId, sellerId, userAssetId, 
       expectedCurrency,
     },
     false,
-    { 'X-Korone-Ticket': ticketId },
+    { 'X-Vedora-Ticket': ticketId },
   ).then((d) => d.data);
 }
 

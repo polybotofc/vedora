@@ -69,7 +69,7 @@
 	<div class="d-flex flex-wrap justify-content-between align-items-end mb-3">
 		<div>
 			<h1>Telemetry</h1>
-			<p class="text-muted mb-0">Operational health across Korone services. Refreshes every 30 seconds.</p>
+			<p class="text-muted mb-0">Operational health across Vedora services. Refreshes every 30 seconds.</p>
 		</div>
 		<div class="d-flex telemetry-filters">
 			<label>Service

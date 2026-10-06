@@ -26,18 +26,18 @@
       if (hash.startsWith('https:/') && !hash.startsWith('https://')) {
         hash = hash.replace('https:/', 'https://');
       }
-      if (hash.includes('https://cdn.pekora.zip/')) {
+      if (hash.includes('https://cdn.vedora.xyz/')) {
         return hash;
       }
-      if (hash.includes('www.pekora.zip')) {
-        return hash;
-      }
-
-      if (hash.includes('www.pekora.zip') || hash.includes('cdn.pekora.zip')) {
+      if (hash.includes('vedora.xyz')) {
         return hash;
       }
 
-      if (hash.includes('https://pekora.zip/')) {
+      if (hash.includes('vedora.xyz') || hash.includes('cdn.vedora.xyz')) {
+        return hash;
+      }
+
+      if (hash.includes('https://vedora.xyz/')) {
         hash = hash.substring(str.indexOf('/', 8) + 1);
       }
       let st = 31;

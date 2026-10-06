@@ -21,6 +21,7 @@ public class AuthenticationController : RobloxControllerBase
     }
 
     [AllowRobloxAnonymous]
+    [RequireRobloxClient]
     [HttpPost("v2/login")]
     public async Task<IActionResult> LoginV2()
     {
@@ -35,8 +36,10 @@ public class AuthenticationController : RobloxControllerBase
         return Ok(result.response);
     }
     
+    [RequireRobloxClient]
     [RequireRobloxSession]
     [HttpPost("sign-out/v1")]
+    [HttpGet("sign-out/v1")]
     public void Logout()
     {
         using var sessCache = Roblox.Services.ServiceProvider.GetOrCreate<UserSessionsCache>();

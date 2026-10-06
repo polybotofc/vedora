@@ -36,7 +36,7 @@ public class LeakCheckApi
         _httpClient = new HttpClient(handler);
         _httpClient.DefaultRequestHeaders.Add("X-API-Key", _apiKey);
         _httpClient.DefaultRequestHeaders.Add("User-Agent",
-            $"PekoraAPI/1.0");
+            $"VedoraAPI/1.0");
     }
 
     public void SetProxy(string proxy)

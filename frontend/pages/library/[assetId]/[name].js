@@ -7,14 +7,14 @@ const ItemPage = ({ name, description, assetId, ...props }) => {
     <>
       {name && (
         <Head>
-          <title>{name} - Korone</title>
+          <title>{name} - Vedora</title>
           <meta property="og:title" content={name} />
-          <meta property="og:url" content={`https://www.pekora.zip/library/${assetId}/--`} />
+          <meta property="og:url" content={`https://vedora.xyz/library/${assetId}/--`} />
           <meta property="og:type" content="profile" />
           <meta property="og:description" content={description} />
-          <meta property="og:image" content={`https://www.pekora.zip/thumbs/asset.ashx?assetId=${assetId}`} />
+          <meta property="og:image" content={`https://vedora.xyz/thumbs/asset.ashx?assetId=${assetId}`} />
           <meta name="twitter:card" content="summary_large_image" />
-          <meta name="og:site_name" content="Korone" />
+          <meta name="og:site_name" content="Vedora" />
           <meta name="theme-color" content="#E2231A" />
         </Head>
       )}

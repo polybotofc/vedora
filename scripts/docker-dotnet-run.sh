@@ -5,7 +5,7 @@ set -u
 assembly="${1:?service assembly name is required}"
 shift
 
-artifacts_root=/tmp/korone-artifacts
+artifacts_root=/tmp/vedora-artifacts
 dll="$artifacts_root/bin/$assembly/debug/$assembly.dll"
 stamp="$artifacts_root/run-stamps/$assembly"
 child_pid=''

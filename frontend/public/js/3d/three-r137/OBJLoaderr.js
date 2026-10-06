@@ -303,13 +303,13 @@
       if (hash.includes('mats-thumbnails.roblox.com')) {
         return hash;
       }
-      if (hash.includes('https://cdn.pekora.zip/')) {
+      if (hash.includes('https://cdn.vedora.xyz/')) {
         return hash;
       }
-      if (hash.includes('www.pekora.zip')) {
+      if (hash.includes('vedora.xyz')) {
         return hash;
       }
-      if (hash.includes('https://pekora.zip/')) {
+      if (hash.includes('https://vedora.xyz/')) {
         hash = hash.substring(str.indexOf('/', 8) + 1);
       }
       let st = 31;
@@ -317,7 +317,7 @@
         st ^= hash[ii].charCodeAt(0);
       }
       // return `https://t${(st % 8).toString()}.rbxcdn.com/${hash}`;
-      return `https://www.pekora.zip${hash.at(0) === '/' ? hash : '/' + hash}`;
+      return `https://vedora.xyz${hash.at(0) === '/' ? hash : '/' + hash}`;
     }
 
     load(hash, onLoad, onProgress, onError) {
