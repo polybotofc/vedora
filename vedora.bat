@@ -53,7 +53,7 @@ rem  parenthesized blocks in batch.
 rem ---------------------------------------------------------------
 set "PF86=%ProgramFiles(x86)%"
 set "DOTNET_EXE="
-for /f "delims=" %%d in ('where dotnet 2^>nul') do if not defined DOTNET_EXE set "DOTNET_EXE=%%d"
+for /f "delims=" %%d in ('where dotnet 2^>nul ^| findstr /i "dotnet.exe"') do if not defined DOTNET_EXE set "DOTNET_EXE=%%d"
 if not defined DOTNET_EXE if exist "%ProgramFiles%\dotnet\dotnet.exe" set "DOTNET_EXE=%ProgramFiles%\dotnet\dotnet.exe"
 if not defined DOTNET_EXE if exist "%ProgramW6432%\dotnet\dotnet.exe" set "DOTNET_EXE=%ProgramW6432%\dotnet\dotnet.exe"
 if not defined DOTNET_EXE if exist "%PF86%\dotnet\dotnet.exe" set "DOTNET_EXE=%PF86%\dotnet\dotnet.exe"
