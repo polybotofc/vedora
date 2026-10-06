@@ -37,16 +37,46 @@ rem ---------------------------------------------------------------
 where docker >nul 2>nul
 if errorlevel 1 (
     echo [ERROR] Docker was not found in PATH.
-    echo         Install Docker Desktop and make sure it is running, then retry.
+    echo         Install Docker Desktop, start it, then close and reopen this
+    echo         window so PATH is refreshed. If Docker is installed but not
+    echo         running, start Docker Desktop and retry.
     goto :fail
 )
 
-where dotnet >nul 2>nul
-if errorlevel 1 (
-    echo [ERROR] The .NET SDK was not found in PATH.
+rem ---------------------------------------------------------------
+rem 1b. .NET SDK
+rem  Resolve `dotnet` from PATH first, then from the standard install
+rem  locations, so a freshly installed SDK is picked up even when the
+rem  current shell has a stale PATH (or was installed per-user).
+rem  `PF86` is captured up front because `%ProgramFiles(x86)%` breaks
+rem  parenthesized blocks in batch.
+rem ---------------------------------------------------------------
+set "PF86=%ProgramFiles(x86)%"
+set "DOTNET_EXE="
+for /f "delims=" %%d in ('where dotnet 2^>nul') do if not defined DOTNET_EXE set "DOTNET_EXE=%%d"
+if not defined DOTNET_EXE if exist "%ProgramFiles%\dotnet\dotnet.exe" set "DOTNET_EXE=%ProgramFiles%\dotnet\dotnet.exe"
+if not defined DOTNET_EXE if exist "%ProgramW6432%\dotnet\dotnet.exe" set "DOTNET_EXE=%ProgramW6432%\dotnet\dotnet.exe"
+if not defined DOTNET_EXE if exist "%PF86%\dotnet\dotnet.exe" set "DOTNET_EXE=%PF86%\dotnet\dotnet.exe"
+if not defined DOTNET_EXE if exist "%LOCALAPPDATA%\Microsoft\dotnet\dotnet.exe" set "DOTNET_EXE=%LOCALAPPDATA%\Microsoft\dotnet\dotnet.exe"
+if not defined DOTNET_EXE (
+    echo [ERROR] The .NET SDK was not found.
     echo         Install the .NET 10 SDK from https://dotnet.microsoft.com/download
+    echo         then close and reopen this window (or reboot) so PATH is refreshed.
     goto :fail
 )
+
+rem The runtime alone cannot build or run the arbiter, and Vedora targets
+rem net10.0 (Roblox/global.json), so require a 10.x SDK.
+set "DOTNET_SDK10="
+for /f "tokens=1 delims=. " %%v in ('"%DOTNET_EXE%" --list-sdks 2^>nul') do if "%%v"=="10" set "DOTNET_SDK10=1"
+if not defined DOTNET_SDK10 (
+    echo [ERROR] `dotnet` was found at "%DOTNET_EXE%" but no .NET 10 SDK is installed.
+    echo         Vedora targets net10.0; the .NET Runtime or an older SDK is not
+    echo         enough. Install the .NET 10 SDK from
+    echo         https://dotnet.microsoft.com/download
+    goto :fail
+)
+for %%d in ("%DOTNET_EXE%") do set "PATH=%%~dpd;%PATH%"
 
 rem ---------------------------------------------------------------
 rem 2. RCCService2021
