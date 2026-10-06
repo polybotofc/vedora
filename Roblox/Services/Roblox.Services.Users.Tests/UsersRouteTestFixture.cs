@@ -30,14 +30,14 @@ public sealed class UsersRouteTestFixture : IAsyncDisposable
     public HttpClient Client { get; }
 
     public static string PostgresConnectionString =>
-        Environment.GetEnvironmentVariable("KORONE_TEST_POSTGRES") ??
+        Environment.GetEnvironmentVariable("VEDORA_TEST_POSTGRES") ??
         "Host=localhost;Port=5432;Database=roblox_integration_test;Username=roblox_integration_test_user;Password=docker;Timeout=1;Command Timeout=1";
 
     public static string RedisConnectionString =>
-        Environment.GetEnvironmentVariable("KORONE_TEST_REDIS") ?? "localhost:6379,connectTimeout=500,syncTimeout=500,abortConnect=false";
+        Environment.GetEnvironmentVariable("VEDORA_TEST_REDIS") ?? "localhost:6379,connectTimeout=500,syncTimeout=500,abortConnect=false";
 
     public static bool DockerTestsRequired =>
-        string.Equals(Environment.GetEnvironmentVariable("KORONE_REQUIRE_DOCKER_TESTS"), "true", StringComparison.OrdinalIgnoreCase);
+        string.Equals(Environment.GetEnvironmentVariable("VEDORA_REQUIRE_DOCKER_TESTS"), "true", StringComparison.OrdinalIgnoreCase);
 
     public static async Task<UsersRouteTestFixture?> CreateAsync()
     {

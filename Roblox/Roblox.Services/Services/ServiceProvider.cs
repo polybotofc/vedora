@@ -21,7 +21,27 @@ public static class ServiceProvider
     public static T GetOrCreate<T>(ServiceBase? parent = null) where T : ServiceBase, IDisposable
     {
         var provider = CurrentProvider.Value ?? _rootProvider;
-        if (provider != null)
+        var service = TryCreateFromProvider<T>(provider, parent);
+        if (service != null)
+        {
+            return service;
+        }
+
+        var fallback = Activator.CreateInstance<T>();
+        if (parent != null)
+        {
+            fallback.transactionConnection = parent.transactionConnection;
+        }
+
+        return fallback;
+    }
+
+    private static T? TryCreateFromProvider<T>(IServiceProvider? provider, ServiceBase? parent) where T : ServiceBase, IDisposable
+    {
+        if (provider == null)
+            return null;
+
+        try
         {
             var service = parent == null
                 ? ResolveOrCreate<T>(provider)
@@ -33,14 +53,12 @@ public static class ServiceProvider
 
             return service;
         }
-
-        var fallback = Activator.CreateInstance<T>();
-        if (parent != null)
+        catch (ObjectDisposedException)
         {
-            fallback.transactionConnection = parent.transactionConnection;
+            // The provider was disposed (application shutdown, or a recycled
+            // root provider in tests). Fall back to direct activation.
+            return null;
         }
-
-        return fallback;
     }
 
     private static T ResolveOrCreate<T>(IServiceProvider provider) where T : ServiceBase, IDisposable

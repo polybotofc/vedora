@@ -4,13 +4,13 @@ import {GroupBasic, GroupPermissionsEntry, GroupRoleEntry, GroupUserWithRoleId, 
 
 export declare const getInfo: ({groupId: number}) => Promise<GroupWithShout>;
 export declare const getRoles: ({groupId: number}) => Promise<{groupId: number; roles: GroupRoleEntry[];}>;
-export declare const getWall: ({groupId:number,cursor:any,sort:any,limit:any}) => Promise<PekoraCollectionPaginated<GroupPostEntry>>;
+export declare const getWall: ({groupId:number,cursor:any,sort:any,limit:any}) => Promise<VedoraCollectionPaginated<GroupPostEntry>>;
 export declare const getMembers = groups.getMembers as (
     args: { groupId: number; cursor?: any; limit?: any; sortOrder?: any }
-) => Promise<PekoraCollectionPaginated<GroupUser>>;
+) => Promise<VedoraCollectionPaginated<GroupUser>>;
 export declare const getRolesetMembers = groups.getMembers as (
     args: { groupId: number; roleSetId: number; cursor?: string; limit?: number; sortOrder?: string }
-) => Promise<PekoraCollectionPaginated<GroupUserWithRoleId>>
+) => Promise<VedoraCollectionPaginated<GroupUserWithRoleId>>
 export function getPermissionsForRoleset(args: { groupId: number; rolesetId: number }): Promise<GroupPermissionsEntry>;
 
 export function getUserGroupsV2(args: { userId: number }): Promise<UserGroupV2>;

@@ -15,12 +15,12 @@ public class ApiProxyUsersConfigurationTests
         Assert.True(routes.TryGetProperty("users-host-route", out var hostRoute), "users-host-route should exist.");
         Assert.Equal("users-cluster", hostRoute.GetProperty("ClusterId").GetString());
         Assert.Equal("{**catch-all}", hostRoute.GetProperty("Match").GetProperty("Path").GetString());
-        Assert.Contains("users.pekora.zip", ReadStringArray(hostRoute.GetProperty("Match").GetProperty("Hosts")));
+        Assert.Contains("users.vedora.xyz", ReadStringArray(hostRoute.GetProperty("Match").GetProperty("Hosts")));
 
         Assert.True(routes.TryGetProperty("users-apisite-route", out var apisiteRoute), "users-apisite-route should exist.");
         Assert.Equal("users-cluster", apisiteRoute.GetProperty("ClusterId").GetString());
         Assert.Equal("/apisite/users/{**catch-all}", apisiteRoute.GetProperty("Match").GetProperty("Path").GetString());
-        Assert.Contains("www.pekora.zip", ReadStringArray(apisiteRoute.GetProperty("Match").GetProperty("Hosts")));
+        Assert.Contains("vedora.xyz", ReadStringArray(apisiteRoute.GetProperty("Match").GetProperty("Hosts")));
 
         Assert.True(clusters.TryGetProperty("users-cluster", out var usersCluster), "users-cluster should exist.");
         Assert.Equal(
@@ -34,13 +34,13 @@ public class ApiProxyUsersConfigurationTests
         using var document = LoadApiProxyAppSettings();
         var root = document.RootElement;
 
-        Assert.Contains("users.pekora.zip", ReadStringArray(root.GetProperty("InternalServiceHosts")));
+        Assert.Contains("users.vedora.xyz", ReadStringArray(root.GetProperty("InternalServiceHosts")));
 
         var matchingRoute = root.GetProperty("InternalServiceRoutes")
             .EnumerateArray()
             .FirstOrDefault(route =>
                 route.TryGetProperty("Hosts", out var hosts) &&
-                ReadStringArray(hosts).Contains("www.pekora.zip") &&
+                ReadStringArray(hosts).Contains("vedora.xyz") &&
                 route.TryGetProperty("PathPrefixes", out var prefixes) &&
                 ReadStringArray(prefixes).Contains("/apisite/users/"));
 

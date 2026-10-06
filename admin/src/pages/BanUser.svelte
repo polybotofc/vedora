@@ -9,19 +9,19 @@
 	const quickFillReasons: { name: string; text: string }[] = [
 		{
 			name: 'TOS Violation',
-			text: 'This account has been closed due to violating Korone terms of service.',
+			text: 'This account has been closed due to violating Vedora terms of service.',
 		},
 		{
 			name: 'Bad Username',
-			text: 'Your username is inappropriate for Korone.',
+			text: 'Your username is inappropriate for Vedora.',
 		},
 		{
 			name: 'Bad Username (Privacy Issue)',
-			text: 'Your username is not appropriate for Korone due to privacy concerns. ',
+			text: 'Your username is not appropriate for Vedora due to privacy concerns. ',
 		},
 		{
 			name: 'Spam',
-			text: 'Do not repeatedly post spam chat or content in Korone.',
+			text: 'Do not repeatedly post spam chat or content in Vedora.',
 		},
 		{
 			name: 'Inappropriate Behaviour',
@@ -29,11 +29,11 @@
 		},
 		{
 			name: 'Hate Speech',
-			text: 'This content is not appropriate. Hate speech is not permitted on Korone.',
+			text: 'This content is not appropriate. Hate speech is not permitted on Vedora.',
 		},
 		{
 			name: 'Real-Life Information',
-			text: 'Do not ask for or give out personal, real-life, or private information on Korone.',
+			text: 'Do not ask for or give out personal, real-life, or private information on Vedora.',
 		},
 		{
 			name: 'Disputed Charges',
@@ -41,7 +41,7 @@
 		},
 		{
 			name: 'USDer',
-			text: 'Your account has been moderated for buying, selling, or trading Robux or virtual Korone items outside of the Korone website.',
+			text: 'Your account has been moderated for buying, selling, or trading Robux or virtual Vedora items outside of the Vedora website.',
 		},
 		{
 			name: 'Pois Lims',
@@ -66,7 +66,7 @@
 	let expires: string|undefined;
 	let internalReason: string|undefined;
 	let isMachineBan = false;
-	const genericTosReason = 'This account has been closed due to violating Korone terms of service.';
+	const genericTosReason = 'This account has been closed due to violating Vedora terms of service.';
 	const isOwner = isRank('owner');
 </script>
 

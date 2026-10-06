@@ -5,7 +5,7 @@ import OnBoardingStore from "./store";
 
 const useStyles = createUseStyles({
     bg: {
-        backgroundImage: 'url(/img/play-korone-bg.png)',
+        backgroundImage: 'url(/img/play-vedora-bg.png)',
         backgroundSize: '100% auto',
         backgroundRepeat: 'no-repeat',
         backgroundPosition: 'center',
@@ -38,7 +38,7 @@ function OnBoarding() {
                 </div>
             </div>
             <div className={`col-12 padding-15 pb-0 mt-1`}>
-                <h1 className={`text-center`} style={{fontSize: 64}}>Welcome to Korone!</h1>
+                <h1 className={`text-center`} style={{fontSize: 64}}>Welcome to Vedora!</h1>
                 <h5 className={`text-center`}>
                     We're happy to have you here. Click Begin to configure your settings.
                 </h5>

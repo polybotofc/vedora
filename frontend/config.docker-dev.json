@@ -35,33 +35,18 @@
         "downloadGameClients": [
           {
             "imageUrl": "/img/player.png",
-            "title": "Download the latest Pekora bootstrapper",
-            "url": "https://github.com/KoroneX/Korone-Bootstrapper/releases"
+            "title": "Download the latest Vedora bootstrapper",
+            "url": "https://github.com/VedoraX/Vedora-Bootstrapper/releases"
           },
           {
-            "imageUrl": "/img/Pekora.png",
+            "imageUrl": "/img/Vedora.png",
             "title": "Mobile clients",
             "url": "/download2"
           },
           {
             "imageUrl": "/img/studio.png",
-            "title": "Download the Korone 2017 Studio for Windows (Unstable, 2018 recommended)",
-            "url": "https://setup.pekora.zip/PekoraStudio2017.zip"
-          },
-          {
-            "imageUrl": "/img/studio.png",
-            "title": "Download the Korone 2018 Studio for Windows",
-            "url": "https://setup.pekora.zip/PekoraStudio2018.zip"
-          },
-          {
-            "imageUrl": "/img/studio.png",
-            "title": "Download the Korone 2020 Studio for Windows",
-            "url": "https://setup.pekora.zip/PekoraStudio2020.zip"
-          },
-          {
-            "imageUrl": "/img/studio.png",
-            "title": "Download the Korone 2021 Studio for Windows",
-            "url": "https://setup.pekora.zip/PekoraStudio2021.zip"
+            "title": "Download the Vedora 2021 Studio for Windows",
+            "url": "https://setup.vedora.xyz/VedoraStudio2021.zip"
           }
         ]
       },

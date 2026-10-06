@@ -4,7 +4,7 @@ import { publicRuntimeConfig } from "../../lib/publicConfig";
 
 const footerLinks = {
   '/about-us': 'About Us',
-  'https://discord.gg/korone': 'Discord',
+  'https://discord.gg/vedora': 'Discord',
   '/internal/robuxexchange': 'Robux Exchange',
   '/internal/tixexchange': 'Tix Exchange',
   '/auth/tos': 'Terms',
@@ -85,7 +85,7 @@ const Footer = props => {
           })
         }
       </ul>
-      <p className={s.footerNote}>©2026 Korone. Korone is not affiliated with Roblox Corporation. v{publicRuntimeConfig.frontendVer}</p>
+      <p className={s.footerNote}>©2026 Vedora. Vedora is not affiliated with Roblox Corporation. v{publicRuntimeConfig.frontendVer}</p>
     </div>
   </footer>
 
@@ -103,7 +103,7 @@ const Footer = props => {
         }
         <div className={'col-12 col-lg-10 ' + s.lowerFooterContainer}>
           <p className={`${s.text} ${s.text2}`}>
-            <a>©2025 Korone. Korone is not affliated with Roblox Corporation.</a>.
+            <a>©2025 Vedora. Vedora is not affliated with Roblox Corporation.</a>.
           </p>
         </div>
       </div>

@@ -9,7 +9,7 @@ const DonatePage = () => {
 
 DonatePage.getInitialProps = () => {
     return {
-        title: 'Donate - Korone',
+        title: 'Donate - Vedora',
     };
 };
 

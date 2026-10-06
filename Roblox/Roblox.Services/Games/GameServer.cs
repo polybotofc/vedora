@@ -35,7 +35,10 @@ public class GameServerService : ServiceBase
 
         public ArbiterHttpClient()
         {
-            this.BaseAddress = new Uri($"https://arbiter.{Configuration.ShortBaseUrl}/");
+            var baseUrl = Configuration.ArbiterBaseUrl;
+            this.BaseAddress = new Uri(string.IsNullOrWhiteSpace(baseUrl)
+                ? $"https://arbiter.{Configuration.ShortBaseUrl}/"
+                : baseUrl);
             this.DefaultRequestHeaders.Add("rblx-authorization", Configuration.ArbiterAuthorization);
         }
 
@@ -156,7 +159,7 @@ public class GameServerService : ServiceBase
         }
     }
 
-    private static ArbiterHttpClient arbiterClient = new ArbiterHttpClient();
+    private static readonly Lazy<ArbiterHttpClient> arbiterClient = new(() => new ArbiterHttpClient());
     private static string jwtKey { get; set; } = string.Empty;
     private static EasyJwt jwt { get; } = new();
 
@@ -303,11 +306,11 @@ public class GameServerService : ServiceBase
     public async Task KickPlayer(long userId)
     {
         Guid jobId = await GetJobIdByUserId(userId);
-        await arbiterClient.EvictPlayer(ArbiterHttpClient.CreateEvictPlayerRequest(jobId, userId));
+        await arbiterClient.Value.EvictPlayer(ArbiterHttpClient.CreateEvictPlayerRequest(jobId, userId));
     }
     public async Task KickPlayer(long userId, Guid jobId)
     {
-        await arbiterClient.EvictPlayer(ArbiterHttpClient.CreateEvictPlayerRequest(jobId, userId));
+        await arbiterClient.Value.EvictPlayer(ArbiterHttpClient.CreateEvictPlayerRequest(jobId, userId));
     }
 
     public async Task ShutDownServerAsync(Guid serverId)
@@ -316,7 +319,7 @@ public class GameServerService : ServiceBase
         {
             await TryDeleteGameServer(serverId);
 
-            var killed = await arbiterClient.KillGameServer(ArbiterHttpClient.CreateKillGameServerRequest(serverId));
+            var killed = await arbiterClient.Value.KillGameServer(ArbiterHttpClient.CreateKillGameServerRequest(serverId));
             if (!killed)
                 Console.Error.WriteLine($"Arbiter rejected shutdown request for server {serverId}");
         }
@@ -553,7 +556,7 @@ public class GameServerService : ServiceBase
     public async Task<ArbiterHttpClient.StartGameServerResponse?> StartGameServer(PlaceEntry placeInfo, Guid jobId, int matchmaking)
     {
         var request = ArbiterHttpClient.CreateGameServerRequest(placeInfo, jobId, matchmaking);
-        return await arbiterClient.StartGameServer(request);
+        return await arbiterClient.Value.StartGameServer(request);
     }
 
     public async Task<IEnumerable<GameServerPlayer>> GetGameServerPlayers(Guid serverId)

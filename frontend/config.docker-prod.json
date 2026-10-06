@@ -32,39 +32,24 @@
         "userProfileUserStatusEnabled": true,
         "downloadGameClients": [
           {
-            "imageUrl": "https://www.pekora.zip/img/player.png",
-            "title": "Download the latest Pekora bootstrapper",
-            "url": "https://github.com/KoroneX/Korone-Bootstrapper/releases"
+            "imageUrl": "https://vedora.xyz/img/player.png",
+            "title": "Download the latest Vedora bootstrapper",
+            "url": "https://github.com/VedoraX/Vedora-Bootstrapper/releases"
           },
           {
-            "imageUrl": "https://www.pekora.zip/img/Pekora.png",
+            "imageUrl": "https://vedora.xyz/img/Vedora.png",
             "title": "Mobile clients",
-            "url": "https://www.pekora.zip/download2"
+            "url": "https://vedora.xyz/download2"
           },
           {
-            "imageUrl": "https://www.pekora.zip/img/studio.png",
-            "title": "Download the Korone 2017 Studio for Windows (Unstable, 2018 recommended)",
-            "url": "https://setup.pekora.zip/PekoraStudio2017.zip"
-          },
-          {
-            "imageUrl": "https://www.pekora.zip/img/studio.png",
-            "title": "Download the Korone 2018 Studio for Windows",
-            "url": "https://setup.pekora.zip/PekoraStudio2018.zip"
-          },
-          {
-            "imageUrl": "https://www.pekora.zip/img/studio.png",
-            "title": "Download the Korone 2020 Studio for Windows",
-            "url": "https://setup.pekora.zip/PekoraStudio2020.zip"
-          },
-          {
-            "imageUrl": "https://www.pekora.zip/img/studio.png",
-            "title": "Download the Korone 2021 Studio for Windows",
-            "url": "https://setup.pekora.zip/PekoraStudio2021.zip"
+            "imageUrl": "https://vedora.xyz/img/studio.png",
+            "title": "Download the Vedora 2021 Studio for Windows",
+            "url": "https://setup.vedora.xyz/VedoraStudio2021.zip"
           }
         ]
       },
-      "baseUrl": "https://www.pekora.zip",
-      "apiFormat": "https://www.pekora.zip/apisite/{0}{1}"
+      "baseUrl": "https://vedora.xyz",
+      "apiFormat": "https://vedora.xyz/apisite/{0}{1}"
     }
   }
 }

@@ -33,7 +33,7 @@ public class UsersController : RobloxControllerBase
             Username = safeUserSession.username,
             DisplayName = safeUserSession.username,
             HasPasswordSet = true,
-            Email = "korone@pekora.zip",
+            Email = "vedora@vedora.xyz",
             MembershipType = 3,
             RobuxBalance = userBalance.robux,
             AgeBracket = 0,

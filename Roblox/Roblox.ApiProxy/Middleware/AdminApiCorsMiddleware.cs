@@ -6,7 +6,7 @@ namespace Roblox.ApiProxy.Middleware;
 
 public sealed class AdminApiCorsMiddleware
 {
-    private const string AdminHost = "admin.pekora.zip";
+    private const string AdminHost = "admin.vedora.xyz";
     private readonly AdminApiOptions _options;
     private readonly RequestDelegate _next;
 

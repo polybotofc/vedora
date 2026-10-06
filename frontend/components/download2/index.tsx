@@ -38,12 +38,12 @@ const useStyles = createUseStyles({
         height: '500px',
         position: 'relative',
     },
-    playKoroneText: {
+    playVedoraText: {
         aspectRatio: '981 / 198',
         width: '50%',
     },
-    playKoroneImg: {
-        background: 'url(/img/play-korone.png) no-repeat center center',
+    playVedoraImg: {
+        background: 'url(/img/play-vedora.png) no-repeat center center',
         backgroundSize: 'contain',
         width: '100%',
         height: '100%',
@@ -91,8 +91,8 @@ function DownloadPage() {
             <div className={`${s.wrapper} section-content padding-none`}>
                 <div className={`flex ${s.headerBg} w-100`}>
                     <div className={`flex flex-column justify-center ${s.downloadContainer}`}>
-                        <div className={s.playKoroneText}>
-                            <span className={s.playKoroneImg} />
+                        <div className={s.playVedoraText}>
+                            <span className={s.playVedoraImg} />
                         </div>
                         <DownloadDropdown />
                     </div>
@@ -102,8 +102,8 @@ function DownloadPage() {
                     </div>
                 </div>
                 <div className={`flex flex-column padding-15`}>
-                    <h1 className={s.header}>Get Korone</h1>
-                    <h3 className={s.subHeader}>Join the fun and play Korone today! Download and install the Korone app for your device.</h3>
+                    <h1 className={s.header}>Get Vedora</h1>
+                    <h3 className={s.subHeader}>Join the fun and play Vedora today! Download and install the Vedora app for your device.</h3>
                 </div>
             </div>
             <div className={`${s.wrapper} section-content`}>

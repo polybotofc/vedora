@@ -1,6 +1,6 @@
 # requires Docker 24+ with Compose v2
 
-name: korone-dev
+name: vedora-dev
 
 x-dotnet-dev-env: &dotnet-dev-env
   ASPNETCORE_ENVIRONMENT: Development
@@ -13,11 +13,11 @@ x-dotnet-dev-env: &dotnet-dev-env
   BaseUrl: "http://localhost:5200"
   CdnBaseUrl: "http://localhost:5200"
   IsCdnEnabled: "false"
-  Authorization: "KoroneInternal-dev-secret"
-  ArbiterAuthorization: "KoroneInternal-dev-secret"
-  RccAuthorization: "KoroneRcc-dev-secret"
-  Jwt__Sessions: "KoroneSessions-dev-secret"
-  BotAuthorization: "KoroneBot-dev-secret"
+  Authorization: "VedoraInternal-dev-secret"
+  ArbiterAuthorization: "VedoraInternal-dev-secret"
+  RccAuthorization: "VedoraRcc-dev-secret"
+  Jwt__Sessions: "VedoraSessions-dev-secret"
+  BotAuthorization: "VedoraBot-dev-secret"
   Discord__BotToken: ""
   Discord__GuildId: ""
   Discord__LogChannelId: ""
@@ -30,7 +30,7 @@ x-dotnet-dev-env: &dotnet-dev-env
   Render__AssetQueue__ReconciliationIntervalSeconds: "300"
   Render__AssetQueue__ReconciliationBatchSize: "100"
   AssetValidation__BaseUrl: "http://asset-validation:4300"
-  AssetValidation__Authorization: "KoroneAssetValidation-dev-secret"
+  AssetValidation__Authorization: "VedoraAssetValidation-dev-secret"
   Directories__Public: "/srv/app/api/public/"
   Directories__Asset: "/srv/app/api/asset/"
   Directories__Storage: "/srv/app/api/storage/"
@@ -50,7 +50,7 @@ x-dotnet-dev-service: &dotnet-dev-service
   image: mcr.microsoft.com/dotnet/aspnet:10.0
   volumes:
     - .:/srv/app
-    - dotnet_artifacts:/tmp/korone-artifacts:ro
+    - dotnet_artifacts:/tmp/vedora-artifacts:ro
   networks:
     - economy
   depends_on:
@@ -216,7 +216,7 @@ services:
     volumes:
       - .:/srv/app
       - dotnet_cache:/root/.nuget
-      - dotnet_artifacts:/tmp/korone-artifacts
+      - dotnet_artifacts:/tmp/vedora-artifacts
     networks:
       - economy
     environment:
@@ -236,7 +236,7 @@ services:
     volumes:
       - .:/srv/app
       - dotnet_cache:/root/.nuget
-      - dotnet_artifacts:/tmp/korone-artifacts
+      - dotnet_artifacts:/tmp/vedora-artifacts
     networks:
       - economy
     depends_on:
@@ -274,16 +274,16 @@ services:
       - --ReverseProxy:Clusters:users-cluster:Destinations:primary:Address=http://users-service:5209
       - --ReverseProxy:Routes:avatar-apisite-route:Match:Hosts:0=localhost
       - --ReverseProxy:Routes:avatar-apisite-route:Match:Hosts:1=127.0.0.1
-      - --ReverseProxy:Routes:avatar-apisite-route:Match:Hosts:2=www.pekora.zip
+      - --ReverseProxy:Routes:avatar-apisite-route:Match:Hosts:2=vedora.xyz
       - --ReverseProxy:Routes:thumbnails-apisite-route:Match:Hosts:0=localhost
       - --ReverseProxy:Routes:thumbnails-apisite-route:Match:Hosts:1=127.0.0.1
-      - --ReverseProxy:Routes:thumbnails-apisite-route:Match:Hosts:2=www.pekora.zip
+      - --ReverseProxy:Routes:thumbnails-apisite-route:Match:Hosts:2=vedora.xyz
       - --ReverseProxy:Routes:users-apisite-route:Match:Hosts:0=localhost
       - --ReverseProxy:Routes:users-apisite-route:Match:Hosts:1=127.0.0.1
-      - --ReverseProxy:Routes:users-apisite-route:Match:Hosts:2=www.pekora.zip
+      - --ReverseProxy:Routes:users-apisite-route:Match:Hosts:2=vedora.xyz
       - --ReverseProxy:Routes:games-apisite-route:Match:Hosts:0=localhost
       - --ReverseProxy:Routes:games-apisite-route:Match:Hosts:1=127.0.0.1
-      - --ReverseProxy:Routes:games-apisite-route:Match:Hosts:2=www.pekora.zip
+      - --ReverseProxy:Routes:games-apisite-route:Match:Hosts:2=vedora.xyz
     ports:
       - "127.0.0.1:5200:5200"
     environment:
@@ -291,8 +291,8 @@ services:
       FrontendProxy__DestinationPrefix: "http://frontend:3000/"
       FrontendProxy__PublicHosts__0: "localhost"
       FrontendProxy__PublicHosts__1: "127.0.0.1"
-      FrontendProxy__PublicHosts__2: "pekora.zip"
-      FrontendProxy__PublicHosts__3: "www.pekora.zip"
+      FrontendProxy__PublicHosts__2: "vedora.xyz"
+      FrontendProxy__PublicHosts__3: "www.vedora.xyz"
       InternalServiceHosts__0: "localhost"
       InternalServiceHosts__16: "127.0.0.1"
     depends_on:

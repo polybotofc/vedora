@@ -42,7 +42,7 @@ public sealed class StripeWebhookController(
 
             var session = stripeEvent.Data.Object as Session;
             var customUserId = session?.CustomFields
-                .FirstOrDefault(field => field.Label?.Custom == "Korone User ID")
+                .FirstOrDefault(field => field.Label?.Custom == "Vedora User ID")
                 ?.Text?.Value;
             var parsedUserId = long.TryParse(customUserId, out var userId) ? userId : (long?)null;
             var result = await services.donationRewards.ProcessAsync(new DonationRewardRequest(

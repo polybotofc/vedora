@@ -335,7 +335,7 @@ public class AuthenticationRouteTests
         var cookies = GetSetCookies(response);
         Assert.Contains(cookies, cookie => IsDeletedCookie(cookie, ".ROBLOSECURITY"));
         Assert.Contains(cookies, cookie => IsDeletedCookie(cookie, ".PUPPYSECURITY"));
-        Assert.Contains(cookies, cookie => IsDeletedCookie(cookie, ".PEKORASECURITY"));
+        Assert.Contains(cookies, cookie => IsDeletedCookie(cookie, ".VEDORASECURITY"));
     }
 
     private static bool IsDeletedCookie(string cookie, string name)

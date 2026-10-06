@@ -120,7 +120,7 @@ public class ClientSettingsRouteTests
 
     private static string CreateJsonDataDirectory()
     {
-        var directory = Path.Combine(Path.GetTempPath(), "korone-api-client-settings-tests", Guid.NewGuid().ToString("N"));
+        var directory = Path.Combine(Path.GetTempPath(), "vedora-api-client-settings-tests", Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(directory);
         File.WriteAllText(Path.Combine(directory, "StudioAppSettings.json"), "{\"FFlagFromTest\":true}");
         return directory;

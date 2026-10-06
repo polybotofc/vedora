@@ -3,7 +3,7 @@ using System.Diagnostics.Metrics;
 namespace Roblox.Metrics;
 
 /// <summary>
-/// Shared OpenTelemetry-compatible instruments emitted by Korone services.
+/// Shared OpenTelemetry-compatible instruments emitted by Vedora services.
 /// </summary>
 public static class RobloxMetrics
 {

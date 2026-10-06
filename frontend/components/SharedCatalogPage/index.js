@@ -48,7 +48,7 @@ const AssetPage = () => {
         return <CatalogPageStore2018.Provider>
             <Theme2016>
                 <Head>
-                    <title>Catalog - Pekora</title>
+                    <title>Catalog - Vedora</title>
                 </Head>
 
                 <div className={s.container + ' container padding-none flex justify-content-between'}>

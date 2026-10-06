@@ -19,9 +19,6 @@ public class GamesService : ServiceBase, IService
     //ugh
     public readonly Dictionary<long, string> clientVersionMap = new Dictionary<long, string>
     {
-        { 2017, "2017L" },
-        { 2018, "2018L" },
-        { 2020, "2020L" },
         { 2021, "2021M" }
     };
     public async Task<long> GetMaxPlayerCount(long placeId)
@@ -613,7 +610,7 @@ public class GamesService : ServiceBase, IService
                     13228,  // WAAPP
                     22037,  // MM2
                     32309,  // The Normal Elevator
-                    52729,  // PEKORA High School
+                    52729,  // VEDORA High School
                     1547,   // Escape McDonalds!
                     1176,   // Epic Minigames
                     1287,   // Flood Escape 1
@@ -696,10 +693,6 @@ public class GamesService : ServiceBase, IService
 
     public readonly List<long> AllowedGameYears = new List<long>
     {
-        2017,
-        2018,
-        2019,
-        2020,
         2021
     };
 

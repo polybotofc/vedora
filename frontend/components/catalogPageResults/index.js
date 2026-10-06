@@ -129,7 +129,7 @@ const CatalogPageResults = props => {
             return <h1 className={s.pageTitleAlt}>Search results for "{store.query}"</h1>;
         }
         if (store.category === 'Featured') {
-            return <h1 className={s.pageTitle}>Featured Items on Korone</h1>;
+            return <h1 className={s.pageTitle}>Featured Items on Vedora</h1>;
         }
         let title = getDisplayNameForCombination(store.category, store.subCategory);
         const currentOffset = Math.trunc(store.page / store.limit + 1) || 0;

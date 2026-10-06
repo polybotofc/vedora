@@ -33,7 +33,7 @@ namespace Roblox.Services;
 
 public class UsersService : ServiceBase, IService
 {
-    private static TwoFactorAuth tfa = new TwoFactorAuth("Korone");
+    private static TwoFactorAuth tfa = new TwoFactorAuth("Vedora");
     private static readonly TimeSpan PasswordResetTicketTtl = TimeSpan.FromHours(1);
     private static string UserByIdCacheKey(long userId) => $"users:info:v1:{userId}";
     private static string PasswordResetCacheKey(string id) => $"PasswordReset:Ticket:V1:{id}";
@@ -178,7 +178,7 @@ public class UsersService : ServiceBase, IService
     }
     public async Task<string> Generate2SVTicket(TwoFactorTicket info)
     {
-        string ticket = "korone2sv-v2:" + Guid.NewGuid().ToString();
+        string ticket = "vedora2sv-v2:" + Guid.NewGuid().ToString();
         await redis.StringSetAsync(ticket, JsonSerializer.Serialize(info), TimeSpan.FromMinutes(1));
         return ticket;
     }
@@ -200,7 +200,7 @@ public class UsersService : ServiceBase, IService
     }
     public async Task<string> GenerateLoginTicket(LoginTicet info)
     {
-        string ticket = "korone2svloginv2:" + Guid.NewGuid().ToString() + Guid.NewGuid().ToString();
+        string ticket = "vedora2svloginv2:" + Guid.NewGuid().ToString() + Guid.NewGuid().ToString();
         await redis.StringSetAsync(ticket, JsonSerializer.Serialize(info), TimeSpan.FromSeconds(10));
         return ticket;
     }
@@ -428,7 +428,7 @@ public class UsersService : ServiceBase, IService
 
     public async Task ResetUsername(long userId, long requesterUserId)
     {
-        var newName = $"korone_user_{userId}";
+        var newName = $"vedora_user_{userId}";
         await db.ExecuteAsync(
             "INSERT INTO moderation_bad_username_log (username, user_id, author_id) VALUES (:name, :id, :author)", new
             {
@@ -2370,8 +2370,8 @@ public class UsersService : ServiceBase, IService
         var result = await redis.StringGetAsync("useryeartheme:v1:" + userId);
         if (result == null)
         {
-            s.Set(userId, WebsiteYear.Year2016);
-            return WebsiteYear.Year2016;
+            s.Set(userId, WebsiteYear.Year2021);
+            return WebsiteYear.Year2021;
         }
         var value = Enum.Parse<WebsiteYear>(result);
         s.Set(userId, value);

@@ -71,6 +71,8 @@ public static class AvatarRouteCases
         })),
         Session("POST", "/v1/avatar/set-player-avatar-type", content: _ => JsonContent(new { playerAvatarType = 1 })),
         Session("POST", "/apisite/avatar/v1/avatar/set-player-avatar-type", content: _ => JsonContent(new { playerAvatarType = 1 })),
+        Session("GET", "/v1/avatar/set-rig?rigType=R15"),
+        Session("GET", "/apisite/avatar/v1/avatar/set-rig?rigType=R15"),
         Session("POST", "/v1/avatar/set-body-colors", content: _ => JsonContent(new
         {
             headColorId = 194,

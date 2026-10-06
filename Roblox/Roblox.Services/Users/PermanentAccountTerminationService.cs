@@ -23,7 +23,7 @@ public sealed record PermanentTerminationResult(
 public class PermanentAccountTerminationService : ServiceBase
 {
     public const string GenericTermsOfServiceReason =
-        "This account has been closed due to violating Korone terms of service.";
+        "This account has been closed due to violating Vedora terms of service.";
 
     private UsersService? _users;
     private GameServerService? _gameServer;
@@ -123,7 +123,7 @@ public class PermanentAccountTerminationService : ServiceBase
             // arbiter must not undo or indefinitely retry a durable termination.
             Writer.Info(
                 LogGroup.GameServerJoin,
-                "Could not kick terminated Korone user {0}: {1}",
+                "Could not kick terminated Vedora user {0}: {1}",
                 userId,
                 exception.Message);
         }
@@ -146,7 +146,7 @@ public class PermanentAccountTerminationService : ServiceBase
         {
             Writer.Info(
                 LogGroup.DiscordApi,
-                "Cannot Discord-ban terminated Korone user {0}: no approved registered application Discord ID",
+                "Cannot Discord-ban terminated Vedora user {0}: no approved registered application Discord ID",
                 userId);
             return DiscordTerminationOutcome.NoRegisteredApplication;
         }
@@ -156,7 +156,7 @@ public class PermanentAccountTerminationService : ServiceBase
         {
             Writer.Info(
                 LogGroup.DiscordApi,
-                "Discord termination is not configured for Korone user {0} (Discord {1})",
+                "Discord termination is not configured for Vedora user {0} (Discord {1})",
                 userId,
                 discordId);
             return DiscordTerminationOutcome.NotConfigured;
@@ -167,7 +167,7 @@ public class PermanentAccountTerminationService : ServiceBase
             return await discordBotApi.BanGuildMember(
                 Roblox.Configuration.DiscordGuildId,
                 discordId,
-                $"Permanent Korone termination for user {userId}")
+                $"Permanent Vedora termination for user {userId}")
                 ? DiscordTerminationOutcome.Banned
                 : DiscordTerminationOutcome.Failed;
         }
@@ -175,7 +175,7 @@ public class PermanentAccountTerminationService : ServiceBase
         {
             Writer.Info(
                 LogGroup.DiscordApi,
-                "Discord termination threw for Korone user {0} (Discord {1}): {2}",
+                "Discord termination threw for Vedora user {0} (Discord {1}): {2}",
                 userId,
                 discordId,
                 exception.Message);

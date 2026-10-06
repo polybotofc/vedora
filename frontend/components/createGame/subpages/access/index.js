@@ -106,9 +106,6 @@ const Access = props => {
                             props.setGameYear(parseInt(v.currentTarget.value, 10));
                         }}
                     >
-                        <option value={2017}>2017</option>
-                        <option value={2018}>2018</option>
-                        <option value={2020}>2020</option>
                         <option value={2021}>2021</option>
                     </select>
                 </div>
@@ -118,7 +115,7 @@ const Access = props => {
                 <span>Server Fill:</span>
                 <label className={s.deviceLabel}>
                     <input type="radio" name="optimize" checked={false} disabled={true}/>
-                    <span>Korone optimizes server fill for me</span>
+                    <span>Vedora optimizes server fill for me</span>
                 </label>
                 <label className={s.deviceLabel}>
                     <input type="radio" name="fill" checked={true} disabled={true}/>

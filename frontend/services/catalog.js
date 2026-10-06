@@ -123,7 +123,7 @@ export const getItemDetails = async (assetIdArray) => {
 
 /**
  * @param {number[]} assetIdArray
- * @returns {Promise<PekoraCollection<AssetDetailsEntry>>}
+ * @returns {Promise<VedoraCollection<AssetDetailsEntry>>}
  */
 export const getItemDetailsNew = async (assetIdArray) => {
     if (assetIdArray.length === 0) return Promise.resolve({ data: [] });
@@ -160,7 +160,7 @@ export const getItemDetailsNew = async (assetIdArray) => {
  * @param {number} assetId
  * @param {number} assetTypeId
  * @param {number} limit
- * @returns {Promise<PekoraCollection<RecommendedItemEntry>>}
+ * @returns {Promise<VedoraCollection<RecommendedItemEntry>>}
  */
 export const getRecommendations = ({ assetId, assetTypeId, limit }) => {
     return request('GET', getFullUrl('catalog', '/v1/recommendations/asset/' + assetTypeId + '?contextAssetId=' + assetId + '&numItems=' + limit)).then(d => d.data);
@@ -279,7 +279,7 @@ export const getModerationStatus = ({ assetID }) => {
  * @param {number|null} priceOption
  * @param {[number, number]|null} priceRange
  * @param {number|null} currency
- * @returns {Promise<PekoraCollectionPaginated<{itemType: string; id: number;}>>}
+ * @returns {Promise<VedoraCollectionPaginated<{itemType: string; id: number;}>>}
  */
 export const searchCatalog2 = ({
                                    category,

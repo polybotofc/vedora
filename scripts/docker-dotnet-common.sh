@@ -5,7 +5,7 @@ set -eu
 repository_root=/srv/app
 dotnet_root=/srv/app/Roblox
 dev_host_project=Roblox.DevHost/Roblox.DevHost.csproj
-artifacts_root=/tmp/korone-artifacts
+artifacts_root=/tmp/vedora-artifacts
 build_lock="$artifacts_root/.build.lock"
 restore_signature_file="$artifacts_root/.restore-signature"
 source_signature_file="$artifacts_root/.source-signature"

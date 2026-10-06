@@ -16,13 +16,13 @@ public class AdminApiCorsMiddlewareTests
     {
         using var server = CreateServer();
         var request = new HttpRequestMessage(HttpMethod.Options, "/v1/users");
-        request.Headers.Host = "admin.pekora.zip";
-        request.Headers.Add("Origin", "https://www.pekora.zip");
+        request.Headers.Host = "admin.vedora.xyz";
+        request.Headers.Add("Origin", "https://vedora.xyz");
 
         var response = await server.CreateClient().SendAsync(request);
 
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
-        Assert.Equal("https://www.pekora.zip", response.Headers.GetValues("Access-Control-Allow-Origin").Single());
+        Assert.Equal("https://vedora.xyz", response.Headers.GetValues("Access-Control-Allow-Origin").Single());
         Assert.Equal("true", response.Headers.GetValues("Access-Control-Allow-Credentials").Single());
         Assert.Contains("x-csrf-token", response.Headers.GetValues("Access-Control-Allow-Headers").Single());
         Assert.Contains("x-csrf-token", response.Headers.GetValues("Access-Control-Expose-Headers").Single());
@@ -35,7 +35,7 @@ public class AdminApiCorsMiddlewareTests
     {
         using var server = CreateServer();
         var client = server.CreateClient();
-        client.DefaultRequestHeaders.Host = "admin.pekora.zip";
+        client.DefaultRequestHeaders.Host = "admin.vedora.xyz";
 
         var response = await client.GetAsync("/not-v1");
 
@@ -48,7 +48,7 @@ public class AdminApiCorsMiddlewareTests
     {
         using var server = CreateServer();
         var client = server.CreateClient();
-        client.DefaultRequestHeaders.Host = "www.pekora.zip";
+        client.DefaultRequestHeaders.Host = "vedora.xyz";
 
         var response = await client.GetAsync("/not-v1");
 
@@ -63,7 +63,7 @@ public class AdminApiCorsMiddlewareTests
             {
                 services.Configure<AdminApiOptions>(options =>
                 {
-                    options.CorsAllowedOrigins = new[] { "https://www.pekora.zip" };
+                    options.CorsAllowedOrigins = new[] { "https://vedora.xyz" };
                 });
             })
             .Configure(app =>

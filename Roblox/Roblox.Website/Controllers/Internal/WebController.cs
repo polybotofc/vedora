@@ -78,7 +78,7 @@ public class WebController : ControllerBase
         catch (RecordNotFoundException)
         {
             await services.discordBotApi.AddGuildMember(Configuration.DiscordGuildId, userInfo.Id.ToString(), discordApi.AccessToken);
-            return Content("We couldn't find a korone account relating to this account, we have automatically joined the Korone discord server for you so you can register an account or link it!");
+            return Content("We couldn't find a vedora account relating to this account, we have automatically joined the Vedora discord server for you so you can register an account or link it!");
         }
 
         var sess = await services.users.CreateSession(user.userId);
@@ -92,7 +92,7 @@ public class WebController : ControllerBase
     [HttpGetBypass("api/discordapplicationcallback")]
     public async Task<IActionResult> ApplicationDiscordCallback(string? code)
     {
-        const string key = "PEKORA-DISCORD";
+        const string key = "VEDORA-DISCORD";
         if (discordAccessToken != null)
         {
             HttpContext.Response.Cookies.Delete(key);
@@ -489,7 +489,7 @@ public class WebController : ControllerBase
         return new
         {
             joinScriptUrl = bootstrapperArgs,
-            prefix = "pekora-player",
+            prefix = "vedora-player",
             retroArgs = args
         };
     }
@@ -515,7 +515,7 @@ public class WebController : ControllerBase
         return new
         {
             joinScriptUrl = bootstrapperArgs,
-            prefix = "pekora-player",
+            prefix = "vedora-player",
             retroArgs = args
         };
     }

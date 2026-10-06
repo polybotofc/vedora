@@ -68,7 +68,7 @@ const  AccountInfo = props => {
             <div className={cardStyles.card + ' p-3'}>
                 <textarea ref={descRef} className={s.descInput} rows={3} defaultValue={store.description}></textarea>
                 <p className='mb-0 font-size-12'>Do not provide any details that can be used to identify you outside
-                    Korone.</p>
+                    Vedora.</p>
                 <div className='mt-1'>
                     <div className='row'>
                         <div className='col pe-0'>
@@ -123,7 +123,7 @@ const  AccountInfo = props => {
         </div>
         {getFlag('settingsPageThemeSelectorEnabled', false) &&
             <div className='col-12 mt-2'>
-                <Subtitle>Customize Your Korone</Subtitle>
+                <Subtitle>Customize Your Vedora</Subtitle>
                 <div className={cardStyles.card + ' p-3'}>
                     <div className='flex mt-1'>
                         <div className='col pe-0'>

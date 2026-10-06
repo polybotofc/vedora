@@ -32,7 +32,10 @@ public static class RobloxServiceInfrastructure
         Roblox.Configuration.IsCdnEnabled = configuration.GetValue("IsCdnEnabled", Roblox.Configuration.IsCdnEnabled);
         Roblox.Configuration.BaseUrl = configuration["BaseUrl"] ?? Roblox.Configuration.BaseUrl ?? string.Empty;
         Roblox.Configuration.ShortBaseUrl = !string.IsNullOrWhiteSpace(Roblox.Configuration.BaseUrl)
-            ? Roblox.Configuration.BaseUrl.Replace("https", "http").Replace("http://www.", "")
+            ? Roblox.Configuration.BaseUrl
+                .Replace("https://", "")
+                .Replace("http://", "")
+                .Replace("www.", "")
             : Roblox.Configuration.ShortBaseUrl ?? string.Empty;
 
         Roblox.Configuration.AssetDirectory = configuration["Directories:Asset"] ?? Roblox.Configuration.AssetDirectory ?? string.Empty;
@@ -67,5 +70,7 @@ public static class RobloxServiceInfrastructure
                 Roblox.Configuration.ArbiterAuthorization,
                 configuration.GetValue("Render:UseBinaryTransport", true));
         }
+
+        Roblox.Configuration.ArbiterBaseUrl = configuration["Arbiter:BaseUrl"] ?? renderBaseUrl;
     }
 }

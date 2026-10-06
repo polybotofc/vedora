@@ -12,15 +12,15 @@ public class RobloxSessionCookieWriterTests
         var previousShortBaseUrl = Roblox.Configuration.ShortBaseUrl;
         try
         {
-            Roblox.Configuration.ShortBaseUrl = "pekora.zip";
+            Roblox.Configuration.ShortBaseUrl = "vedora.xyz";
             var context = InfrastructureTestHelpers.Context();
-            context.Request.Host = new HostString("api.pekora.zip");
+            context.Request.Host = new HostString("api.vedora.xyz");
 
             RobloxSessionCookieWriter.AppendSessionCookiesForToken(context, "session-token");
 
             var cookies = GetSetCookies(context);
             Assert.Contains(cookies, cookie => cookie.StartsWith(".ROBLOSECURITY=session-token;", StringComparison.Ordinal));
-            Assert.All(cookies, cookie => Assert.Contains("domain=.pekora.zip", cookie, StringComparison.OrdinalIgnoreCase));
+            Assert.All(cookies, cookie => Assert.Contains("domain=.vedora.xyz", cookie, StringComparison.OrdinalIgnoreCase));
             Assert.All(cookies, cookie => Assert.Contains("httponly", cookie, StringComparison.OrdinalIgnoreCase));
         }
         finally
@@ -37,13 +37,13 @@ public class RobloxSessionCookieWriterTests
         {
             Roblox.Configuration.ShortBaseUrl = string.Empty;
             var context = InfrastructureTestHelpers.Context();
-            context.Request.Host = new HostString("api.pekora.zip");
+            context.Request.Host = new HostString("api.vedora.xyz");
 
             RobloxSessionCookieWriter.AppendSessionCookiesForToken(context, "session-token");
 
             var cookies = GetSetCookies(context);
             Assert.Contains(cookies, cookie => cookie.StartsWith(".PUPPYSECURITY=session-token;", StringComparison.Ordinal));
-            Assert.All(cookies, cookie => Assert.Contains("domain=.pekora.zip", cookie, StringComparison.OrdinalIgnoreCase));
+            Assert.All(cookies, cookie => Assert.Contains("domain=.vedora.xyz", cookie, StringComparison.OrdinalIgnoreCase));
         }
         finally
         {
@@ -79,9 +79,9 @@ public class RobloxSessionCookieWriterTests
         var previousShortBaseUrl = Roblox.Configuration.ShortBaseUrl;
         try
         {
-            Roblox.Configuration.ShortBaseUrl = "pekora.zip";
+            Roblox.Configuration.ShortBaseUrl = "vedora.xyz";
             var context = InfrastructureTestHelpers.Context();
-            context.Request.Host = new HostString("api.pekora.zip");
+            context.Request.Host = new HostString("api.vedora.xyz");
 
             RobloxSessionCookieWriter.DeleteSessionCookies(context);
 
@@ -89,7 +89,7 @@ public class RobloxSessionCookieWriterTests
             Assert.Contains(cookies, cookie => IsExpiredCookie(cookie, RobloxWebContextConstants.RobloxSessionCookieName));
             Assert.Contains(cookies, cookie => IsExpiredCookie(cookie, RobloxWebContextConstants.SessionCookieName));
             Assert.Contains(cookies, cookie => IsExpiredCookie(cookie, RobloxWebContextConstants.AltSessionCookieName));
-            Assert.All(cookies, cookie => Assert.Contains("domain=.pekora.zip", cookie, StringComparison.OrdinalIgnoreCase));
+            Assert.All(cookies, cookie => Assert.Contains("domain=.vedora.xyz", cookie, StringComparison.OrdinalIgnoreCase));
         }
         finally
         {

@@ -301,7 +301,7 @@ public class MachineBanService : ServiceBase
         var discordIdentity = result.DiscordId == null ? "none" : result.DiscordId;
         var content =
             $"## Automated machine-ban termination\n" +
-            $"Korone user: {result.Username} ({job.userId})\n" +
+            $"Vedora user: {result.Username} ({job.userId})\n" +
             $"Machine-ban source: {job.sourceUserId}\n" +
             $"Initiating staff: {actorUserId}\n" +
             $"Discord user: {discordIdentity}\n" +

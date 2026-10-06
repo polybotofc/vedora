@@ -73,13 +73,13 @@ public class MachineBanPolicyTests
         using var client = new HttpClient(handler) { BaseAddress = new Uri("https://discord.test/api/") };
         var api = new DiscordBotApi(client, "token");
 
-        var result = await api.BanGuildMember("guild-1", "discord-2", "Korone user 123");
+        var result = await api.BanGuildMember("guild-1", "discord-2", "Vedora user 123");
 
         Assert.True(result);
         Assert.NotNull(handler.Request);
         Assert.Equal(HttpMethod.Put, handler.Request!.Method);
         Assert.Equal("https://discord.test/api/guilds/guild-1/bans/discord-2", handler.Request.RequestUri!.ToString());
-        Assert.Equal("Korone%20user%20123", handler.Request.Headers.GetValues("X-Audit-Log-Reason").Single());
+        Assert.Equal("Vedora%20user%20123", handler.Request.Headers.GetValues("X-Audit-Log-Reason").Single());
         Assert.Equal("{\"delete_message_seconds\":0}", handler.Body);
     }
 

@@ -177,7 +177,7 @@ public sealed class RewarbleController(
             "REWARBLE_NOT_CONFIGURED" => "Voucher redemption is not configured yet.",
             "REWARBLE_UNAVAILABLE" => "Rewarble is temporarily unavailable. Try again shortly.",
             "REWARBLE_TIMEOUT" => "Rewarble took too long to respond. Try again shortly.",
-            "REWARBLE_BAD_RESPONSE" => "Rewarble returned an unexpected response. Please contact support at https://support.korone.one/submit-request",
+            "REWARBLE_BAD_RESPONSE" => "Rewarble returned an unexpected response. Please contact support at https://support.vedora.xyz/submit-request",
             _ => "This voucher could not be redeemed.",
         };
     }
@@ -185,13 +185,13 @@ public sealed class RewarbleController(
     private static string GetResultMessage(DonationRewardResult result)
     {
         if (result.IsDuplicate)
-            return "This voucher has already been processed on Korone.";
+            return "This voucher has already been processed on Vedora.";
 
         return result.Status switch
         {
             "granted" => "Rewards granted.",
-            "skipped" => "Voucher redeemed, but rewards need manual review. Please contact support at https://support.korone.one/submit-request",
-            _ => "Voucher redeemed, but rewards need manual review. Please contact support at https://support.korone.one/submit-request",
+            "skipped" => "Voucher redeemed, but rewards need manual review. Please contact support at https://support.vedora.xyz/submit-request",
+            _ => "Voucher redeemed, but rewards need manual review. Please contact support at https://support.vedora.xyz/submit-request",
         };
     }
 }

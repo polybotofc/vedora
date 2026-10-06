@@ -38,7 +38,10 @@ public static class RobloxWebsiteBuilderExtensions
         Roblox.Configuration.AdminBundleDirectory = options.Directories.AdminBundle;
         Roblox.Configuration.EconomyChatBundleDirectory = options.Directories.EconomyChatBundle;
         Roblox.Configuration.BaseUrl = options.BaseUrl;
-        Roblox.Configuration.ShortBaseUrl = options.BaseUrl.Replace("https", "http").Replace("http://www.", "");
+        Roblox.Configuration.ShortBaseUrl = options.BaseUrl
+            .Replace("https://", "")
+            .Replace("http://", "")
+            .Replace("www.", "");
         Roblox.Configuration.HCaptchaPublicKey = options.HCaptcha.Public;
         Roblox.Configuration.HCaptchaPrivateKey = options.HCaptcha.Private;
         Roblox.Configuration.IsCdnEnabled = options.IsCdnEnabled;
@@ -89,7 +92,7 @@ public static class RobloxWebsiteBuilderExtensions
         Roblox.Configuration.SignupAvatarAssetIds = options.SignupAvatarAssetIds;
 
 #if DEBUG
-        Roblox.Configuration.RobloxAppPrefix = "rbxeconsimdev:";
+        Roblox.Configuration.RobloxAppPrefix = "vedoradev:";
 #endif
 
         Roblox.Website.Filters.StaffFilter.Configure(options.OwnerUserId);
@@ -100,6 +103,7 @@ public static class RobloxWebsiteBuilderExtensions
         var arbiterUrl = string.IsNullOrWhiteSpace(options.Render.BaseUrl)
             ? $"https://arbiter.{Roblox.Configuration.ShortBaseUrl}/"
             : options.Render.BaseUrl;
+        Roblox.Configuration.ArbiterBaseUrl = arbiterUrl;
         CommandHandler.Configure(arbiterUrl, options.ArbiterAuthorization, options.Render.UseBinaryTransport);
         Roblox.Services.Signer.SignService.Setup();
 

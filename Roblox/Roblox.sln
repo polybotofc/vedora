@@ -65,9 +65,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Roblox.Services.Api", "Serv
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Roblox.Services.Api.Tests", "Services\Roblox.Services.Api.Tests\Roblox.Services.Api.Tests.csproj", "{00823C46-33CD-4274-8BA1-EF2E91F896DE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Korone.RccServiceArbiter", "Korone.RccServiceArbiter\Korone.RccServiceArbiter.csproj", "{B4C5BBFB-1401-424F-B2C9-3B8C5EEC3235}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vedora.RccServiceArbiter", "Vedora.RccServiceArbiter\Vedora.RccServiceArbiter.csproj", "{B4C5BBFB-1401-424F-B2C9-3B8C5EEC3235}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Korone.RccServiceArbiter.Tests", "Korone.RccServiceArbiter.Tests\Korone.RccServiceArbiter.Tests.csproj", "{E7CA6589-90C7-4122-8195-AC0FF9885017}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vedora.RccServiceArbiter.Tests", "Vedora.RccServiceArbiter.Tests\Vedora.RccServiceArbiter.Tests.csproj", "{E7CA6589-90C7-4122-8195-AC0FF9885017}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Roblox.Services.Users", "Services\Roblox.Services.Users\Roblox.Services.Users.csproj", "{F7B534D3-DDD2-477B-99ED-4E98FDCB424F}"
 EndProject

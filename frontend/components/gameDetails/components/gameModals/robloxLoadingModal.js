@@ -71,7 +71,7 @@ const useStyles = createUseStyles({
         height: '95px',
         display: 'inline-block',
         verticalAlign: 'middle',
-        backgroundImage: 'url(/img/korone-icon-square.png)',
+        backgroundImage: 'url(/img/vedora-icon-square.png)',
         backgroundSize: '85px 85px',
         backgroundRepeat: 'no-repeat',
         backgroundPosition: '5px 0'
@@ -83,7 +83,7 @@ const useStyles = createUseStyles({
  * @param {{exitFunction: () => void; closeModals: boolean;}} props 
  * @returns 
  */
-const projexLoadingModal = props => {
+const vedoraLoadingModal = props => {
     const s = useStyles();
     const [isOpen, setOpen] = useState(true);
 
@@ -98,7 +98,7 @@ const projexLoadingModal = props => {
         {isOpen && <NewModal title="">
             <div className={s.container}>
                 <span className={s.iconLogo} />
-                <p className={s.loadingText}>Korone is now loading. Get ready!</p>
+                <p className={s.loadingText}>Vedora is now loading. Get ready!</p>
                 <span className="spinner" />
             </div>
             <div className={s.modalBtns}></div>
@@ -107,4 +107,4 @@ const projexLoadingModal = props => {
     </>
 }
 
-export default projexLoadingModal;
+export default vedoraLoadingModal;

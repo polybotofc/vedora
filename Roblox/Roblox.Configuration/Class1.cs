@@ -64,13 +64,14 @@ public static class Configuration
     public static string DiscordLinkCallback { get; set; }
     public static IEnumerable<GameServerConfigEntry> GameServerIpAddresses { get; set; }
     public static string GameServerAuthorization { get; set; }
-    public static string RobloxAppPrefix { get; set; } = "rbxeconsim:";
+    public static string RobloxAppPrefix { get; set; } = "vedora:";
     public static string AssetValidationServiceUrl { get; set; }
     public static string AssetValidationServiceAuthorization { get; set; }
     public static string BotAuthorization { get; set; }
     public static string RccAuthorization { get; set; }
     public static string RobloxAuthorization { get; set; }
     public static string ArbiterAuthorization { get; set; }
+    public static string ArbiterBaseUrl { get; set; }
     public static string GameServerIp { get; set; }
     public static string UserAgentBypassSecret { get; set; }
     public static string InvisibleTurnstileSiteKey { get; set; } = "";
@@ -105,5 +106,5 @@ public static class Configuration
     }
 
     public static long AiUserId { get; set; } = 1;
-    public static string GameServerDomain => "pekora.zip"; // set to your game server's domain
+    public static string GameServerDomain => "vedora.xyz"; // set to your game server's domain
 }

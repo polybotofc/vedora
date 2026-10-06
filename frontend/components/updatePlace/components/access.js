@@ -9,7 +9,7 @@ const Access = (props) => {
   const store = updatePlaceStore.useContainer();
   const [maxPlayers, setMaxPlayers] = useState(10);
   const [feedback, setFeedback] = useState(null);
-  const [year, setSelectedYear] = useState(2017);
+  const [year, setSelectedYear] = useState(2021);
   const [robloxPlaceId, setRobloxPlaceId] = useState(1818);
   
   const resetForm = () => {
@@ -79,9 +79,6 @@ const Access = (props) => {
           >
             {/*<option value={2015}>2015</option>*/}
             {/*<option value={2016}>2016</option>*/}
-            <option value={2017}>2017</option>
-            <option value={2018}>2018</option>
-            <option value={2020}>2020</option>
             <option value={2021}>2021</option>
           </select>
           <p className="fw-bold">Animation/Audio place ID:</p>

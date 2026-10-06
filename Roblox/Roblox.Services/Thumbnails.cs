@@ -394,7 +394,7 @@ public class ThumbnailsService : ServiceBase, IService
         }
 
         var baseUrl = string.IsNullOrWhiteSpace(Configuration.CdnBaseUrl)
-            ? "https://cdn.pekora.zip/"
+            ? "https://cdn.vedora.xyz/"
             : Configuration.CdnBaseUrl;
 
         baseUrl = baseUrl.TrimEnd('/') + "/";

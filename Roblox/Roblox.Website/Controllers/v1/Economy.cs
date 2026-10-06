@@ -254,7 +254,7 @@ public class EconomyControllerV1 : ControllerBase
         if (request.userAssetId is 0 or < 0)
             request.userAssetId = null;
 
-        var ticketHeader = Request.Headers["X-Korone-Ticket"].ToString();
+        var ticketHeader = Request.Headers["X-Vedora-Ticket"].ToString();
         await services.purchaseAttestation.ConsumeOrThrow(safeUserSession.userId, ticketHeader, assetId);
 
         if (request.userAssetId != null)

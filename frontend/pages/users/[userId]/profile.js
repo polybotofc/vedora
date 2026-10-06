@@ -6,22 +6,22 @@ import UserProfileStore from "../../../components/userProfile/stores/UserProfile
 import { getUserInfo } from "../../../services/users";
 
 const UserProfilePage = ({ username, userId, description, ...props }) => {
-    const ogTitle = username + "'s Profile" || "Korone";
-    const ogUrl = userId ? `https://pekora.zip/users/${userId}/profile` : '';
-    const ogDesc = description || 'Join Korone and explore together!';
+    const ogTitle = username + "'s Profile" || "Vedora";
+    const ogUrl = userId ? `https://vedora.xyz/users/${userId}/profile` : '';
+    const ogDesc = description || 'Join Vedora and explore together!';
     
     return (
         <>
             {username && (
                 <Head>
-                    <title>{ogTitle} - Korone</title>
+                    <title>{ogTitle} - Vedora</title>
                     <meta property="og:title" content={ogTitle}/>
                     <meta property="og:url" content={ogUrl}/>
                     <meta property="og:type" content="profile"/>
                     <meta property="og:description" content={ogDesc}/>
                     <meta property="og:image"
-                          content={`https://pekora.zip/thumbs/avatar-headshot.ashx?userId=${userId}`}/>
-                    <meta name="og:site_name" content="Korone"/>
+                          content={`https://vedora.xyz/thumbs/avatar-headshot.ashx?userId=${userId}`}/>
+                    <meta name="og:site_name" content="Vedora"/>
                     <meta name="theme-color" content="#E2231A"/>
                 </Head>
             )}
@@ -39,7 +39,7 @@ export async function getServerSideProps(context) {
     // we will get the username, desc
     try {
         const info = await getUserInfo({ userId });
-        const username = info.name || "Korone";
+        const username = info.name || "Vedora";
         const description = info.description || "No description available";
         return {
             props: {
@@ -52,8 +52,8 @@ export async function getServerSideProps(context) {
         console.error("Error fetching user info in profile.js" + error);
         return {
             props: {
-                username: "Korone",
-                description: "Join Korone and explore together!",
+                username: "Vedora",
+                description: "Join Vedora and explore together!",
                 userId
             }
         };

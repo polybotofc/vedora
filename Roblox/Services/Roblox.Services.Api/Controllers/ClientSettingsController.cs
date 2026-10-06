@@ -31,18 +31,19 @@ public class ClientSettingsController : RobloxControllerBase
     {
         switch (apiKey)
         {
+            // RCCService2021 settings.
             case "9CE2063F-BB45-449B-89D4-65CD2ED806CD":
                 return "RCCServiceUJ38BA31M8F47VA76XZ1RYONSSTILA3F";
             case "D6925E56-BFB9-4908-AAA2-A5B1EC4B2D79":
             case "08BF6621-8100-4484-B14C-87497E372160":
                 return type == "StudioAppSettings"
                     ? type
-                    : "ClientAppSettings2017";
+                    : "ClientAppSettings";
             case "D6925E56-BFB9-4908-AAA2-A5B1EC4B2D7A":
-                return "RCCService2018";
+                return "RCCService2021";
             case "76E5A40C-3AE1-4028-9F10-7C62520BD94F":
             case "19C0B314-AC23-4CD4-8A37-02C4140F7240":
-                return "ClientAppSettings2018";
+                return "ClientAppSettings";
             default:
                 return string.Empty;
         }

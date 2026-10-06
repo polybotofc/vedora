@@ -100,7 +100,7 @@ const CreateGame = props => {
         console: false
     });
     const [playerCount, setPlayerCount] = useState(10);
-    const [gameYear, setGameYear] = useState(2017);
+    const [gameYear, setGameYear] = useState(2021);
     const [access, setAccess] = useState('Everyone');
     
     //const [gearGenres, setGearGenres] = useState(false);
