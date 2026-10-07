@@ -76,6 +76,7 @@ public sealed class RenderServiceCoalescingTests
     private sealed class FakeScripts : IRenderScriptCatalog
     {
         public ScriptExecution Create(RenderRequest request) => new() { Name = "test", Script = "{}" };
+        public IEnumerable<RenderKind> KindsWithMissingScripts(IReadOnlySet<string> availableScripts) => [];
     }
 
     private sealed class ControlledSoapClient : IRccSoapClient
