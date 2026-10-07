@@ -275,7 +275,8 @@ public sealed class RccProcessPool : IRccProcessPool
         try
         {
             var exe = Path.Combine(_options.RccServiceRoot, $"RCCService{year}", "RCCService.exe");
-            process = _launcher.Start(exe, $"-console {rccPort}", Path.GetDirectoryName(exe));
+            process = _launcher.Start(exe, RccLaunchArguments.Build(_options.Render.LaunchArguments, rccPort),
+                Path.GetDirectoryName(exe));
             await _readinessProbe.WaitUntilAvailableAsync(
                 rccPort,
                 TimeSpan.FromSeconds(_options.Processes.StartupTimeoutSeconds),
@@ -286,6 +287,8 @@ public sealed class RccProcessPool : IRccProcessPool
         {
             if (process != null)
             {
+                if (process.TryGetOutput(out var rccOutput))
+                    _logger.LogWarning("RCCService (year {Year}) launch output: {Output}", year, rccOutput);
                 try
                 {
                     process.KillTree();
