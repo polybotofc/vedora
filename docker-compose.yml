@@ -438,7 +438,7 @@ services:
       - ./AssetValidationServiceV2:/app
       - go_pkg_cache:/go/pkg/mod
       - go_bin_cache:/go/bin
-    command: sh -c "if ! command -v air >/dev/null 2>&1; then go install github.com/air-verse/air@latest; fi; air"
+    command: sh -c "if ! command -v air >/dev/null 2>&1; then go install github.com/air-verse/air@v1.61.7; fi; air"
     ports:
       - "127.0.0.1:4300:4300"
     networks:

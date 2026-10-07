@@ -147,7 +147,7 @@ echo.
 echo [..] Building and starting the Vedora RCC arbiter...
 rem Run from the repository root so the relative RCCService paths in
 rem appsettings.json resolve to <root>\RCCService.
-start "Vedora RCC Arbiter" cmd /k "cd /d "%ROOT%" ^&^& dotnet run --project "%ARBITER_PROJECT%" --configuration Release --urls %ARBITER_URLS%"
+start "Vedora RCC Arbiter" /d "%ROOT%" cmd /k ""%DOTNET_EXE%" run --project "%ARBITER_PROJECT%" --configuration Release --urls %ARBITER_URLS%"
 
 echo.
 echo ==========================================================
