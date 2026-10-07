@@ -25,6 +25,10 @@ builder.Services.AddReverseProxy()
 var app = builder.Build();
 
 app.UseRobloxServiceDefaults(ServiceExposure.PublicService);
+// Next.js serves its dev HMR channel as a WebSocket at /_next/webpack-hmr.
+// YARP's frontend forwarder can only tunnel that upgrade when the pipeline has
+// the WebSocket middleware; without it every HMR upgrade fails with 502.
+app.UseWebSockets();
 app.UseMiddleware<AdminApiCorsMiddleware>();
 app.UseMiddleware<AdminFrontendMiddleware>();
 app.UseMiddleware<FrontendProxyMiddleware>();

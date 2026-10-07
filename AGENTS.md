@@ -119,6 +119,11 @@ When you add or change a controller route, update the matching route case file
   `*.vedora.xyz`). Keep secrets in server-local `appsettings.Production.json`.
 - Do not restyle the frontend. Branding/domain replacements must not change
   layouts, CSS, or component structure.
+- `Roblox.ApiProxy` must call `app.UseWebSockets()` before
+  `FrontendProxyMiddleware`. The Next.js dev HMR channel (`/_next/webpack-hmr`)
+  is a WebSocket; without the middleware YARP cannot tunnel the upgrade and logs
+  a repeating 502 (`The response ended prematurely`). Normal page/API traffic is
+  unaffected by the middleware.
 
 ## Gotchas
 
