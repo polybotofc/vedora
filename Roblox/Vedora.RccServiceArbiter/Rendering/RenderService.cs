@@ -52,6 +52,33 @@ public sealed class RenderService : IRenderService, IDisposable
         _renderGate = new PriorityRenderGate(_options.Render.MaxWorkers,
             _options.Render.InteractiveQueueCapacity, _options.Render.BackgroundQueueCapacity);
         _conversionSlots = new SemaphoreSlim(_options.Render.ConversionConcurrency, _options.Render.ConversionConcurrency);
+        WarnIfThumbnailScriptsAreMissing();
+    }
+
+    // RCC builds "<RccServiceRoot>/RCCService<Year>/internalscripts/thumbnails/<Type>.lua"
+    // at render time. The stock 2021 install ships none of these files, so without them
+    // every render fails with "Failed to open script file" and the website only shows a
+    // generic message. Surfacing it once at startup saves the debugging round-trip.
+    private void WarnIfThumbnailScriptsAreMissing()
+    {
+        var thumbnails = Path.Combine(_options.RccServiceRoot,
+            $"RCCService{_options.Render.DefaultYear}", "internalscripts", "thumbnails");
+        if (!Directory.Exists(thumbnails))
+        {
+            _logger.LogWarning("RCC thumbnail scripts are missing at {Directory}. " +
+                "Renders will fail with 'Failed to open script file' until the " +
+                "internalscripts directory is present.", thumbnails);
+            return;
+        }
+
+        var available = Directory.GetFiles(thumbnails, "*.lua")
+            .Select(file => Path.GetFileNameWithoutExtension(file)!)
+            .ToHashSet(StringComparer.Ordinal);
+        var missing = _scripts.KindsWithMissingScripts(available).ToList();
+        if (missing.Count > 0)
+            _logger.LogWarning("RCC has no thumbnail script for render kinds: {Kinds}. " +
+                "Renders of those kinds will fail with 'Failed to open script file'.",
+                string.Join(", ", missing));
     }
 
     public bool IsReady => _ready;

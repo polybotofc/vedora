@@ -99,6 +99,49 @@ public sealed class RenderScriptCatalog : IRenderScriptCatalog
         return template.ToJsonString();
     }
 
+    public IEnumerable<RenderKind> KindsWithMissingScripts(IReadOnlySet<string> availableScripts)
+    {
+        foreach (var kind in Enum.GetValues<RenderKind>())
+        {
+            string type;
+            try
+            {
+                type = _options.Render.DefaultYear >= 2018
+                    ? ModernType(kind, AvatarRigType.R15)
+                    : Path.GetFileNameWithoutExtension(ScriptName(kind));
+            }
+            catch (RenderValidationException)
+            {
+                continue; // Not an RCC thumbnail operation.
+            }
+
+            if (!availableScripts.Contains(type)) yield return kind;
+        }
+    }
+
+    // The RCC "Type" for a kind, independent of a concrete request. Some kinds
+    // change Type with the rig type, so an explicit rig is required.
+    private static string ModernType(RenderKind kind, AvatarRigType rigType) => kind switch
+    {
+        RenderKind.Avatar when rigType == AvatarRigType.R6 => "Avatar",
+        RenderKind.Avatar or RenderKind.Avatar3D => "Avatar_R15_Action",
+        RenderKind.AvatarHeadshot => "Closeup",
+        RenderKind.Asset or RenderKind.Model => "Model",
+        RenderKind.Texture => "Image",
+        RenderKind.TeeShirt => "Image",
+        RenderKind.Hat => "Hat",
+        RenderKind.Head => "Head",
+        RenderKind.Mesh => "Mesh",
+        RenderKind.MeshPart => "MeshPart",
+        RenderKind.Package => "Package",
+        RenderKind.BodyPart => "BodyPart",
+        RenderKind.Clothing => "Shirt",
+        RenderKind.Place => "Place",
+        RenderKind.Animation => "AvatarAnimation",
+        RenderKind.AnimationSilhouette => "AnimationSilhouette",
+        _ => throw new RenderValidationException($"Render kind {kind} is not an RCC JSON thumbnail operation"),
+    };
+
     private static string ModernTemplateName(RenderKind kind) => kind switch
     {
         RenderKind.Avatar or RenderKind.Avatar3D => "Avatar.json",
