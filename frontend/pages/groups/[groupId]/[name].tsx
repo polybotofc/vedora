@@ -55,7 +55,7 @@ const GamePage = () => {
         <>
             {group !== null && group !== undefined && (
                 <Head>
-                    <title>{group.name} - Vedora</title>
+                    <title>{`${group.name} - Vedora`}</title>
                     <meta property="og:title" content={group.name} />
                     <meta property="og:url" content={`https://vedora.xyz/groups/${group.id}/--`} />
                     <meta property="og:type" content="profile" />

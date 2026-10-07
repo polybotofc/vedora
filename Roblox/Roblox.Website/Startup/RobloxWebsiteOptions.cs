@@ -80,9 +80,9 @@ public sealed class RobloxDiscordOptions
     public string BotToken { get; set; } = string.Empty;
     public string LogChannelId { get; set; } = string.Empty;
     public string LockChannelId { get; set; } = string.Empty;
-    public string ApplicationCallback { get; set; } = string.Empty;
-    public string LoginCallback { get; set; } = string.Empty;
-    public string LinkCallback { get; set; } = string.Empty;
+    public string ApplicationCallback { get; set; } = "/api/discordapplicationcallback";
+    public string LoginCallback { get; set; } = "/api/logincallback";
+    public string LinkCallback { get; set; } = "/bot/verify";
 }
 
 public sealed class RobloxInvisibleTurnstileOptions

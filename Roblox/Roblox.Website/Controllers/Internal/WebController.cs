@@ -50,6 +50,8 @@ public class WebController : ControllerBase
     [HttpGetBypass("auth/discord-login")]
     public IActionResult DiscordLogin()
     {
+        if (string.IsNullOrWhiteSpace(Configuration.DiscordClientId))
+            return Content("Discord login is not configured on this server. Set Discord__ClientId and Discord__ClientSecret.");
         return Redirect($"https://discord.com/oauth2/authorize?client_id={Configuration.DiscordClientId}&response_type=code&redirect_uri={HttpUtility.UrlEncode(Configuration.BaseUrl)}%2Fapi%2Flogincallback&scope=identify+guilds.join");
     }
 
@@ -99,6 +101,8 @@ public class WebController : ControllerBase
         }
         if (code is null)
         {
+            if (string.IsNullOrWhiteSpace(Configuration.DiscordClientId))
+                return Content("Discord signup verification is not configured on this server. Set Discord__ClientId and Discord__ClientSecret.");
             return Redirect($"https://discord.com/oauth2/authorize?client_id={Configuration.DiscordClientId}&response_type=code&redirect_uri={Configuration.DiscordApplicationCallback}&scope=identify+guilds.join");
         }
         var discordApi = await DiscordApi.CreateFromOAuthCode(code, Configuration.DiscordApplicationCallback);

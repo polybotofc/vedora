@@ -7,7 +7,7 @@ const ItemPage = ({ name, description, assetId, ...props }) => {
     <>
       {name && (
         <Head>
-          <title>{name} - Vedora</title>
+          <title>{`${name} - Vedora`}</title>
           <meta property="og:title" content={name} />
           <meta property="og:url" content={`https://vedora.xyz/library/${assetId}/--`} />
           <meta property="og:type" content="profile" />

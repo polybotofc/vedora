@@ -18,6 +18,8 @@ x-dotnet-dev-env: &dotnet-dev-env
   RccAuthorization: "VedoraRcc-dev-secret"
   Jwt__Sessions: "VedoraSessions-dev-secret"
   BotAuthorization: "VedoraBot-dev-secret"
+  Discord__ClientId: "${DISCORD_CLIENT_ID:-}"
+  Discord__ClientSecret: "${DISCORD_CLIENT_SECRET:-}"
   Discord__BotToken: ""
   Discord__GuildId: ""
   Discord__LogChannelId: ""
