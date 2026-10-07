@@ -23,6 +23,7 @@ public sealed class RenderService : IRenderService, IDisposable
     private readonly ILogger<RenderService> _logger;
     private readonly ConcurrentDictionary<string, Lazy<Task<RenderOutput>>> _inflight = new(StringComparer.Ordinal);
     private int _workerCount;
+    private int _warming;
     private int _running;
     private int _conversionQueued;
     private long _completed;
@@ -221,23 +222,34 @@ public sealed class RenderService : IRenderService, IDisposable
 
     public async Task EnsureWarmWorkersAsync(CancellationToken cancellationToken)
     {
-        int desired;
-        lock (_workersGate)
+        // The cleanup service ticks every few seconds while a failed start can
+        // block for the whole startup timeout, so skip overlapping attempts
+        // instead of launching a fresh batch of RCC processes each tick.
+        if (Interlocked.CompareExchange(ref _warming, 1, 0) != 0) return;
+        try
         {
-            desired = Math.Min(_options.Render.MinimumWarmWorkers - _idle.Count,
-                _options.Render.MaxWorkers - _workerCount);
-        }
-        if (desired <= 0) { _ready = true; return; }
+            int desired;
+            lock (_workersGate)
+            {
+                desired = Math.Min(_options.Render.MinimumWarmWorkers - _idle.Count,
+                    _options.Render.MaxWorkers - _workerCount);
+            }
+            if (desired <= 0) { _ready = true; return; }
 
-        var starts = Enumerable.Range(0, desired)
-            .Select(async _ => (await AcquireWorkerAsync(cancellationToken)).Worker).ToArray();
-        try { await Task.WhenAll(starts); }
+            var starts = Enumerable.Range(0, desired)
+                .Select(async _ => (await AcquireWorkerAsync(cancellationToken)).Worker).ToArray();
+            try { await Task.WhenAll(starts); }
+            finally
+            {
+                foreach (var start in starts.Where(start => start.IsCompletedSuccessfully))
+                    ReleaseWorker(start.Result, true);
+            }
+            lock (_workersGate) _ready = _idle.Count >= Math.Min(_options.Render.MinimumWarmWorkers, _options.Render.MaxWorkers);
+        }
         finally
         {
-            foreach (var start in starts.Where(start => start.IsCompletedSuccessfully))
-                ReleaseWorker(start.Result, true);
+            Interlocked.Exchange(ref _warming, 0);
         }
-        lock (_workersGate) _ready = _idle.Count >= Math.Min(_options.Render.MinimumWarmWorkers, _options.Render.MaxWorkers);
     }
 
     public RenderStatistics GetStatistics()
@@ -284,6 +296,9 @@ public sealed class RenderService : IRenderService, IDisposable
         return expired.Count;
     }
 
+    private string BuildLaunchArguments(int port) =>
+        RccLaunchArguments.Build(_options.Render.LaunchArguments, port);
+
     private async Task<(RenderWorker Worker, bool Cold)> AcquireWorkerAsync(CancellationToken cancellationToken)
     {
         List<RenderWorker> dead = [];
@@ -311,12 +326,14 @@ public sealed class RenderService : IRenderService, IDisposable
 
         var port = _ports.Allocate(_options.Ports.Rcc);
         IManagedProcess? process = null;
+        var command = string.Empty;
         try
         {
             var executable = Path.Combine(_options.RccServiceRoot,
                 $"RCCService{_options.Render.DefaultYear}", "RCCService.exe");
             var startWatch = Stopwatch.StartNew();
-            process = _launcher.Start(executable, $"-console {port}", Path.GetDirectoryName(executable));
+            command = BuildLaunchArguments(port);
+            process = _launcher.Start(executable, command, Path.GetDirectoryName(executable));
             await _readiness.WaitUntilAvailableAsync(port,
                 TimeSpan.FromSeconds(_options.Processes.StartupTimeoutSeconds), cancellationToken);
             var soap = _soapFactory.Create(port);
@@ -329,6 +346,11 @@ public sealed class RenderService : IRenderService, IDisposable
         }
         catch
         {
+            _logger.LogWarning("RCCService worker failed to start. Executable: {Executable}; Args: {Command}",
+                Path.Combine(_options.RccServiceRoot, $"RCCService{_options.Render.DefaultYear}", "RCCService.exe"),
+                command);
+            if (process is not null && process.TryGetOutput(out var rccOutput))
+                _logger.LogWarning("RCCService worker launch output: {Output}", rccOutput);
             process?.KillTree(); process?.Dispose(); _ports.Release(port);
             lock (_workersGate) _workerCount--;
             throw;

@@ -177,6 +177,7 @@ public sealed class RccProcessPoolTests
         public bool Killed { get; private set; }
         public bool HasExited => Killed;
         public void KillTree() => Killed = true;
+        public bool TryGetOutput(out string output) { output = string.Empty; return false; }
         public void Dispose() { }
     }
 

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Text;
 
 namespace Vedora.RccServiceArbiter.Processes;
 
@@ -13,11 +14,27 @@ public sealed class RccProcessLauncher : IRccProcessLauncher
                 UseShellExecute = false,
                 CreateNoWindow = true,
                 WindowStyle = ProcessWindowStyle.Hidden,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
                 WorkingDirectory = string.IsNullOrWhiteSpace(workingDirectory)
                     ? AppContext.BaseDirectory
                     : workingDirectory,
             },
         };
+
+        var output = new StringBuilder();
+        var outputGate = new object();
+        void Capture(object _, DataReceivedEventArgs args)
+        {
+            if (string.IsNullOrEmpty(args.Data)) return;
+            lock (outputGate)
+            {
+                if (output.Length < 64 * 1024) output.AppendLine(args.Data);
+            }
+        }
+
+        process.OutputDataReceived += Capture;
+        process.ErrorDataReceived += Capture;
 
         if (!process.Start())
         {
@@ -25,16 +42,23 @@ public sealed class RccProcessLauncher : IRccProcessLauncher
             throw new InvalidOperationException($"Failed to start process {fileName}");
         }
 
-        return new ManagedProcess(process);
+        process.BeginOutputReadLine();
+        process.BeginErrorReadLine();
+
+        return new ManagedProcess(process, output, outputGate);
     }
 
     private sealed class ManagedProcess : IManagedProcess
     {
         private readonly Process _process;
+        private readonly StringBuilder _output;
+        private readonly object _outputGate;
 
-        public ManagedProcess(Process process)
+        public ManagedProcess(Process process, StringBuilder output, object outputGate)
         {
             _process = process;
+            _output = output;
+            _outputGate = outputGate;
         }
 
         public int? Id => _process.Id;
@@ -58,12 +82,20 @@ public sealed class RccProcessLauncher : IRccProcessLauncher
         {
             try
             {
-                Console.WriteLine("Attempting to kill");
                 _process.Kill(entireProcessTree: true);
                 _process.WaitForExit(5000);
             }
             catch (InvalidOperationException)
             {
+            }
+        }
+
+        public bool TryGetOutput(out string output)
+        {
+            lock (_outputGate)
+            {
+                output = _output.ToString().Trim();
+                return output.Length > 0;
             }
         }
 

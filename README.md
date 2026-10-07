@@ -51,3 +51,17 @@ Requirements:
 
 The public domain defaults to `https://vedora.xyz`.
 
+### RCCService launch arguments
+
+The arbiter starts `RCCService.exe` with `Arbiter:Render:LaunchArguments`
+(`{port}` is replaced with the allocated SOAP port). The default,
+`-Console -port {port}`, matches the standard 2021E RCCService build. If your
+RCCService build takes the port differently, change this value instead of the
+code. On a failed start the arbiter logs the exact command line and RCC's
+captured stdout/stderr.
+
+If RCC never becomes ready, run `RCCService\diagnose-rcc.bat` from the
+repository root. It launches RCCService directly and reports the TCP port it
+actually opens, so you can compare it with the port range in
+`Arbiter:Ports:Rcc`.
+
