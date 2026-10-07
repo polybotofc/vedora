@@ -66,6 +66,19 @@ When you add or change a controller route, update the matching route case file
   HTTP 500 for every SOAP call.
 - `RCCService/RCCService2021/AppSettings.xml` `<BaseUrl>` points at
   `https://vedora.xyz`. The RCC 2021 binary reads its base URL from there.
+- Renders do **not** use the JSON in `RenderScripts/Modern`. RCC 2021 loads a
+  Lua script named after the thumbnail `Type` from
+  `RCCService/RCCService2021/internalscripts/thumbnails/<Type>.lua` and passes
+  the arbiter's `Arguments` as `...`. The stock 2021 install ships no
+  `internalscripts`, so those files are committed under
+  `RCCService/RCCService2021/internalscripts`. If a `Type` has no matching
+  `.lua`, that render fails with `Failed to open script file` and the website
+  shows the generic "3D Render not available" message. Add a script for any new
+  `Type`, and run `RCCService/diagnose-render.bat` (arbiter up) to see the real
+  RCC error surface.
+- `Avatar` (2D body shot) and `Avatar3D` both use `Type=Avatar_R15_Action`; only
+  the output format differs (`PNG` vs `OBJ`). Modifying the avatar render path
+  therefore affects 2D and 3D together.
 - `Roblox/Roblox.ApiProxy/appsettings.json` is committed (routes for
   `*.vedora.xyz`). Keep secrets in server-local `appsettings.Production.json`.
 - Do not restyle the frontend. Branding/domain replacements must not change
