@@ -97,6 +97,49 @@ public class RobloxSessionCookieWriterTests
         }
     }
 
+    [Fact]
+    public void AppendSessionCookiesForToken_OmitsDomainWhenShortBaseUrlHasPort()
+    {
+        var previousShortBaseUrl = Roblox.Configuration.ShortBaseUrl;
+        try
+        {
+            Roblox.Configuration.ShortBaseUrl = "localhost:5200";
+            var context = InfrastructureTestHelpers.Context();
+            context.Request.Host = new HostString("localhost:5200");
+
+            RobloxSessionCookieWriter.AppendSessionCookiesForToken(context, "session-token");
+
+            var cookies = GetSetCookies(context);
+            Assert.Equal(2, cookies.Count);
+            Assert.All(cookies, cookie => Assert.DoesNotContain("domain=", cookie, StringComparison.OrdinalIgnoreCase));
+        }
+        finally
+        {
+            Roblox.Configuration.ShortBaseUrl = previousShortBaseUrl;
+        }
+    }
+
+    [Fact]
+    public void AppendSessionCookiesForToken_StripsPortFromConfiguredShortBaseUrl()
+    {
+        var previousShortBaseUrl = Roblox.Configuration.ShortBaseUrl;
+        try
+        {
+            Roblox.Configuration.ShortBaseUrl = "vedora.xyz:5200";
+            var context = InfrastructureTestHelpers.Context();
+            context.Request.Host = new HostString("vedora.xyz:5200");
+
+            RobloxSessionCookieWriter.AppendSessionCookiesForToken(context, "session-token");
+
+            var cookies = GetSetCookies(context);
+            Assert.All(cookies, cookie => Assert.Contains("domain=.vedora.xyz", cookie, StringComparison.OrdinalIgnoreCase));
+        }
+        finally
+        {
+            Roblox.Configuration.ShortBaseUrl = previousShortBaseUrl;
+        }
+    }
+
     private static IReadOnlyList<string> GetSetCookies(HttpContext context)
     {
         return context.Response.Headers.SetCookie.Select(cookie => cookie ?? string.Empty).ToList();
