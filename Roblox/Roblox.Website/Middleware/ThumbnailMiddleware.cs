@@ -36,14 +36,14 @@ namespace Roblox.Website.Middleware
 
                 if (normalizedPath.StartsWith("/images/thumbnails/3d/") && File.Exists(filePathWithoutExtension))
                 {
-                    context.Response.ContentType = "application/octet-stream";
+                    context.Response.ContentType = ContentTypeFor(filePathWithoutExtension);
                     await context.Response.SendFileAsync(filePathWithoutExtension);
                     return;
                 }
                 
                 if (File.Exists(filePathWithoutExtension))
                 {
-                    context.Response.ContentType = "image/png";
+                    context.Response.ContentType = ContentTypeFor(filePathWithoutExtension);
                     await context.Response.SendFileAsync(filePathWithoutExtension);
                     return;
                 }
@@ -58,6 +58,15 @@ namespace Roblox.Website.Middleware
             }
 
             await _next(context);
+        }
+
+        private static string ContentTypeFor(string filePath)
+        {
+            var extension = Path.GetExtension(filePath);
+            if (extension.Equals(".json", StringComparison.OrdinalIgnoreCase)) return "application/json";
+            if (extension.Equals(".mtl", StringComparison.OrdinalIgnoreCase)) return "model/mtl";
+            if (extension.Equals(".obj", StringComparison.OrdinalIgnoreCase)) return "model/obj";
+            return "image/png";
         }
 
         private string NormalizePath(string requestPath, string basePath)

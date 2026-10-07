@@ -79,6 +79,16 @@ When you add or change a controller route, update the matching route case file
 - `Avatar` (2D body shot) and `Avatar3D` both use `Type=Avatar_R15_Action`; only
   the output format differs (`PNG` vs `OBJ`). Modifying the avatar render path
   therefore affects 2D and 3D together.
+- Avatar thumbnails honour `IsCdnEnabled`: with the CDN **on** they go to R2 and
+  are linked with `R2StorageService.GetPublicUrl`; with it **off** (the local
+  Windows setup) `Avatar.cs` writes them to `Directories__Thumbnails` and links
+  them under `/images/thumbnails/...`, which `ThumbnailMiddleware` serves from
+  that same directory. Keep both branches in sync — writing only to R2 while the
+  CDN is disabled leaves every render returning an empty result even though the
+  arbiter reported success.
+- `ThumbnailMiddleware` derives the `Content-Type` from the file extension. The
+  3D render JSON must be served as `application/json`, otherwise axios fails to
+  parse the response and the client reports "3D Render not available".
 - `Roblox/Roblox.ApiProxy/appsettings.json` is committed (routes for
   `*.vedora.xyz`). Keep secrets in server-local `appsettings.Production.json`.
 - Do not restyle the frontend. Branding/domain replacements must not change

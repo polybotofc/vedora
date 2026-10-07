@@ -852,6 +852,37 @@ public class AvatarService : ServiceBase, IService {
     private static void Touch3DKey(string r2Key) =>
         _3dLastUsed[r2Key] = DateTime.UtcNow;
 
+    // "images/thumbnails/{...}" keys map onto the served thumbnails directory:
+    // with the CDN enabled files live in R2, otherwise they must be written to
+    // disk because that is what the website's ThumbnailMiddleware serves.
+    private static string ThumbnailKeyToLocalPath(string key)
+    {
+        const string prefix = "images/thumbnails/";
+        var relative = key.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)
+            ? key[prefix.Length..]
+            : Path.GetFileName(key);
+        return Path.Combine(Configuration.ThumbnailsDirectory, relative);
+    }
+
+    private static string ThumbnailKeyToUrl(string key) =>
+        Configuration.IsCdnEnabled ? R2StorageService.GetPublicUrl(key) : "/" + key;
+
+    private static async Task<bool> ThumbnailsExistAsync(R2StorageService r2, params string[] keys)
+    {
+        if (Configuration.IsCdnEnabled)
+            return (await Task.WhenAll(keys.Select(r2.FileExistsAsync))).All(exists => exists);
+        return keys.All(key => File.Exists(ThumbnailKeyToLocalPath(key)));
+    }
+
+    private static async Task WriteThumbnailToDiskAsync(string key, Stream content)
+    {
+        var path = ThumbnailKeyToLocalPath(key);
+        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+        content.Position = 0;
+        await using var file = File.Create(path);
+        await content.CopyToAsync(file);
+    }
+
     /// <summary>
     /// Converts a stored public URL or legacy local path back to its R2 object key.
     /// Handles both "https://cdn.example.com/images/thumbnails/3d/foo"
@@ -872,9 +903,9 @@ public class AvatarService : ServiceBase, IService {
         try
         {
             var r2 = ServiceProvider.GetOrCreate<R2StorageService>();
-            var jsonStream = await r2.GetFileAsync(thumbnail3DKey);
+            var jsonStream = await OpenThumbnailAsync(r2, thumbnail3DKey);
             if (jsonStream is null)
-                throw new FileNotFoundException($"3D thumbnail JSON missing in R2 for hash {avatarHash}.");
+                throw new FileNotFoundException($"3D thumbnail JSON missing for hash {avatarHash}.");
 
             string thumbnail3DJson;
             using (var reader = new StreamReader(jsonStream))
@@ -956,13 +987,7 @@ public class AvatarService : ServiceBase, IService {
 
         if (!forceRedraw)
         {
-            var exists = await Task.WhenAll(
-                r2.FileExistsAsync(headshotKey),
-                r2.FileExistsAsync(thumbnailKey),
-                r2.FileExistsAsync(thumbnail3DKey)
-            );
-
-            if (exists[0] && exists[1] && exists[2])
+            if (await ThumbnailsExistAsync(r2, headshotKey, thumbnailKey, thumbnail3DKey))
             {
                 await UpdateUserAvatarImages(userId, headshotKey, thumbnailKey, thumbnail3DKey);
                 await Update3DRenderModified(userId, avatarHash);
@@ -1020,13 +1045,16 @@ public class AvatarService : ServiceBase, IService {
                 string fileName = extension.Contains("tex_") ? $"{hash}_{extension}" : hash;
                 var key = $"images/thumbnails/3d/{fileName}";
 
-                setUrl(R2StorageService.GetPublicUrl(key));
+                setUrl(ThumbnailKeyToUrl(key));
                 Touch3DKey(key);
 
-                if (!await r2.FileExistsAsync(key))
+                if (!await ThumbnailsExistAsync(r2, key))
                 {
                     using var ms = new MemoryStream(data);
-                    await r2.UploadFileAsync(key, ms, mimeType);
+                    if (Configuration.IsCdnEnabled)
+                        await r2.UploadFileAsync(key, ms, mimeType);
+                    else
+                        await WriteThumbnailToDiskAsync(key, ms);
                 }
             }
 
@@ -1059,7 +1087,10 @@ public class AvatarService : ServiceBase, IService {
             byte[] jsonBytes = JsonSerializer.SerializeToUtf8Bytes(thumbnail3DJson);
             using (var jsonMs = new MemoryStream(jsonBytes))
             {
-                await r2.UploadFileAsync(thumbnail3DKey, jsonMs, "application/json");
+                if (Configuration.IsCdnEnabled)
+                    await r2.UploadFileAsync(thumbnail3DKey, jsonMs, "application/json");
+                else
+                    await WriteThumbnailToDiskAsync(thumbnail3DKey, jsonMs);
             }
 
             await UpdateUserAvatarImages(userId, headshotKey, thumbnailKey, thumbnail3DKey);
@@ -1070,11 +1101,26 @@ public class AvatarService : ServiceBase, IService {
         }
     }
 
+    private static async Task<Stream?> OpenThumbnailAsync(R2StorageService r2, string key)
+    {
+        if (Configuration.IsCdnEnabled)
+            return await r2.GetFileAsync(key);
+        var path = ThumbnailKeyToLocalPath(key);
+        return File.Exists(path)
+            ? new MemoryStream(await File.ReadAllBytesAsync(path))
+            : null;
+    }
+
     private async Task ProcessAndUploadImageAsync(R2StorageService r2, string imageResult, int size, string key)
     {
         using var stream = await RenderingHandler.ResizeImage<MemoryStream, string>(imageResult, size, size);
         stream.Position = 0;
-        await r2.UploadFileAsync(key, stream, "image/png");
+        if (Configuration.IsCdnEnabled)
+        {
+            await r2.UploadFileAsync(key, stream, "image/png");
+            return;
+        }
+        await WriteThumbnailToDiskAsync(key, stream);
     }
     
 
@@ -1102,11 +1148,17 @@ public class AvatarService : ServiceBase, IService {
 
     private static async Task Clear3DStaleFiles()
     {
-        Writer.Info(LogGroup.ClearThumbnail3DFolder, "Clearing stale 3D thumbnails from R2 (older than 5 days)...");
+        var target = Configuration.IsCdnEnabled ? "R2" : "local disk";
+        Writer.Info(LogGroup.ClearThumbnail3DFolder, $"Clearing stale 3D thumbnails from {target} (older than 5 days)...");
         try
         {
             var r2 = ServiceProvider.GetOrCreate<R2StorageService>();
-            var keys = await r2.ListFilesAsync("images/thumbnails/3d/");
+            var keys = Configuration.IsCdnEnabled
+                ? (IEnumerable<string>)await r2.ListFilesAsync("images/thumbnails/3d/")
+                : Directory.Exists(Path.Combine(Configuration.ThumbnailsDirectory, "3d"))
+                    ? Directory.GetFiles(Path.Combine(Configuration.ThumbnailsDirectory, "3d"))
+                        .Select(file => "images/thumbnails/3d/" + Path.GetFileName(file))
+                    : [];
             var fiveDaysAgo = DateTime.UtcNow.Subtract(TimeSpan.FromDays(5));
             var deleted = 0;
 
@@ -1115,25 +1167,39 @@ public class AvatarService : ServiceBase, IService {
                 var lastUsed = _3dLastUsed.GetValueOrDefault(key, DateTime.MinValue);
                 if (lastUsed >= fiveDaysAgo) continue;
 
+                DateTime lastModified;
                 if (!_3dLastUsed.ContainsKey(key))
                 {
-                    var meta = await r2.GetFileMetadataAsync(key);
-                    if (meta != null && meta.LastModified.ToUniversalTime() >= fiveDaysAgo)
+                    if (Configuration.IsCdnEnabled)
                     {
-                        _3dLastUsed[key] = meta.LastModified;
+                        var meta = await r2.GetFileMetadataAsync(key);
+                        lastModified = meta?.LastModified.ToUniversalTime() ?? DateTime.MinValue;
+                    }
+                    else
+                    {
+                        var path = ThumbnailKeyToLocalPath(key);
+                        lastModified = File.Exists(path) ? File.GetLastWriteTimeUtc(path) : DateTime.MinValue;
+                    }
+
+                    if (lastModified >= fiveDaysAgo)
+                    {
+                        _3dLastUsed[key] = lastModified;
                         continue;
                     }
                 }
 
                 Writer.Info(LogGroup.ClearThumbnail3DFolder,
                     $"Deleting stale 3D thumbnail {key}, last used: {lastUsed:u}");
-                await r2.DeleteFileAsync(key);
+                if (Configuration.IsCdnEnabled)
+                    await r2.DeleteFileAsync(key);
+                else
+                    File.Delete(ThumbnailKeyToLocalPath(key));
                 _3dLastUsed.TryRemove(key, out var _);
                 deleted++;
             }
 
             Writer.Info(LogGroup.ClearThumbnail3DFolder,
-                $"Successfully cleared {deleted} stale 3D thumbnails from R2.");
+                $"Successfully cleared {deleted} stale 3D thumbnails from {target}.");
         }
         catch (Exception ex)
         {
