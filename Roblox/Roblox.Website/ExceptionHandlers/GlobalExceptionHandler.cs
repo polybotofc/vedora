@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Roblox.Exceptions;
+using Roblox.Exceptions.Services.Users;
 using Roblox.Libraries.Exceptions;
 using Roblox.Services.Exceptions;
 using Roblox.Website.WebsiteModels;
@@ -68,6 +69,11 @@ public sealed class GlobalExceptionHandler : IExceptionHandler
             case RecordNotFoundException:
                 code = HttpStatusCode.BadRequest;
                 errorList.Add(new() { code = 0, message = "NotFound" });
+                break;
+
+            case NotEnoughRobuxForPurchaseException:
+                code = HttpStatusCode.BadRequest;
+                errorList.Add(new() { code = 0, message = "You do not have enough Robux to complete this purchase." });
                 break;
 
             case RobloxException ex:
