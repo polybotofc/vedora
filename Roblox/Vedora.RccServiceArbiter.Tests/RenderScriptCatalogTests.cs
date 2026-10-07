@@ -154,6 +154,49 @@ public sealed class RenderScriptCatalogTests
         Assert.Equal(10, arguments.GetArrayLength());
     }
 
+    // RCCService loads <Type>.lua from RCCService<Year>/internalscripts/thumbnails,
+    // not the JSON in this assembly. A 2021 build ships no scripts, so a missing
+    // file makes every render of that kind fail with "Failed to open script file".
+    [Fact]
+    public void EveryModernRenderTypeHasThumbnailScript()
+    {
+        var repoRoot = FindRepositoryRoot();
+        if (repoRoot == null) return; // Repository layout is not available (packaged test run).
+
+        var templates = Directory.GetFiles(
+            Path.Combine(repoRoot, "Roblox", "Vedora.RccServiceArbiter", "RenderScripts", "Modern"), "*.json");
+        Assert.NotEmpty(templates);
+
+        var thumbnails = Path.Combine(repoRoot, "RCCService", "RCCService2021", "internalscripts", "thumbnails");
+        Assert.True(Directory.Exists(thumbnails), $"Missing RCC thumbnail scripts at {thumbnails}");
+
+        var available = Directory.GetFiles(thumbnails, "*.lua")
+            .Select(file => Path.GetFileNameWithoutExtension(file)!)
+            .ToHashSet(StringComparer.Ordinal);
+
+        var missing = new List<string>();
+        foreach (var template in templates)
+        {
+            using var document = JsonDocument.Parse(File.ReadAllText(template));
+            var type = document.RootElement.GetProperty("Settings").GetProperty("Type").GetString()!;
+            if (!available.Contains(type)) missing.Add($"{Path.GetFileName(template)} -> {type}.lua");
+        }
+
+        Assert.True(missing.Count == 0, "RCC 2021 has no thumbnail script for: " + string.Join(", ", missing));
+    }
+
+    private static string? FindRepositoryRoot()
+    {
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+        while (directory != null)
+        {
+            if (Directory.Exists(Path.Combine(directory.FullName, "RCCService", "RCCService2021", "internalscripts")))
+                return directory.FullName;
+            directory = directory.Parent;
+        }
+        return null;
+    }
+
     private static RenderScriptCatalog CreateCatalog() => new(Options.Create(new ArbiterOptions
     { BaseUrl = "https://example.test", Render = new ArbiterRenderOptions { DefaultYear = 2020 } }));
 }
