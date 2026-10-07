@@ -72,7 +72,7 @@ public sealed class ArbiterRenderOptions
     // allocated for the worker. Different RCCService builds take the port
     // differently (the 2021E build uses "-port", older builds accept it
     // positionally after "-Console"), so this is configurable.
-    public string LaunchArguments { get; set; } = "-Console -port {port}";
+    public string LaunchArguments { get; set; } = "-Console -Verbose -SettingsFile \"DevSettingsFile.json\" -port {port}";
 }
 
 public sealed class ArbiterPortOptions

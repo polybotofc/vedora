@@ -56,9 +56,13 @@ When you add or change a controller route, update the matching route case file
   `Vedora.RccServiceArbiter/Configuration/RccPathResolver.cs` so it works
   regardless of the working directory.
 - RCC launch flags come from `Arbiter:Render:LaunchArguments` (built by
-  `Processes/RccLaunchArguments.cs`, `{port}` = allocated SOAP port). Keep the
-  default `-Console -port {port}` unless a different RCCService build needs
-  other flags; do not hardcode the command line again.
+  `Processes/RccLaunchArguments.cs`, `{port}` = allocated SOAP port). The
+  default loads `DevSettingsFile.json`, which sets
+  `DebugCrashOnFailToLoadClientSettings: false` so RCC does not crash when it
+  cannot fetch Roblox client settings over the network. Keep that flag false;
+  do not hardcode the command line again.
+- `RCCService/RCCService2021/AppSettings.xml` `<BaseUrl>` points at
+  `https://vedora.xyz`. The RCC 2021 binary reads its base URL from there.
 - `Roblox/Roblox.ApiProxy/appsettings.json` is committed (routes for
   `*.vedora.xyz`). Keep secrets in server-local `appsettings.Production.json`.
 - Do not restyle the frontend. Branding/domain replacements must not change

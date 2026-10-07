@@ -14,9 +14,9 @@ public class RccLaunchArgumentsTests
     [Fact]
     public void Build_FallsBackToDefaultTemplateWhenBlank()
     {
-        Assert.Equal("-Console -port 1234", RccLaunchArguments.Build("", 1234));
-        Assert.Equal("-Console -port 1234", RccLaunchArguments.Build(null, 1234));
-        Assert.Equal("-Console -port 1234", RccLaunchArguments.Build("   ", 1234));
+        Assert.Equal("-Console -Verbose -SettingsFile \"DevSettingsFile.json\" -port 1234", RccLaunchArguments.Build("", 1234));
+        Assert.Equal("-Console -Verbose -SettingsFile \"DevSettingsFile.json\" -port 1234", RccLaunchArguments.Build(null, 1234));
+        Assert.Equal("-Console -Verbose -SettingsFile \"DevSettingsFile.json\" -port 1234", RccLaunchArguments.Build("   ", 1234));
     }
 
     [Fact]

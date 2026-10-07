@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Settings>
     <ContentFolder>Content</ContentFolder>
-    <BaseUrl>https://localhost:2015/</BaseUrl>
+    <BaseUrl>https://vedora.xyz</BaseUrl>
 </Settings>
