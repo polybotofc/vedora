@@ -84,8 +84,13 @@ When you add or change a controller route, update the matching route case file
   `Type`, and run `RCCService/diagnose-render.bat` (arbiter up) to see the real
   RCC error surface.
 - `Avatar` (2D body shot) and `Avatar3D` both use `Type=Avatar_R15_Action`; only
-  the output format differs (`PNG` vs `OBJ`). Modifying the avatar render path
+  the output format differs (`PNG` vs `obj`). Modifying the avatar render path
   therefore affects 2D and 3D together.
+- The `Avatar3D` output format must be the lowercase `obj`. RCC matches the OBJ
+  token case-sensitively (`exportScene` when `fileType == "obj"`, otherwise
+  `renderThumb` with the `JPG`/`JPEG`/`TGA`/`PNG` encoders). Sending `OBJ` or
+  `Obj` matches neither path, so RCC returns no data and `thumbnail_3d_url`
+  stays `NULL` while 2D renders still work.
 - Avatar thumbnails honour `IsCdnEnabled`: with the CDN **on** they go to R2 and
   are linked with `R2StorageService.GetPublicUrl`; with it **off** (the local
   Windows setup) `Avatar.cs` writes them to `Directories__Thumbnails` and links
