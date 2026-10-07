@@ -344,9 +344,9 @@ public sealed class RenderService : IRenderService, IDisposable
                 port, startWatch.Elapsed.TotalMilliseconds);
             return (new RenderWorker(port, process, soap), true);
         }
-        catch
+        catch (Exception ex)
         {
-            _logger.LogWarning("RCCService worker failed to start. Executable: {Executable}; Args: {Command}",
+            _logger.LogWarning(ex, "RCCService worker failed to start. Executable: {Executable}; Args: {Command}",
                 Path.Combine(_options.RccServiceRoot, $"RCCService{_options.Render.DefaultYear}", "RCCService.exe"),
                 command);
             if (process is not null && process.TryGetOutput(out var rccOutput))

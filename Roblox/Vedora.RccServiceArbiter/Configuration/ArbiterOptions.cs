@@ -12,8 +12,11 @@ public sealed class ArbiterOptions
 
     public string ServiceUrl { get; set; } = string.Empty;
 
+    // RCCService dispatches SOAP methods in its WSDL namespace
+    // (http://roblox.com/), so this must stay roblox.com. Anything else makes
+    // RCC answer every SOAP call with HTTP 500.
     [Required]
-    public string SoapServiceUrl { get; set; } = "vedora.xyz";
+    public string SoapServiceUrl { get; set; } = "roblox.com";
 
     [Required]
     public string RccServiceRoot { get; set; } = "RCCService";
