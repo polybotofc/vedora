@@ -47,12 +47,16 @@ echo Notes:
 echo  - If step 2 fails too, the problem is not specific to 3D: RCC itself is
 echo    failing to render. Read the arbiter window for the RCC output.
 echo  - If step 2 works and step 3 fails, the 3D OBJ operation is the problem.
+echo  - Avatar3D returns JSON model data (OBJ/MTL/texture URLs), not a picture,
+echo    so diag-render-Avatar3D.json is what you inspect. Open its obj/mtl/
+echo    textures URLs to confirm the render produced a model.
 goto :done
 
 rem ---------------------------------------------------------------
 rem :render <label> <jsonBody>
-rem  POSTs to /render, saves the body to diag-render-<label>.txt and
-rem  prints the HTTP status plus the arbiter error message (if any).
+rem  POSTs to /render, saves the raw response to diag-render-<label>.txt,
+rem  then decodes the base64 Data field into diag-render-<label>.<png|jpg|json|bin>
+rem  and prints the HTTP status plus the arbiter error message (if any).
 rem ---------------------------------------------------------------
 :render
 echo   POST /render  ^(%~1^)
@@ -60,18 +64,26 @@ powershell -NoProfile -Command ^
     "$body = '%~2';" ^
     "try {" ^
     "  $r = Invoke-WebRequest -UseBasicParsing -Method Post -Uri '%ARBITER%/render' -Headers @{ 'rblx-authorization' = '%AUTH%' } -ContentType 'application/json' -Body $body -TimeoutSec 120;" ^
-    "  Set-Content -Path '%~1-render.txt' -Value $r.Content;" ^
-    "  Write-Host ('  [OK] HTTP ' + $r.StatusCode + ' - response saved to %~1-render.txt');" ^
+    "  Set-Content -Path 'diag-render-%~1.txt' -Value $r.Content;" ^
+    "  Write-Host ('  [OK] HTTP ' + $r.StatusCode + ' - raw response saved to diag-render-%~1.txt');" ^
     "  $d = $r.Content | ConvertFrom-Json;" ^
-    "  if ($d.Data) { Write-Host ('  ContentType: ' + $d.ContentType + ' - base64 length: ' + $d.Data.Length) };" ^
+    "  if ($d.Data) {" ^
+    "    $ct = [string]$d.ContentType;" ^
+    "    $ext = 'bin';" ^
+    "    if ($ct -match 'png') { $ext = 'png' } elseif ($ct -match 'jpe?g') { $ext = 'jpg' } elseif ($ct -match 'json') { $ext = 'json' };" ^
+    "    $out = Join-Path (Get-Location).Path ('diag-render-%~1.' + $ext);" ^
+    "    [IO.File]::WriteAllBytes($out, [Convert]::FromBase64String([string]$d.Data));" ^
+    "    Write-Host ('  ContentType: ' + $ct + ' - base64 length: ' + $d.Data.Length);" ^
+    "    Write-Host ('  Data saved to ' + $out);" ^
+    "  } else { Write-Host '  [WARN] Response has no Data field.' }" ^
     "} catch {" ^
     "  $resp = $_.Exception.Response;" ^
     "  if ($resp) {" ^
     "    $status = [int]$resp.StatusCode;" ^
     "    $reader = New-Object System.IO.StreamReader($resp.GetResponseStream());" ^
     "    $text = $reader.ReadToEnd();" ^
-    "    Set-Content -Path '%~1-render.txt' -Value $text;" ^
-    "    Write-Host ('  [FAIL] HTTP ' + $status + ' - response saved to %~1-render.txt');" ^
+    "    Set-Content -Path 'diag-render-%~1.txt' -Value $text;" ^
+    "    Write-Host ('  [FAIL] HTTP ' + $status + ' - response saved to diag-render-%~1.txt');" ^
     "    Write-Host ('  ' + $text);" ^
     "  } else { Write-Host ('  [FAIL] ' + $_.Exception.Message) }" ^
     "}"
