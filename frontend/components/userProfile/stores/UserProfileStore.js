@@ -40,12 +40,11 @@ const UserProfileStore = createContainer(() => {
     
     const feedback = FeedbackStore.useContainer();
     
-    async function GetUserThumb3D(userId) {
-        await setUserAv3D(null);
+    async function GetUserThumb3D(userId, cancelled = () => false) {
         let attempts = 0;
         let stopwatch = new Stopwatch();
         stopwatch.Start();
-        while (attempts <= 10 && userAv3D === null) {
+        while (!cancelled() && attempts <= 10 && userAv3D === null) {
             let thumbnail = await multiGetUserThumbnails3D({userIds: [userId]})
                 .then(result => result[0]);
             if (thumbnail.state === "Completed" && typeof thumbnail.imageUrl === "string") {
@@ -62,6 +61,7 @@ const UserProfileStore = createContainer(() => {
             await wait(1);
         }
         stopwatch.Stop();
+        if (cancelled()) return;
         if (attempts > 10 && userAv3D == null) {
             feedback.addFeedback("Could not get this user's 3D avatar render. Please try again later.", FeedbackType.ERROR);
         } else {
@@ -91,14 +91,21 @@ const UserProfileStore = createContainer(() => {
             userId,
         }).then(setIsFollowing);
         getUserConnections({ userId, returnUrls: true }).then(setUserConns);
-        GetUserThumb3D(userId);
     }, [userId]);
-    
+
+    // Runs once per user. It used to be triggered by the `userAv3D` state as
+    // well, so each poll that set the render (and each render that was still
+    // null) started another concurrent 10-attempt loop against
+    // /apisite/thumbnails/v1/users/avatar-3d.
     useEffect(() => {
-        if (userAv3D === null) {
-            GetUserThumb3D(userId);
-        }
-    }, [userAv3D]);
+        if (!userId) return;
+        setUserAv3D(null);
+        let cancelled = false;
+        GetUserThumb3D(userId, () => cancelled).then();
+        return () => {
+            cancelled = true;
+        };
+    }, [userId]);
     
     useEffect(() => {
         return () => {

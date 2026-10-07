@@ -4,13 +4,11 @@ using Roblox.ServiceDefaults;
 using Roblox.Services.Api.HostedServices;
 using Roblox.Services.App.FeatureFlags;
 using Roblox.Web.Infrastructure;
-using Roblox.Web.Infrastructure.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddRobloxServiceDefaults("Roblox.Services.Api", ServiceExposure.InternalService);
 await FeatureFlags.RefreshOnceAsync();
-await RobloxIpHasher.InitializeIpHashSetupAsync();
 
 builder.Services.AddHostedService<FeatureFlagRefreshHostedService>();
 builder.Services.AddControllers(options =>
@@ -31,7 +29,7 @@ builder.Services.Configure<FormOptions>(options =>
 
 var app = builder.Build();
 
-app.UseRobloxServiceDefaults(ServiceExposure.InternalService);
+await app.UseRobloxServiceDefaults(ServiceExposure.InternalService);
 app.MapControllers();
 
 app.Run();

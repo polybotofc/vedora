@@ -246,7 +246,19 @@ public class GamesController : RobloxControllerBase
     public async Task<IEnumerable<PlaceEntry>> MultiGetPlaceDetails(string placeIds)
     {
         FeatureFlags.FeatureCheck(FeatureFlag.GamesEnabled);
-        return await services.games.MultiGetPlaceDetails(placeIds.Split(",").Select(long.Parse));
+        // The web client calls this before it knows any ids (for example a profile
+        // with no games), sending an empty placeIds. Parsing that with long.Parse
+        // threw, so treat blank/non-numeric ids as "no places" and return [].
+        var ids = new List<long>();
+        foreach (var rawId in (placeIds ?? string.Empty).Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        {
+            if (long.TryParse(rawId, out var id))
+            {
+                ids.Add(id);
+            }
+        }
+
+        return await services.games.MultiGetPlaceDetails(ids);
     }
 
     [HttpGet("/v1/games/votes")]

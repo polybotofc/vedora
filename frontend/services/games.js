@@ -111,10 +111,12 @@ export const launchGameFromJobId = async ({placeId, jobId}) => {
 }
 
 export const multiGetPlaceDetails = ({placeIds}) => {
+    if (!Array.isArray(placeIds) || placeIds.length === 0) return Promise.resolve([]);
     return request('GET', getFullUrl('games', `/v1/games/multiget-place-details?placeIds=${encodeURIComponent(placeIds.join(','))}`)).then(d => d.data);
 }
 
 export const multiGetUniverseDetails = ({universeIds}) => {
+    if (!Array.isArray(universeIds) || universeIds.length === 0) return Promise.resolve([]);
     return request('GET', getFullUrl('games', `/v1/games?universeIds=${encodeURIComponent(universeIds.join(','))}`)).then(d => d.data.data);
 }
 

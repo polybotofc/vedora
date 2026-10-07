@@ -18,7 +18,7 @@ builder.Services.Configure<FormOptions>(options =>
 
 var app = builder.Build();
 
-app.UseRobloxServiceDefaults(ServiceExposure.InternalService);
+await app.UseRobloxServiceDefaults(ServiceExposure.InternalService);
 app.MapControllers();
 
 app.Run();
