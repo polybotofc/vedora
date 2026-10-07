@@ -1573,28 +1573,38 @@ public class GroupsService : ServiceBase, IService
             return fileName;
         }
 
-        var baseUrl = string.IsNullOrWhiteSpace(Configuration.CdnBaseUrl)
-            ? "https://cdn.vedora.xyz/"
-            : Configuration.CdnBaseUrl;
-
-        baseUrl = baseUrl.TrimEnd('/') + "/";
-
         if (fileName.StartsWith('/'))
         {
             fileName = fileName[1..];
         }
 
+        string relativePath;
         if (fileName.StartsWith("images/", StringComparison.OrdinalIgnoreCase))
         {
-            return baseUrl + fileName;
+            relativePath = fileName;
         }
-
-        if (fileName.StartsWith("groups/", StringComparison.OrdinalIgnoreCase))
+        else if (fileName.StartsWith("groups/", StringComparison.OrdinalIgnoreCase))
         {
-            return baseUrl + "images/" + fileName;
+            relativePath = "images/" + fileName;
+        }
+        else
+        {
+            relativePath = "images/groups/" + fileName;
         }
 
-        return baseUrl + "images/groups/" + fileName;
+        // Without a CDN icons are served by the website itself; a root-relative
+        // path keeps the request on the current origin (host and localhost).
+        if (!Configuration.IsCdnEnabled)
+        {
+            return "/" + relativePath;
+        }
+
+        var baseUrl = string.IsNullOrWhiteSpace(Configuration.CdnBaseUrl)
+            ? "https://cdn.vedora.xyz/"
+            : Configuration.CdnBaseUrl;
+
+        baseUrl = baseUrl.TrimEnd('/') + "/";
+        return baseUrl + relativePath;
     }
 
     public async Task<IEnumerable<FeedEntry>> MultiGetGroupStatus(IEnumerable<long> ids, int limit)

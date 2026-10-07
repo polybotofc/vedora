@@ -295,6 +295,15 @@ services:
       - --ReverseProxy:Routes:admin-host-route:Match:Hosts:0=localhost
       - --ReverseProxy:Routes:admin-host-route:Match:Hosts:1=127.0.0.1
       - --ReverseProxy:Routes:admin-host-route:Match:Hosts:2=admin.vedora.xyz
+      # The default website-route only matches vedora.xyz, but the launcher
+      # prints http://localhost:5200 and FrontendProxy__PublicHosts already
+      # lists localhost/127.0.0.1. Without this catch-all every page, /img and
+      # /images request on localhost 404s, so thumbnails and the site itself
+      # never load. Keep it in sync with the apisite routes above.
+      - --ReverseProxy:Routes:website-localhost-route:ClusterId=website-cluster
+      - --ReverseProxy:Routes:website-localhost-route:Match:Hosts:0=localhost
+      - --ReverseProxy:Routes:website-localhost-route:Match:Hosts:1=127.0.0.1
+      - --ReverseProxy:Routes:website-localhost-route:Match:Path={**catch-all}
     ports:
       - "127.0.0.1:5200:5200"
     environment:

@@ -89,6 +89,20 @@ When you add or change a controller route, update the matching route case file
 - `ThumbnailMiddleware` derives the `Content-Type` from the file extension. The
   3D render JSON must be served as `application/json`, otherwise axios fails to
   parse the response and the client reports "3D Render not available".
+- The thumbnail/group/admin image *URL builders* (`ThumbnailsService.GetThumbnailUrl`,
+  `GroupsService.GetGroupIconUrl`, `AdminApiService.GetImageUrl`) must also honour
+  `IsCdnEnabled`. When the CDN is off they return a root-relative `/images/...`
+  path so the request stays on the current origin. Building an absolute
+  `CdnBaseUrl` (e.g. `http://localhost:5200`) makes the browser fetch a second
+  origin that may not be reachable or routed, so renders 404 even though the file
+  exists on disk.
+- `Roblox/Roblox.ApiProxy/appsettings.json` only routes the public host
+  `vedora.xyz` (and `www.`) to the website cluster. `docker-compose.yml` adds a
+  `website-localhost-route` for `localhost`/`127.0.0.1`, because `vedora.bat`
+  prints `http://localhost:5200` and `FrontendProxy__PublicHosts` lists
+  localhost. Without that route every page, `/img` and `/images/...` request on
+  localhost returns 404. Keep the localhost website route in sync with the
+  `*-apisite-route` host lists.
 - `Roblox/Roblox.ApiProxy/appsettings.json` is committed (routes for
   `*.vedora.xyz`). Keep secrets in server-local `appsettings.Production.json`.
 - Do not restyle the frontend. Branding/domain replacements must not change
