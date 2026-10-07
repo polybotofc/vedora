@@ -45,6 +45,9 @@ x-dotnet-dev-env: &dotnet-dev-env
   # Dev convenience: staff sign in without configuring a TOTP device. Production
   # (docker-compose.prod.yml) uses a separate anchor, so it keeps 2FA required.
   AdminTwoFactor__Required: "false"
+  # Dev convenience: the first account on a fresh install can post/invite right
+  # away instead of waiting a day. Production keeps the one-day gate.
+  ForumsMinimumAccountAgeOneDay: "false"
   Directories__EconomyChatBundle: "/srv/app/economy-chat/build/"
   Directories__RCCLuaScripts: "/srv/app/Roblox/Roblox.Rendering/internalscripts/"
   Directories__RCCService: "/srv/app/RCCService/"

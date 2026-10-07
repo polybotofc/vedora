@@ -261,11 +261,12 @@ public class ForumsService : ServiceBase
             baseLimit1Hour = 10; // 10/hour
         }
 
-        var isAccountLessThanOneDayOld = accountData.created > DateTime.UtcNow.Subtract(TimeSpan.FromDays(1));
+        var isAccountLessThanOneDayOld = Roblox.Configuration.ForumsMinimumAccountAgeOneDay &&
+            accountData.created > DateTime.UtcNow.Subtract(TimeSpan.FromDays(1));
         if (isAccountLessThanOneDayOld)
             throw new RobloxException(403, 0,
                 "Your account must be at least one day old before you can post to the forums.");
-        
+
         var isAccountLessThanOneWeekOld = accountData.created > DateTime.UtcNow.Subtract(TimeSpan.FromDays(7));
         // do this before CheckBeforeForumPostLock lock so we don't create an unnecessary lock
         if (!await TryFloodCheckByIp(ipHash, isAccountLessThanOneWeekOld))

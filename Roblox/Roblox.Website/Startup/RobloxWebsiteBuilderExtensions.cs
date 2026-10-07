@@ -73,6 +73,7 @@ public static class RobloxWebsiteBuilderExtensions
         Roblox.Configuration.InvisibleTurnstileSecretKey = options.InvisibleTurnstile.SecretKey;
         Roblox.Configuration.OpenRouterApiKey = options.AI.OpenRouterAPIKey;
         Roblox.Configuration.VerificationSecret = options.VerificationSecret;
+        Roblox.Configuration.ForumsMinimumAccountAgeOneDay = options.ForumsMinimumAccountAgeOneDay;
         Roblox.Configuration.LuaScriptsDirectory = options.Directories.RCCLuaScripts;
 
         var gameServerConfig = new ConfigurationBuilder()

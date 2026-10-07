@@ -2495,7 +2495,8 @@ public class UsersService : ServiceBase, IService
         if (!canCreate)
             throw new RobloxException(401, 0, "Unauthorized");
         var userInfo = await GetUserById(authorUserId);
-        if (userInfo.created > DateTime.UtcNow.Subtract(TimeSpan.FromDays(1)))
+        if (Roblox.Configuration.ForumsMinimumAccountAgeOneDay &&
+            userInfo.created > DateTime.UtcNow.Subtract(TimeSpan.FromDays(1)))
             throw new RobloxException(403, 0, "Account is too new to invite users. Try again tomorrow.");
 
         await db.ExecuteAsync(
