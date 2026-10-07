@@ -161,6 +161,7 @@ services:
       ReverseProxy__Clusters__avatar-cluster__Destinations__primary__Address: "http://avatar-service:5207"
       ReverseProxy__Clusters__thumbnails-cluster__Destinations__primary__Address: "http://thumbnails-service:5208"
       ReverseProxy__Clusters__admin-cluster__Destinations__primary__Address: "http://admin-service:5210"
+      OwnerUserId__0: "${OWNER_USER_ID:-1}"
     depends_on:
       roblox-website:
         condition: service_started

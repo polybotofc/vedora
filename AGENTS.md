@@ -73,6 +73,16 @@ When you add or change a controller route, update the matching route case file
 
 ## Gotchas
 
+- The `/admin` SPA and the `/v1` admin API are served by `Roblox.ApiProxy`
+  (see `AdminFrontendMiddleware`), so `OwnerUserId` must be set on the
+  `api-proxy` service, not just `roblox-website`/`users-service`/`admin-service`.
+  If it is missing, every `IsStaffAsync` check fails and `/admin` bounces to
+  `/home`. The SPA also defaults its API origin to `https://admin.vedora.xyz/v1/`;
+  the middleware injects `window.ADMIN_API_BASE_URL = window.location.origin + '/v1/'`
+  into `index.html` so a local install talks to itself. `admin-host-route` matches
+  `localhost`/`127.0.0.1` in dev. `AdminTwoFactor:Required=false` (dev compose only)
+  skips the staff TOTP prompt because a fresh install has no TOTP device enrolled
+  and there is no setup UI; production keeps 2FA required.
 - Legacy bundles in `api/public/js/*.js` were previously corrupted by a bad
   domain search/replace. The correct namespace is `Roblox.CatalogShared` /
   `Roblox.CatalogValues` (see `api/public/js/46776eac503b939a2fd9146d77d735a3.js`).

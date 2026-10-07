@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Roblox.ApiProxy.Configuration;
 using Roblox.ApiProxy.Middleware;
@@ -25,12 +26,19 @@ public class AdminFrontendRouteTests : IDisposable
     {
         _adminRoot = Path.Combine(Path.GetTempPath(), "vedora-admin-proxy-tests", Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(Path.Combine(_adminRoot, "build"));
-        File.WriteAllText(Path.Combine(_adminRoot, "index.html"), "<main>admin shell</main>");
+        File.WriteAllText(Path.Combine(_adminRoot, "index.html"), "<!DOCTYPE html><html><head><title>admin</title></head><body><main>admin shell</main></body></html>");
         File.WriteAllText(Path.Combine(_adminRoot, "favicon.png"), "png");
         File.WriteAllText(Path.Combine(_adminRoot, "build", "bundle.js"), "console.log('admin');");
         File.WriteAllText(Path.Combine(_adminRoot, "build", "bundle.css"), "body { color: black; }");
 
         _server = new TestServer(new WebHostBuilder()
+            .ConfigureAppConfiguration(config =>
+            {
+                config.AddInMemoryCollection(new Dictionary<string, string?>
+                {
+                    ["AdminTwoFactor:Required"] = "true",
+                });
+            })
             .ConfigureServices(services =>
             {
                 services.Configure<AdminFrontendOptions>(options =>
@@ -88,7 +96,11 @@ public class AdminFrontendRouteTests : IDisposable
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal("text/html", response.Content.Headers.ContentType?.MediaType);
-        Assert.Contains("admin shell", await response.Content.ReadAsStringAsync());
+        var body = await response.Content.ReadAsStringAsync();
+        Assert.Contains("admin shell", body);
+        // The SPA must be pointed at the current origin, not the unreachable
+        // production admin.vedora.xyz host.
+        Assert.Contains("window.ADMIN_API_BASE_URL", body);
     }
 
     [Theory]

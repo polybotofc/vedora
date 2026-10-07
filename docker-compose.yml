@@ -42,6 +42,9 @@ x-dotnet-dev-env: &dotnet-dev-env
   Directories__JsonData: "/srv/app/Roblox/Roblox.Libraries/Json/"
   Directories__ScriptsData: "/srv/app/Roblox/Roblox.Libraries/StudioScripts/"
   Directories__AdminBundle: "/srv/app/admin/public/"
+  # Dev convenience: staff sign in without configuring a TOTP device. Production
+  # (docker-compose.prod.yml) uses a separate anchor, so it keeps 2FA required.
+  AdminTwoFactor__Required: "false"
   Directories__EconomyChatBundle: "/srv/app/economy-chat/build/"
   Directories__RCCLuaScripts: "/srv/app/Roblox/Roblox.Rendering/internalscripts/"
   Directories__RCCService: "/srv/app/RCCService/"
@@ -286,6 +289,9 @@ services:
       - --ReverseProxy:Routes:games-apisite-route:Match:Hosts:0=localhost
       - --ReverseProxy:Routes:games-apisite-route:Match:Hosts:1=127.0.0.1
       - --ReverseProxy:Routes:games-apisite-route:Match:Hosts:2=vedora.xyz
+      - --ReverseProxy:Routes:admin-host-route:Match:Hosts:0=localhost
+      - --ReverseProxy:Routes:admin-host-route:Match:Hosts:1=127.0.0.1
+      - --ReverseProxy:Routes:admin-host-route:Match:Hosts:2=admin.vedora.xyz
     ports:
       - "127.0.0.1:5200:5200"
     environment:
@@ -297,6 +303,10 @@ services:
       FrontendProxy__PublicHosts__3: "www.vedora.xyz"
       InternalServiceHosts__0: "localhost"
       InternalServiceHosts__16: "127.0.0.1"
+      # The /admin frontend + /v1 admin API are served here, so the owner must
+      # be known on this service too (previously only set on the other services,
+      # which made every staff check fail and bounced /admin to /home).
+      OwnerUserId__0: "1"
     depends_on:
       dotnet-build:
         condition: service_completed_successfully

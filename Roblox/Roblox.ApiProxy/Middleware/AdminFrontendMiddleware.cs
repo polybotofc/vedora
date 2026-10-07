@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using Roblox.ApiProxy.Configuration;
@@ -20,6 +21,7 @@ public sealed class AdminFrontendMiddleware
     private readonly IAdminSessionResolver _sessionResolver;
     private readonly IAdminStaffAuthorizationService _staffAuthorization;
     private readonly IAdminTwoFactorStore _twoFactorStore;
+    private readonly bool _twoFactorRequired;
     private readonly ILogger<AdminFrontendMiddleware> _logger;
     private readonly RequestDelegate _next;
 
@@ -30,6 +32,7 @@ public sealed class AdminFrontendMiddleware
         IAdminSessionResolver sessionResolver,
         IAdminStaffAuthorizationService staffAuthorization,
         IAdminTwoFactorStore twoFactorStore,
+        IConfiguration configuration,
         ILogger<AdminFrontendMiddleware> logger)
     {
         _next = next;
@@ -38,6 +41,7 @@ public sealed class AdminFrontendMiddleware
         _sessionResolver = sessionResolver;
         _staffAuthorization = staffAuthorization;
         _twoFactorStore = twoFactorStore;
+        _twoFactorRequired = AdminTwoFactorPolicy.IsRequired(configuration);
         _logger = logger;
     }
 
@@ -62,7 +66,7 @@ public sealed class AdminFrontendMiddleware
             return;
         }
 
-        if (!await _twoFactorStore.IsVerifiedAsync(session.userId, session.sessionId))
+        if (!await _twoFactorStore.IsVerifiedAsync(session.userId, session.sessionId) && _twoFactorRequired)
         {
             context.Response.Redirect(GetTwoFactorPromptUrl(context));
             return;
@@ -131,6 +135,21 @@ public sealed class AdminFrontendMiddleware
         }
 
         context.Response.ContentType = contentType;
+        if (string.Equals(relativePath, "index.html", StringComparison.OrdinalIgnoreCase))
+        {
+            // The SPA defaults to the production API origin
+            // (https://admin.vedora.xyz/v1/) which is unreachable on a local
+            // install. Point it at this same origin so /v1/ stays on the host
+            // the browser is already using.
+            var html = await File.ReadAllTextAsync(fileFullPath);
+            html = html.Replace(
+                "<head>",
+                "<head>\n    <script>window.ADMIN_API_BASE_URL = window.location.origin + '/v1/';</script>",
+                StringComparison.OrdinalIgnoreCase);
+            await context.Response.WriteAsync(html);
+            return;
+        }
+
         await context.Response.SendFileAsync(fileFullPath);
     }
 
