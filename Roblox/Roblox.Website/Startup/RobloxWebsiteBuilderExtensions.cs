@@ -84,6 +84,7 @@ public static class RobloxWebsiteBuilderExtensions
 
         Roblox.Configuration.AssetValidationServiceUrl = options.AssetValidation.BaseUrl;
         Roblox.Configuration.AssetValidationServiceAuthorization = options.AssetValidation.Authorization;
+        EnsureStorageDirectoriesExist(options.Directories);
         GameServerService.Configure(string.Join(Guid.NewGuid().ToString(), new int[16].Select(_ => Guid.NewGuid().ToString())));
         Roblox.Configuration.PackageShirtAssetId = options.PackageShirtAssetId;
         Roblox.Configuration.PackagePantsAssetId = options.PackagePantsAssetId;
@@ -108,6 +109,28 @@ public static class RobloxWebsiteBuilderExtensions
         Roblox.Services.Signer.SignService.Setup();
 
         RenderingHandler.Configure(arbiterUrl, options.ArbiterAuthorization, options.Render.UseBinaryTransport);
+    }
+
+    // These directories are git-ignored, so a fresh checkout does not contain
+    // them. Asset uploads and thumbnail/group-icon renders write into them and
+    // fail with DirectoryNotFoundException if they are missing.
+    private static void EnsureStorageDirectoriesExist(RobloxDirectoryOptions directories)
+    {
+        foreach (var directory in new[]
+                 {
+                     directories.Asset,
+                     directories.Storage,
+                     directories.Thumbnails,
+                     directories.GroupIcons,
+                 })
+        {
+            if (string.IsNullOrWhiteSpace(directory))
+            {
+                continue;
+            }
+
+            Directory.CreateDirectory(directory);
+        }
     }
 
     public static IServiceCollection AddRobloxWebsiteServices(this IServiceCollection services, IConfiguration configuration, IHostEnvironment environment)
