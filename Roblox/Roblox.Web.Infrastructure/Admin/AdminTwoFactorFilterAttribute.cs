@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Roblox.Web.Infrastructure.Http;
 
@@ -25,6 +26,12 @@ public sealed class AdminTwoFactorFilterAttribute : Attribute, IAsyncActionFilte
         var requestContext = context.HttpContext.GetRobloxRequestContext();
         var session = requestContext?.Session;
         var store = context.HttpContext.RequestServices.GetRequiredService<IAdminTwoFactorStore>();
+
+        if (!AdminTwoFactorPolicy.IsRequired(context.HttpContext.RequestServices.GetRequiredService<IConfiguration>()))
+        {
+            await next();
+            return;
+        }
 
         if (session == null || !await store.IsVerifiedAsync(session.userId, session.sessionId))
         {

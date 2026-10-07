@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Roblox.Cache;
 using Roblox.Models.Sessions;
 using Roblox.Web.Infrastructure.Admin;
@@ -38,6 +40,12 @@ public class AdminTwoFactorFilter : Attribute, IAsyncActionFilter
         }
 
         var session = context.HttpContext.Items[SessionMiddleware.CookieName] as UserSession;
+        if (!AdminTwoFactorPolicy.IsRequired(context.HttpContext.RequestServices.GetRequiredService<IConfiguration>()))
+        {
+            await next();
+            return;
+        }
+
         if (session == null || !await IsVerified(session.userId, session.sessionId))
         {
             var isApi = context.HttpContext.Request.Path.StartsWithSegments("/admin-api");
