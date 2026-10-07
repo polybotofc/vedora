@@ -144,10 +144,22 @@ rem ---------------------------------------------------------------
 rem 5. RCC arbiter (game servers + thumbnails/renders)
 rem ---------------------------------------------------------------
 echo.
+rem Port 3521 is reserved for the arbiter. If something is already bound to
+rem it, a previous arbiter is still running; starting a second one crashes
+rem this window with AddressInUseException and tears down the RCC warm pool.
+call :find_port_pid 3521 ARBITER_PID
+if defined ARBITER_PID (
+    echo [..] %ARBITER_URLS% is already in use ^(PID !ARBITER_PID!^).
+    echo      An RCC arbiter is already running, so a second one is not started.
+    echo      Run "vedora.bat down" first to restart it with the latest code.
+    goto :arbiter_ready
+)
+
 echo [..] Building and starting the Vedora RCC arbiter...
 rem Run from the repository root so the relative RCCService paths in
 rem appsettings.json resolve to <root>\RCCService.
 start "Vedora RCC Arbiter" /d "%ROOT%" cmd /k ""%DOTNET_EXE%" run --project "%ARBITER_PROJECT%" --configuration Release --urls %ARBITER_URLS%"
+:arbiter_ready
 
 echo.
 echo ==========================================================
@@ -166,7 +178,30 @@ goto :eof
 :shutdown
 echo [..] Stopping the Vedora Docker stack...
 docker compose -f "%ROOT%\docker-compose.yml" down
-echo [ok] Docker stack stopped. Close the "Vedora RCC Arbiter" window to stop the arbiter.
+echo [ok] Docker stack stopped.
+
+rem Stop the arbiter too: it is a plain `dotnet run` window, not a container,
+rem so leaving it alive would block port 3521 on the next start.
+call :find_port_pid 3521 ARBITER_PID
+if defined ARBITER_PID (
+    echo [..] Stopping the RCC arbiter ^(PID !ARBITER_PID!^)...
+    taskkill /PID !ARBITER_PID! /T /F >nul 2>nul
+    echo [ok] RCC arbiter stopped.
+) else (
+    echo [ok] No RCC arbiter was running.
+)
+echo Close the "Vedora RCC Arbiter" window if it is still open.
+goto :eof
+
+rem ---------------------------------------------------------------
+rem :find_port_pid <port> <outVar>
+rem  Sets <outVar> to the PID owning a LISTENING socket on <port>, if any.
+rem ---------------------------------------------------------------
+:find_port_pid
+set "%~2="
+for /f "tokens=5" %%p in ('netstat -ano -p tcp ^| findstr /r /c:"LISTENING" ^| findstr /r /c:":%~1 "') do (
+    if not defined %~2 set "%~2=%%p"
+)
 goto :eof
 
 :fail
