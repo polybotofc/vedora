@@ -8,8 +8,8 @@ rem (Arbiter:Ports:Rcc, default 45000) to find out why the readiness probe
 rem times out and the worker is killed.
 rem
 rem Usage:
-rem   diagnose-rcc.bat                 (uses: -Console -verbose)
-rem   diagnose-rcc.bat "-Console -verbose -port 64989"
+rem   diagnose-rcc.bat                 (uses: -Console -Verbose -SettingsFile DevSettingsFile.json)
+rem   diagnose-rcc.bat "-Console -Verbose -SettingsFile \"DevSettingsFile.json\" -port 64989"
 rem
 rem Run it from the repository root.
 
@@ -22,7 +22,7 @@ if not exist "%ROOT%\RCCService\RCCService2021\RCCService.exe" (
 )
 
 set "DIR=%ROOT%\RCCService\RCCService2021"
-if "%~1"=="" (set "ARGS=-Console -verbose") else (set "ARGS=%~1")
+if "%~1"=="" (set "ARGS=-Console -Verbose -SettingsFile DevSettingsFile.json") else (set "ARGS=%~1")
 
 echo ==========================================================
 echo  RCCService2021 diagnostic
