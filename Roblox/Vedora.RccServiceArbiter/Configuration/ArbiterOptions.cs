@@ -67,6 +67,12 @@ public sealed class ArbiterRenderOptions
     public string PlaceConverterPath { get; set; } = "RobloxPlaceConverter.exe";
     public string OriginBaseUrl { get; set; } = string.Empty;
     public bool UseBinaryTransport { get; set; } = true;
+
+    // RCCService launch arguments. "{port}" is replaced with the SOAP port
+    // allocated for the worker. Different RCCService builds take the port
+    // differently (the 2021E build uses "-port", older builds accept it
+    // positionally after "-Console"), so this is configurable.
+    public string LaunchArguments { get; set; } = "-Console -port {port}";
 }
 
 public sealed class ArbiterPortOptions

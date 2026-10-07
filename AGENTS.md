@@ -55,6 +55,10 @@ When you add or change a controller route, update the matching route case file
 - The RCC arbiter resolves relative paths via
   `Vedora.RccServiceArbiter/Configuration/RccPathResolver.cs` so it works
   regardless of the working directory.
+- RCC launch flags come from `Arbiter:Render:LaunchArguments` (built by
+  `Processes/RccLaunchArguments.cs`, `{port}` = allocated SOAP port). Keep the
+  default `-Console -port {port}` unless a different RCCService build needs
+  other flags; do not hardcode the command line again.
 - `Roblox/Roblox.ApiProxy/appsettings.json` is committed (routes for
   `*.vedora.xyz`). Keep secrets in server-local `appsettings.Production.json`.
 - Do not restyle the frontend. Branding/domain replacements must not change

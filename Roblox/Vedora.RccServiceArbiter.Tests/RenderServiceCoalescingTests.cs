@@ -59,6 +59,7 @@ public sealed class RenderServiceCoalescingTests
         public int? Id => 1;
         public bool HasExited => false;
         public void KillTree() { }
+        public bool TryGetOutput(out string output) { output = string.Empty; return false; }
         public void Dispose() { }
     }
 
