@@ -50,7 +50,9 @@ public sealed class RenderScriptCatalog : IRenderScriptCatalog
         var appearanceUrl = request.CharacterAppearanceUrl == null
             ? Correlate($"{baseUrl}v1.1/avatar-fetch?placeId=0&userId={request.UserId}", request)
             : PrivateDependencyUrl(request.CharacterAppearanceUrl, request);
-        var format = request.Kind == RenderKind.Avatar3D ? "OBJ" : "PNG";
+        // RCC 2021 matches the OBJ output token case-sensitively ("obj", lowercase);
+        // "OBJ" falls through both the OBJ path and the JPG/JPEG/TGA/PNG encoders.
+        var format = request.Kind == RenderKind.Avatar3D ? "obj" : "PNG";
         var type = request.Kind switch
         {
             RenderKind.Avatar when request.AvatarRigType == AvatarRigType.R6 => "Avatar",

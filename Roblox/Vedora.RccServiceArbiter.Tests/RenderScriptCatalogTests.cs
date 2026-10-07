@@ -11,7 +11,7 @@ public sealed class RenderScriptCatalogTests
 {
     [Theory]
     [InlineData(RenderKind.Avatar, "Avatar_R15_Action", "PNG")]
-    [InlineData(RenderKind.Avatar3D, "Avatar_R15_Action", "OBJ")]
+    [InlineData(RenderKind.Avatar3D, "Avatar_R15_Action", "obj")]
     [InlineData(RenderKind.AvatarHeadshot, "Closeup", "PNG")]
     [InlineData(RenderKind.MeshPart, "MeshPart", "PNG")]
     [InlineData(RenderKind.Animation, "AvatarAnimation", "PNG")]
