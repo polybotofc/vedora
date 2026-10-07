@@ -163,34 +163,43 @@ public class AdminApiService : ServiceBase
             return fileName;
         }
 
-        var baseUrl = string.IsNullOrWhiteSpace(Roblox.Configuration.CdnBaseUrl)
-            ? "https://cdn.vedora.xyz/"
-            : Roblox.Configuration.CdnBaseUrl;
-
-        baseUrl = baseUrl.TrimEnd('/') + "/";
-
         if (fileName.StartsWith('/'))
         {
             fileName = fileName[1..];
         }
 
+        string relativePath;
         if (fileName.StartsWith("images/", StringComparison.OrdinalIgnoreCase))
         {
-            return baseUrl + fileName;
+            relativePath = fileName;
         }
-
-        if (fileName.StartsWith("groups/", StringComparison.OrdinalIgnoreCase))
+        else if (fileName.StartsWith("groups/", StringComparison.OrdinalIgnoreCase))
         {
-            return baseUrl + "images/" + EnsurePngExtension(fileName);
+            relativePath = "images/" + EnsurePngExtension(fileName);
         }
-
-        if (fileName.StartsWith("thumbnails/", StringComparison.OrdinalIgnoreCase))
+        else if (fileName.StartsWith("thumbnails/", StringComparison.OrdinalIgnoreCase))
         {
-            return baseUrl + "images/" + EnsurePngExtension(fileName);
+            relativePath = "images/" + EnsurePngExtension(fileName);
+        }
+        else
+        {
+            var prefix = isThumbnails ? "images/thumbnails/" : "images/groups/";
+            relativePath = prefix + EnsurePngExtension(fileName);
         }
 
-        var prefix = isThumbnails ? "images/thumbnails/" : "images/groups/";
-        return baseUrl + prefix + EnsurePngExtension(fileName);
+        // Without a CDN images are served by the website itself; keep the URL on
+        // the current origin so it also works when the install uses localhost.
+        if (!Roblox.Configuration.IsCdnEnabled)
+        {
+            return "/" + relativePath;
+        }
+
+        var baseUrl = string.IsNullOrWhiteSpace(Roblox.Configuration.CdnBaseUrl)
+            ? "https://cdn.vedora.xyz/"
+            : Roblox.Configuration.CdnBaseUrl;
+
+        baseUrl = baseUrl.TrimEnd('/') + "/";
+        return baseUrl + relativePath;
     }
 
     private static string EnsurePngExtension(string fileName)
