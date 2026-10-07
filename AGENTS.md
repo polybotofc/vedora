@@ -55,6 +55,13 @@ When you add or change a controller route, update the matching route case file
 - The RCC arbiter resolves relative paths via
   `Vedora.RccServiceArbiter/Configuration/RccPathResolver.cs` so it works
   regardless of the working directory.
+- The arbiter must not carry a `Postgres` or `Redis` key in its
+  `appsettings.json`. It serves renders only and never touches the database, but
+  `RobloxServiceInfrastructure.Initialize` opens a synchronous Npgsql connection
+  at startup whenever `Postgres` is set. A slow or unreachable host then crashes
+  the whole arbiter with `NpgsqlException: Timeout during reading attempt` before
+  it can serve anything. The arbiter test fixture already empties both keys for
+  the same reason — keep them out of the shipped config too.
 - RCC launch flags come from `Arbiter:Render:LaunchArguments` (built by
   `Processes/RccLaunchArguments.cs`, `{port}` = allocated SOAP port). The
   default loads `DevSettingsFile.json`, which sets
