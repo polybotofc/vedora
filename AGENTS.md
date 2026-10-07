@@ -61,6 +61,9 @@ When you add or change a controller route, update the matching route case file
   `DebugCrashOnFailToLoadClientSettings: false` so RCC does not crash when it
   cannot fetch Roblox client settings over the network. Keep that flag false;
   do not hardcode the command line again.
+- `Arbiter:SoapServiceUrl` must stay `roblox.com`; RCCService dispatches SOAP
+  in the `http://roblox.com/` WSDL namespace. Changing it makes RCC return
+  HTTP 500 for every SOAP call.
 - `RCCService/RCCService2021/AppSettings.xml` `<BaseUrl>` points at
   `https://vedora.xyz`. The RCC 2021 binary reads its base URL from there.
 - `Roblox/Roblox.ApiProxy/appsettings.json` is committed (routes for

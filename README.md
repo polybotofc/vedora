@@ -74,6 +74,11 @@ RCC reads its base URL from `RCCService/RCCService2021/AppSettings.xml`
 (`<BaseUrl>https://vedora.xyz</BaseUrl>`), so settings and assets resolve
 against the Vedora domain instead of `localhost:2015`.
 
+`Arbiter:SoapServiceUrl` must stay `roblox.com`. RCCService dispatches SOAP
+methods in its WSDL namespace `http://roblox.com/`; pointing this at another
+domain makes RCC answer every SOAP call with HTTP 500 and the arbiter rejects
+the worker.
+
 If RCC never becomes ready, run `RCCService\diagnose-rcc.bat` from the
 repository root. It launches RCCService directly and reports the TCP port it
 actually opens, so you can compare it with the port range in

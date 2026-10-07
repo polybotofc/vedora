@@ -7,7 +7,8 @@ namespace Vedora.RccServiceArbiter.Tests;
 
 public sealed class RccSoapEnvelopeTests
 {
-    private const string ServiceUrl = "vedora.xyz";
+    // RCCService dispatches SOAP in the http://roblox.com/ WSDL namespace.
+    private const string ServiceUrl = "roblox.com";
 
     [Fact]
     public void OpenJobEx_ContainsJobAndScriptShape()
@@ -28,8 +29,7 @@ public sealed class RccSoapEnvelopeTests
             }));
 
         Assert.Contains("OpenJobEx", xml);
-        Assert.Contains("http://vedora.xyz/", xml);
-        Assert.DoesNotContain("http://roblox.com/", xml);
+        Assert.Contains("http://roblox.com/", xml);
         Assert.Contains("<id>job-1</id>", xml);
         Assert.Contains("<expirationInSeconds>60</expirationInSeconds>", xml);
         Assert.Contains("<name>VEDORA_GAME</name>", xml);
@@ -45,7 +45,7 @@ public sealed class RccSoapEnvelopeTests
             RccScriptFactory.EvictPlayer(123, 1)));
 
         Assert.Contains("ExecuteEx", xml);
-        Assert.Contains("http://vedora.xyz/", xml);
+        Assert.Contains("http://roblox.com/", xml);
         Assert.Contains("<jobID>job-2</jobID>", xml);
         Assert.Contains("Evict Player V1", xml);
         Assert.Contains("EvictPlayer", xml);
@@ -57,14 +57,14 @@ public sealed class RccSoapEnvelopeTests
         var xml = RccSoapEnvelope.ToRequestBody(RccSoapEnvelope.CloseJob(ServiceUrl, "job-3"));
 
         Assert.Contains("CloseJob", xml);
-        Assert.Contains("http://vedora.xyz/", xml);
+        Assert.Contains("http://roblox.com/", xml);
         Assert.Contains("<jobID>job-3</jobID>", xml);
     }
 
     [Fact]
     public void SoapAction_UsesConfiguredServiceUrl()
     {
-        Assert.Equal("http://vedora.xyz/OpenJobEx", RccSoapEnvelope.SoapAction(ServiceUrl, "OpenJobEx"));
+        Assert.Equal("http://roblox.com/OpenJobEx", RccSoapEnvelope.SoapAction(ServiceUrl, "OpenJobEx"));
     }
 
     [Fact]
