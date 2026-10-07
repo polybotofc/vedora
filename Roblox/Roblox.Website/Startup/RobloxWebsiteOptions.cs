@@ -25,6 +25,7 @@ public sealed class RobloxWebsiteOptions
     public RobloxInvisibleTurnstileOptions InvisibleTurnstile { get; set; } = new();
     public RobloxAiOptions AI { get; set; } = new();
     public string VerificationSecret { get; set; } = string.Empty;
+    public bool ForumsMinimumAccountAgeOneDay { get; set; } = true;
     public RobloxAssetValidationOptions AssetValidation { get; set; } = new();
     public long PackageShirtAssetId { get; set; }
     public long PackagePantsAssetId { get; set; }

@@ -78,6 +78,11 @@ public static class Configuration
     public static string InvisibleTurnstileSecretKey { get; set; } = "";
     public static string OpenRouterApiKey { get; set; } = "";
     public static string VerificationSecret { get; set; }
+
+    // New accounts normally must be at least one day old before they can post on
+    // the forums or create invites. Dev installs disable this so the first user
+    // can use the site immediately; production keeps it on.
+    public static bool ForumsMinimumAccountAgeOneDay { get; set; } = true;
     public static long PackageShirtAssetId { get; set; }
     public static long PackagePantsAssetId { get; set; }
     private static IEnumerable<long>? _SignupAssetIds { get; set; }
