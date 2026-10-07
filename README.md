@@ -54,11 +54,25 @@ The public domain defaults to `https://vedora.xyz`.
 ### RCCService launch arguments
 
 The arbiter starts `RCCService.exe` with `Arbiter:Render:LaunchArguments`
-(`{port}` is replaced with the allocated SOAP port). The default,
-`-Console -port {port}`, matches the standard 2021E RCCService build. If your
-RCCService build takes the port differently, change this value instead of the
-code. On a failed start the arbiter logs the exact command line and RCC's
-captured stdout/stderr.
+(`{port}` is replaced with the allocated SOAP port). The default is:
+
+```
+-Console -Verbose -SettingsFile "DevSettingsFile.json" -port {port}
+```
+
+- `-SettingsFile` loads `DevSettingsFile.json` from the RCCService folder. That
+  file sets `DebugCrashOnFailToLoadClientSettings: false`, so RCC keeps running
+  if it cannot fetch Roblox's client settings over the network. With the
+  upstream `true` value RCC crashes with `RBXCRASH:
+  LoadClientSettingsFailure (HttpError: ConnectFail)` before it opens its port.
+- The RCC 2021 binary has no dedicated `-port` flag; it is appended because the
+  standard 2021E launch line uses it, and older guidance passes the port
+  positionally after `-Console`. If your build needs the port differently,
+  change `Arbiter:Render:LaunchArguments` instead of the code.
+
+RCC reads its base URL from `RCCService/RCCService2021/AppSettings.xml`
+(`<BaseUrl>https://vedora.xyz</BaseUrl>`), so settings and assets resolve
+against the Vedora domain instead of `localhost:2015`.
 
 If RCC never becomes ready, run `RCCService\diagnose-rcc.bat` from the
 repository root. It launches RCCService directly and reports the TCP port it

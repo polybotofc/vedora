@@ -541,7 +541,7 @@
 		"FFlagAllowAudioBulkImport": true,
 		"FFlagNonBlockingAnalyticsExit": true,
 		"FIntTouchQueueMetricsSendEveryXSeconds2": 300,
-		"DebugCrashOnFailToLoadClientSettings": true,
+		"DebugCrashOnFailToLoadClientSettings": false,
 		"FIntLocalizationServiceContentLoadErrorHundredthsPercentage": 1000,
 		"FFlagABTestsUnifyStudio": true,
 		"FFlagCollectAnalyticsForSystemMenu": true,

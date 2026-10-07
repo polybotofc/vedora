@@ -5,7 +5,7 @@ namespace Vedora.RccServiceArbiter.Processes;
 // exact flags can be tuned per RCCService build without a code change.
 public static class RccLaunchArguments
 {
-    public const string DefaultTemplate = "-Console -port {port}";
+    public const string DefaultTemplate = "-Console -Verbose -SettingsFile \"DevSettingsFile.json\" -port {port}";
 
     public static string Build(string? template, int port)
     {
