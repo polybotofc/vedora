@@ -20,6 +20,8 @@ x-dotnet-prod-env: &dotnet-prod-env
   RccAuthorization: "${RCC_AUTHORIZATION}"
   Jwt__Sessions: "${JWT_SESSIONS_SECRET}"
   BotAuthorization: "${BOT_AUTHORIZATION}"
+  Discord__ClientId: "${DISCORD_CLIENT_ID:-}"
+  Discord__ClientSecret: "${DISCORD_CLIENT_SECRET:-}"
   Discord__BotToken: "${DISCORD_BOT_TOKEN:-}"
   Discord__GuildId: "${DISCORD_GUILD_ID:-}"
   Discord__LogChannelId: "${DISCORD_LOG_CHANNEL_ID:-}"

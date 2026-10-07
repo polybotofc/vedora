@@ -67,7 +67,7 @@ const ErrorPage = ({ code, title, desc }) => {
     
     return <>
         <Head>
-            <title>{code} - Vedora</title>
+            <title>{`${code} - Vedora`}</title>
         </Head>
         <Theme2016>
             <div className='col-12 h-100 flex justify-content-center align-items-center' style={{

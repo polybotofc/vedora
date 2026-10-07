@@ -14,7 +14,7 @@ const UserProfilePage = ({ username, userId, description, ...props }) => {
         <>
             {username && (
                 <Head>
-                    <title>{ogTitle} - Vedora</title>
+                    <title>{`${ogTitle} - Vedora`}</title>
                     <meta property="og:title" content={ogTitle}/>
                     <meta property="og:url" content={ogUrl}/>
                     <meta property="og:type" content="profile"/>
