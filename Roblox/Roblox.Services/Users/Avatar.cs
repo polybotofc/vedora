@@ -1152,9 +1152,12 @@ public class AvatarService : ServiceBase, IService {
         Writer.Info(LogGroup.ClearThumbnail3DFolder, $"Clearing stale 3D thumbnails from {target} (older than 5 days)...");
         try
         {
-            var r2 = ServiceProvider.GetOrCreate<R2StorageService>();
+            // The R2 client throws at construction when no bucket is configured,
+            // so only build it when the CDN is actually enabled. Local installs
+            // clean the thumbnails directory instead.
+            var r2 = Configuration.IsCdnEnabled ? ServiceProvider.GetOrCreate<R2StorageService>() : null;
             var keys = Configuration.IsCdnEnabled
-                ? (IEnumerable<string>)await r2.ListFilesAsync("images/thumbnails/3d/")
+                ? (IEnumerable<string>)await r2!.ListFilesAsync("images/thumbnails/3d/")
                 : Directory.Exists(Path.Combine(Configuration.ThumbnailsDirectory, "3d"))
                     ? Directory.GetFiles(Path.Combine(Configuration.ThumbnailsDirectory, "3d"))
                         .Select(file => "images/thumbnails/3d/" + Path.GetFileName(file))
@@ -1191,7 +1194,7 @@ public class AvatarService : ServiceBase, IService {
                 Writer.Info(LogGroup.ClearThumbnail3DFolder,
                     $"Deleting stale 3D thumbnail {key}, last used: {lastUsed:u}");
                 if (Configuration.IsCdnEnabled)
-                    await r2.DeleteFileAsync(key);
+                    await r2!.DeleteFileAsync(key);
                 else
                     File.Delete(ThumbnailKeyToLocalPath(key));
                 _3dLastUsed.TryRemove(key, out var _);
