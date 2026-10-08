@@ -127,10 +127,21 @@ public class ItemConfigurationV1 : ControllerBase
 
     [HttpGetBypass("/v1/assets/restrictions")]
     [HttpGet("assets/restrictions")]
-    public async Task<RobloxCollection<ItemRestrictions>> GetAssetRestrictions(string assetIds)
+    public async Task<RobloxCollection<ItemRestrictions>> GetAssetRestrictions(string? assetIds = null)
     {
-        var parsed = assetIds.Split(",").Select(long.Parse).Distinct().ToList();
-        if (parsed.Count is > 200 or < 0) throw new BadRequestException(0, "Invalid asset id list");
+        // Nullable, and blank ids are treated as "no assets": a user wearing
+        // nothing sends an empty list, and a non-nullable query parameter would
+        // make [ApiController] answer 400 before this action ran.
+        var parsed = new List<long>();
+        foreach (var rawId in (assetIds ?? string.Empty).Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        {
+            if (long.TryParse(rawId, out var id))
+            {
+                parsed.Add(id);
+            }
+        }
+        parsed = parsed.Distinct().ToList();
+        if (parsed.Count > 200) throw new BadRequestException(0, "Invalid asset id list");
 
         var results = (await services.assets.MultiGetAssetRestrictions(parsed)).ToList();
 

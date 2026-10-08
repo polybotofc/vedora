@@ -123,6 +123,9 @@ export const setAssetPrice = async ({ assetId, priceInRobux, priceInTickets }) =
  * @returns {Promise<AssetRestriction[]>}
  */
 export const getAssetRestrictions = async (assetIds) => {
+    // An empty list (e.g. a user wearing nothing) would send `?assetIds=`,
+    // which the backend rejects. Mirror the thumbnails services and skip it.
+    if (!Array.isArray(assetIds) || assetIds.length < 1) return [];
     let req = await request("GET", getFullUrl('itemconfiguration',
         `/v1/assets/restrictions?assetIds=${encodeURIComponent(assetIds)}`)
     );

@@ -118,9 +118,18 @@ public class ApiController : ControllerBase
     }
 
     [HttpGet("v1/items/restrictions")]
-    public async Task<dynamic> GetItemRestrictions(string assetIds)
+    public async Task<dynamic> GetItemRestrictions(string? assetIds = null)
     {
-        var ids = assetIds.Split(",").Select(long.Parse).ToArray();
+        // Blank ids mean "no assets" (e.g. an empty avatar). A non-nullable
+        // query parameter would make [ApiController] answer 400 before this ran.
+        var ids = new List<long>();
+        foreach (var rawId in (assetIds ?? string.Empty).Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        {
+            if (long.TryParse(rawId, out var id))
+            {
+                ids.Add(id);
+            }
+        }
         if (!ids.Any())
             return Array.Empty<BadgeAwardDate>();
         return await services.assets.MultiGetAssetRestrictions(ids);

@@ -26,6 +26,8 @@ export const getMyAvatar = () => {
  * @returns {Promise<ItemRestrictionsClass[]>}
  */
 export const getItemRestrictions = (assetIds) => {
+  // An empty list would send `?assetIds=`, which the backend rejects with 400.
+  if (!Array.isArray(assetIds) || assetIds.length < 1) return Promise.resolve([]);
   return request('GET', getFullUrl('api', `/v1/items/restrictions?assetIds=${assetIds}`)).then(d => d.data);
 }
 
