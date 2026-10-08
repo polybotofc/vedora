@@ -168,3 +168,14 @@ When you add or change a controller route, update the matching route case file
   `dotnet-build`/`dotnet-watch` restore hangs on `api.nuget.org`. To build or
   test here, run the SDK image with `--network host`, e.g.
   `docker run --rm --network host -v $PWD:/srv/app -w /srv/app/Roblox -v vedora-dev_dotnet_cache:/root/.nuget mcr.microsoft.com/dotnet/sdk:10.0 dotnet test …`.
+- The same missing egress makes `db-migrate` stall: `npm install` builds
+  `argon2` via `node-pre-gyp`, which downloads its prebuilt binary from GitHub.
+  The registry itself is reachable and `knex`/`pg` install first, so migrations
+  can be run in place once they are present:
+  `docker exec -e DB_HOST=postgres -e DB_USER=roblox -e DB_PASS=roblox_dev_pass -e DB_NAME=economy vedora-dev-db-migrate-1 npx knex migrate:latest`.
+  Start the .NET services only after migrations finish, or the website's
+  `RunDevelopmentBootstrapAsync` logs `relation "user" does not exist`.
+- `R2StorageService`'s constructor throws when `R2AccountId` is unset
+  (`ServiceURL is not a valid URL: https://.r2.cloudflarestorage.com`). Never
+  build it unconditionally: guard with `Configuration.IsCdnEnabled` so
+  CDN-disabled (local) installs fall back to the local thumbnails directory.
