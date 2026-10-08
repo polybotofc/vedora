@@ -288,7 +288,17 @@ public sealed class FrontendProxyMiddleware
 
     private static bool IsFrontendOwnedPath(string path)
     {
-        return IsFrontendPublicAsset(path);
+        if (IsFrontendPublicAsset(path))
+        {
+            return true;
+        }
+
+        // Next.js API routes live under /api/ as well, but the backend owns
+        // /api/economy-chat and the oauth callbacks. Only these two are served
+        // by the frontend; without this the cookie login handshake is sent to
+        // the website service and fails with a 502.
+        return path.Equals("/api/validate-and-add-cookie", StringComparison.OrdinalIgnoreCase) ||
+               path.Equals("/api/proxy", StringComparison.OrdinalIgnoreCase);
     }
 
     private static bool IsFrontendPublicAsset(string path)
