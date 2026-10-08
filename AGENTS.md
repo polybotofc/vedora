@@ -153,3 +153,18 @@ When you add or change a controller route, update the matching route case file
   Beware of blind `pekora.zip`/`vedora.xyz` substitutions in minified JS.
 - `Roblox/Roblox.Website/Controllers/RobloxApi/Asset.cs` serves `FixJitter`
   models; they are copied to the output/publish dir from `Roblox/FixJitter`.
+- Vedora is 2021-only. The RCCService binary is always
+  `RCCService/RCCService2021/RCCService.exe` (arbiter `RccServiceRoot=RCCService`,
+  `Arbiter:GameServerYear=2021`, `Arbiter:Render:DefaultYear=2021`). The website
+  year (`WebsiteYear`) is a legacy per-user theme switch; `Users.GetYear`
+  defaults every account to `Year2021`, so it does not select another RCC build.
+- The ASP.NET DataProtection key ring is persisted through
+  `AddVedoraDataProtection` (`Roblox.Web.Infrastructure/Extensions`), configured
+  by `DataProtection:KeysDirectory` / `DataProtection:ApplicationName`. Every
+  .NET service must share one directory and application name or antiforgery
+  tokens/cookies fail to decrypt ("key was not found in the key ring"). The dev
+  and prod compose files both set these and mount a shared volume.
+- The `economy` bridge network in this sandbox has no egress, so the in-compose
+  `dotnet-build`/`dotnet-watch` restore hangs on `api.nuget.org`. To build or
+  test here, run the SDK image with `--network host`, e.g.
+  `docker run --rm --network host -v $PWD:/srv/app -w /srv/app/Roblox -v vedora-dev_dotnet_cache:/root/.nuget mcr.microsoft.com/dotnet/sdk:10.0 dotnet test …`.

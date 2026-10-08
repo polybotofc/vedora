@@ -18,6 +18,24 @@ const useStyles = createUseStyles({
     },
 })
 
+// /user-sponsorship/:type is counted as a view, so once-per-type is enough.
+// Caching the in-flight promise also keeps React StrictMode's double-invoked
+// effect (mount, unmount, remount) from firing two requests.
+const adRequestCache = {};
+
+const fetchAd = (type) => {
+    if (!adRequestCache[type]) {
+        adRequestCache[type] = request('GET', `${getBaseUrl()}/user-sponsorship/${type}`)
+            .then(adData => adData.data)
+            .catch(e => {
+                // Allow a later mount to retry after a transient failure.
+                delete adRequestCache[type];
+                throw e;
+            });
+    }
+    return adRequestCache[type];
+};
+
 /**
  * User advertisement iframe
  * @param {{type: number; wrapperClass?: string; backupWidth?: number;}} props
@@ -29,11 +47,18 @@ const UserAdvertisement = props => {
     const [title, setTitle] = useState(null);
     const [imageLoaded, setImageLoaded] = useState(false);
     const s = useStyles();
-    
-    // I HATE IFRAMES I HATE IFRAMES I HATE IFRAMES I HATE IFRAMES
+
     useEffect(() => {
-        request('GET', `${getBaseUrl()}/user-sponsorship/${props.type}`).then(adData => {
-            const doc = new DOMParser().parseFromString(adData.data, 'text/html');
+        let cancelled = false;
+        fetchAd(props.type).then(data => {
+            if (cancelled) return;
+            let doc;
+            try {
+                doc = new DOMParser().parseFromString(data, 'text/html');
+            } catch (e) {
+                console.error('[error] could not parse user ad document:', e);
+                return;
+            }
             const imageElements = doc.getElementsByTagName('img');
             const aTags = doc.getElementsByTagName('a');
             if (!imageElements.length || !aTags.length) {
@@ -52,8 +77,12 @@ const UserAdvertisement = props => {
             setLink(link);
         }).catch(e => {
             console.error('[error] could not load user ad:', e);
-        })
-    }, []);
+        });
+
+        return () => {
+            cancelled = true;
+        };
+    }, [props.type]);
     
     // TODO: calculate correct height of ad when current screen width is smaller than ad width. The height is way too big on mobile.
     if (!info) throw new Error(`unexpected adType: ${props.type}`);

@@ -53,12 +53,17 @@ x-dotnet-dev-env: &dotnet-dev-env
   Directories__RCCService: "/srv/app/RCCService/"
   Directories__RCCServiceGames: "/srv/app/RCCService/"
   OpenTelemetry__OtlpEndpoint: "http://otel-collector:4317"
+  # Persist the ASP.NET DataProtection key ring on a shared volume so antiforgery
+  # tokens and cookies survive service restarts and are readable by every process.
+  DataProtection__KeysDirectory: "/srv/app/DataProtection-Keys"
+  DataProtection__ApplicationName: "vedora"
 
 x-dotnet-dev-service: &dotnet-dev-service
   image: mcr.microsoft.com/dotnet/aspnet:10.0
   volumes:
     - .:/srv/app
     - dotnet_artifacts:/tmp/vedora-artifacts:ro
+    - data_protection_keys:/srv/app/DataProtection-Keys
   networks:
     - economy
   depends_on:
@@ -79,6 +84,7 @@ volumes:
   redis_data:
   dotnet_cache:
   dotnet_artifacts:
+  data_protection_keys:
   go_pkg_cache:
   go_bin_cache:
   migrations_nm:
@@ -280,26 +286,16 @@ services:
       - --ReverseProxy:Clusters:avatar-cluster:Destinations:primary:Address=http://avatar-service:5207
       - --ReverseProxy:Clusters:thumbnails-cluster:Destinations:primary:Address=http://thumbnails-service:5208
       - --ReverseProxy:Clusters:users-cluster:Destinations:primary:Address=http://users-service:5209
-      - --ReverseProxy:Routes:avatar-apisite-route:Match:Hosts:0=localhost
-      - --ReverseProxy:Routes:avatar-apisite-route:Match:Hosts:1=127.0.0.1
-      - --ReverseProxy:Routes:avatar-apisite-route:Match:Hosts:2=vedora.xyz
-      - --ReverseProxy:Routes:thumbnails-apisite-route:Match:Hosts:0=localhost
-      - --ReverseProxy:Routes:thumbnails-apisite-route:Match:Hosts:1=127.0.0.1
-      - --ReverseProxy:Routes:thumbnails-apisite-route:Match:Hosts:2=vedora.xyz
-      - --ReverseProxy:Routes:users-apisite-route:Match:Hosts:0=localhost
-      - --ReverseProxy:Routes:users-apisite-route:Match:Hosts:1=127.0.0.1
-      - --ReverseProxy:Routes:users-apisite-route:Match:Hosts:2=vedora.xyz
-      - --ReverseProxy:Routes:games-apisite-route:Match:Hosts:0=localhost
-      - --ReverseProxy:Routes:games-apisite-route:Match:Hosts:1=127.0.0.1
-      - --ReverseProxy:Routes:games-apisite-route:Match:Hosts:2=vedora.xyz
       - --ReverseProxy:Routes:admin-host-route:Match:Hosts:0=localhost
       - --ReverseProxy:Routes:admin-host-route:Match:Hosts:1=127.0.0.1
       - --ReverseProxy:Routes:admin-host-route:Match:Hosts:2=admin.vedora.xyz
+      # The apisite routes are path-only in appsettings.json, so they match on
+      # any host and no per-host override is needed here.
       # The default website-route only matches vedora.xyz, but the launcher
       # prints http://localhost:5200 and FrontendProxy__PublicHosts already
       # lists localhost/127.0.0.1. Without this catch-all every page, /img and
       # /images request on localhost 404s, so thumbnails and the site itself
-      # never load. Keep it in sync with the apisite routes above.
+      # never load.
       - --ReverseProxy:Routes:website-localhost-route:ClusterId=website-cluster
       - --ReverseProxy:Routes:website-localhost-route:Match:Hosts:0=localhost
       - --ReverseProxy:Routes:website-localhost-route:Match:Hosts:1=127.0.0.1

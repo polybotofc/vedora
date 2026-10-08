@@ -110,14 +110,12 @@ const NavSideBar = props => {
     return <div className={s.container}>
         <div className={s.card}>
             <Link href={`/users/${authStore.userId}/profile`}>
-                <a href={`/users/${authStore.userId}/profile`}>
-                    <div className={s.usernameContainer}>
-                        <div className={s.userIconContainer}>
-                            <PlayerHeadshot id={authStore.userId} name={authStore.username} className={s.userIcon}/>
-                        </div>
-                        <a className={s.username}>{authStore.username}<VerifiedBadge userId={authStore.userId}/></a>
+                <div className={s.usernameContainer}>
+                    <div className={s.userIconContainer}>
+                        <PlayerHeadshot id={authStore.userId} name={authStore.username} className={s.userIcon}/>
                     </div>
-                </a>
+                    <a className={s.username}>{authStore.username}<VerifiedBadge userId={authStore.userId}/></a>
+                </div>
             </Link>
             <div className={s.divider}/>
             <LinkEntry theme={getTheme()} name='Home' url='/home' icon='icon-nav-home'/>

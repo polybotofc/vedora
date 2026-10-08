@@ -15,7 +15,7 @@ public class ThumbnailsController : RobloxControllerBase
     [AllowRobloxAnonymous]
     [HttpGet("/v1/users/avatar-headshot")]
     [HttpGet("/apisite/thumbnails/v1/users/avatar-headshot")]
-    public async Task<RobloxCollection<ThumbnailEntry>> GetUserHeadshots([FromQuery] string userIds)
+    public async Task<RobloxCollection<ThumbnailEntry>> GetUserHeadshots([FromQuery] string? userIds = null)
     {
         var parsed = ParseIdList(userIds);
         var result = (await services.thumbnails.GetUserHeadshots(parsed)).ToList();
@@ -28,7 +28,7 @@ public class ThumbnailsController : RobloxControllerBase
     [AllowRobloxAnonymous]
     [HttpGet("/v1/users/avatar")]
     [HttpGet("/apisite/thumbnails/v1/users/avatar")]
-    public async Task<RobloxCollection<ThumbnailEntry>> GetUserThumbnails([FromQuery] string userIds)
+    public async Task<RobloxCollection<ThumbnailEntry>> GetUserThumbnails([FromQuery] string? userIds = null)
     {
         var parsed = ParseIdList(userIds);
         var result = await services.thumbnails.GetUserThumbnails(parsed);
@@ -41,7 +41,7 @@ public class ThumbnailsController : RobloxControllerBase
     [AllowRobloxAnonymous]
     [HttpGet("/v1/users/avatar-3d")]
     [HttpGet("/apisite/thumbnails/v1/users/avatar-3d")]
-    public async Task<RobloxCollection<ThumbnailEntry>> GetUserThumbnails3D([FromQuery] string userIds)
+    public async Task<RobloxCollection<ThumbnailEntry>> GetUserThumbnails3D([FromQuery] string? userIds = null)
     {
         var parsed = ParseIdList(userIds);
         var result = (await services.thumbnails.GetUserThumbnails3D(parsed)).ToList();
@@ -54,7 +54,7 @@ public class ThumbnailsController : RobloxControllerBase
     [AllowRobloxAnonymous]
     [HttpGet("/v1/assets")]
     [HttpGet("/apisite/thumbnails/v1/assets")]
-    public async Task<RobloxCollection<ThumbnailEntry>> GetAssetThumbnails([FromQuery] string assetIds)
+    public async Task<RobloxCollection<ThumbnailEntry>> GetAssetThumbnails([FromQuery] string? assetIds = null)
     {
         var parsed = ParseIdList(assetIds);
         var result = await services.thumbnails.GetAssetThumbnails(parsed);
@@ -67,7 +67,7 @@ public class ThumbnailsController : RobloxControllerBase
     [AllowRobloxAnonymous]
     [HttpGet("/v1/users/outfits")]
     [HttpGet("/apisite/thumbnails/v1/users/outfits")]
-    public async Task<RobloxCollection<ThumbnailEntry>> GetUserOutfitThumbnails([FromQuery] string userOutfitIds)
+    public async Task<RobloxCollection<ThumbnailEntry>> GetUserOutfitThumbnails([FromQuery] string? userOutfitIds = null)
     {
         var parsed = ParseIdList(userOutfitIds);
         var result = await services.thumbnails.GetUserOutfitThumbnails(parsed);
@@ -80,7 +80,7 @@ public class ThumbnailsController : RobloxControllerBase
     [AllowRobloxAnonymous]
     [HttpGet("/v1/groups/icons")]
     [HttpGet("/apisite/thumbnails/v1/groups/icons")]
-    public async Task<RobloxCollection<ThumbnailEntry>> GetGroupIcons([FromQuery] string groupIds)
+    public async Task<RobloxCollection<ThumbnailEntry>> GetGroupIcons([FromQuery] string? groupIds = null)
     {
         var parsed = ParseIdList(groupIds);
         var result = await services.thumbnails.GetGroupIcons(parsed);
@@ -93,7 +93,7 @@ public class ThumbnailsController : RobloxControllerBase
     [AllowRobloxAnonymous]
     [HttpGet("/v1/games/icons")]
     [HttpGet("/apisite/thumbnails/v1/games/icons")]
-    public async Task<RobloxCollection<ThumbnailEntry>> GetUniverseIcons([FromQuery] string universeIds)
+    public async Task<RobloxCollection<ThumbnailEntry>> GetUniverseIcons([FromQuery] string? universeIds = null)
     {
         var parsed = ParseIdList(universeIds);
         var result = await services.thumbnails.GetUniverseIcons(parsed);
@@ -112,7 +112,7 @@ public class ThumbnailsController : RobloxControllerBase
     [AllowRobloxAnonymous]
     [HttpGet("/v1/places/gameicons")]
     [HttpGet("/apisite/thumbnails/v1/places/gameicons")]
-    public async Task<RobloxCollection<ThumbnailEntry>> GetPlaceIcons([FromQuery] string placeIds)
+    public async Task<RobloxCollection<ThumbnailEntry>> GetPlaceIcons([FromQuery] string? placeIds = null)
     {
         var parsed = ParseIdList(placeIds);
         var result = await services.thumbnails.GetPlaceIcons(parsed);
@@ -202,12 +202,15 @@ public class ThumbnailsController : RobloxControllerBase
 
     private static List<long> ParseIdList(string? rawIds)
     {
+        // A missing or empty id list means "no items" (for example a user who is
+        // not wearing anything), not a malformed request. Return [] so the caller
+        // can answer with an empty collection instead of a 400.
+        var parsed = new List<long>();
         if (string.IsNullOrWhiteSpace(rawIds))
         {
-            throw CreateBadRequest();
+            return parsed;
         }
 
-        var parsed = new List<long>();
         foreach (var rawId in rawIds.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
         {
             if (!long.TryParse(rawId, out var id))
@@ -219,7 +222,7 @@ public class ThumbnailsController : RobloxControllerBase
         }
 
         parsed = parsed.Distinct().ToList();
-        if (parsed.Count is 0 or > 200)
+        if (parsed.Count > 200)
         {
             throw CreateBadRequest();
         }
