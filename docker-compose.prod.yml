@@ -55,6 +55,10 @@ x-dotnet-prod-env: &dotnet-prod-env
   Directories__RCCService: "/app/RCCService/"
   Directories__RCCServiceGames: "/app/RCCService/"
   OpenTelemetry__OtlpEndpoint: "http://otel-collector:4317"
+  # Persist the ASP.NET DataProtection key ring on a shared volume so antiforgery
+  # tokens and cookies survive service restarts and are readable by every process.
+  DataProtection__KeysDirectory: "/data/dataprotection-keys"
+  DataProtection__ApplicationName: "vedora"
 
 x-dotnet-prod-service: &dotnet-prod-service
   restart: unless-stopped
@@ -69,6 +73,7 @@ x-dotnet-prod-service: &dotnet-prod-service
     - storage_data:/data/storage
     - thumbnails_data:/data/thumbnails
     - group_icons_data:/data/group-icons
+    - data_protection_keys:/data/dataprotection-keys
 
 volumes:
   public_data:
@@ -76,6 +81,7 @@ volumes:
   storage_data:
   thumbnails_data:
   group_icons_data:
+  data_protection_keys:
   prometheus_data:
 
 networks:

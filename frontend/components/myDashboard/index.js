@@ -318,7 +318,7 @@ const MyDashboard = props => {
             <div className={`col-12 ${s.homeGamesContainer}`}>
                 {
                     sorts.map(sort => {
-                        return <div className={`col-xs-12 ${s.sortContainer}`}>
+                        return <div key={sort.token} className={`col-xs-12 ${s.sortContainer}`}>
                             <div className={s.containerHeader}>
                                 <h3>{sort.displayName}</h3>
                                 <span>

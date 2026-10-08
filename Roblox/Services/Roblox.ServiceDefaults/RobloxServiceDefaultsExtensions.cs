@@ -24,6 +24,14 @@ public static class RobloxServiceDefaultsExtensions
         builder.Services.AddRobloxWebInfrastructure(builder.Configuration);
         builder.Services.AddRobloxTelemetry(builder.Configuration, serviceName, builder.Environment.EnvironmentName);
 
+        // Antiforgery tokens (and later cookies) are protected with the DataProtection
+        // key ring. By default that ring is ephemeral: a new key is generated per
+        // process, so a restart orphans every outstanding token and decrypting one
+        // logs "The key {..} was not found in the key ring". Persist the ring to a
+        // shared directory and give it one application name so all services use the
+        // same keys across restarts.
+        builder.Services.AddVedoraDataProtection(builder.Configuration);
+
         builder.Services.AddExceptionHandler<RobloxServiceExceptionHandler>();
         builder.Services.AddProblemDetails();
         builder.Services.AddEndpointsApiExplorer();

@@ -1,2 +1,4 @@
-cd C:\goober\prjx-frontend-patches\Project-X-V2\2016-roblox-main
+@echo off
+rem Run the Vedora frontend from this directory.
+cd /d "%~dp0"
 npm run start

@@ -243,7 +243,7 @@ public class GamesController : RobloxControllerBase
 
     [HttpGet("/v1/games/multiget-place-details")]
     [HttpGet("/apisite/games/v1/games/multiget-place-details")]
-    public async Task<IEnumerable<PlaceEntry>> MultiGetPlaceDetails(string placeIds)
+    public async Task<IEnumerable<PlaceEntry>> MultiGetPlaceDetails(string? placeIds = null)
     {
         FeatureFlags.FeatureCheck(FeatureFlag.GamesEnabled);
         // The web client calls this before it knows any ids (for example a profile

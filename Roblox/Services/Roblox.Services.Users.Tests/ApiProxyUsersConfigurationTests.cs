@@ -20,7 +20,11 @@ public class ApiProxyUsersConfigurationTests
         Assert.True(routes.TryGetProperty("users-apisite-route", out var apisiteRoute), "users-apisite-route should exist.");
         Assert.Equal("users-cluster", apisiteRoute.GetProperty("ClusterId").GetString());
         Assert.Equal("/apisite/users/{**catch-all}", apisiteRoute.GetProperty("Match").GetProperty("Path").GetString());
-        Assert.Contains("vedora.xyz", ReadStringArray(apisiteRoute.GetProperty("Match").GetProperty("Hosts")));
+        // The apisite routes are host-agnostic: they match on path only so they
+        // work behind any public host (vedora.xyz, localhost, ...).
+        Assert.False(
+            apisiteRoute.GetProperty("Match").TryGetProperty("Hosts", out _),
+            "users-apisite-route must not restrict by host.");
 
         Assert.True(clusters.TryGetProperty("users-cluster", out var usersCluster), "users-cluster should exist.");
         Assert.Equal(

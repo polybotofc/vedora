@@ -22,6 +22,11 @@ module.exports = withBundleAnalyzer({
     turbopack: {
         root: __dirname,
     },
+    // Next.js 16 rejects cross-origin requests to dev-only resources
+    // (/_next/webpack-hmr, /__nextjs_original-stack-frames) unless the origin
+    // is allow-listed. Requests reach the dev server through the api-proxy, so
+    // their Host is one of these values rather than the proxy's hostname.
+    allowedDevOrigins: ['vedora.xyz', 'www.vedora.xyz', 'localhost', '127.0.0.1'],
     env: {
         NEXT_PUBLIC_VEDORA_PUBLIC_CONFIG: JSON.stringify(publicRuntimeConfig),
     },

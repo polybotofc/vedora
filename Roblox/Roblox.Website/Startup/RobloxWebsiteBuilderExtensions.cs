@@ -138,6 +138,7 @@ public static class RobloxWebsiteBuilderExtensions
     {
         Roblox.Services.Assets.AssetRenderQueue.Configure(configuration);
         services.AddRobloxTelemetry(configuration, "Roblox.Website", environment.EnvironmentName);
+        services.AddVedoraDataProtection(configuration);
         services.AddRazorPages();
         services.AddRobloxWebInfrastructure(configuration);
         services.AddSingleton<Roblox.EconomyChat.ChatService>();
