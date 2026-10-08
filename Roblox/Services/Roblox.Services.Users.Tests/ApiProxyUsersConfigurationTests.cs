@@ -47,6 +47,29 @@ public class ApiProxyUsersConfigurationTests
         Assert.NotEqual(JsonValueKind.Undefined, matchingRoute.ValueKind);
     }
 
+    [Fact]
+    public void ApiProxyConfig_DeclaresEveryApisiteServiceRouteAsInternalForwardedAuthTarget()
+    {
+        using var document = LoadApiProxyAppSettings();
+        var root = document.RootElement;
+
+        var declaredPrefixes = root.GetProperty("InternalServiceRoutes")
+            .EnumerateArray()
+            .Where(route => route.TryGetProperty("Hosts", out var hosts) &&
+                            ReadStringArray(hosts).Contains("vedora.xyz"))
+            .SelectMany(route => ReadStringArray(route.GetProperty("PathPrefixes")))
+            .ToHashSet(StringComparer.Ordinal);
+
+        // The API proxy only forwards the internal auth/identity headers (which every
+        // /apisite service needs to build a session) for paths listed here. Any apisite
+        // service route that is missing will reach its service with no session and
+        // return 401.
+        foreach (var prefix in new[] { "/apisite/users/", "/apisite/games/", "/apisite/avatar/", "/apisite/thumbnails/" })
+        {
+            Assert.Contains(prefix, declaredPrefixes);
+        }
+    }
+
     private static JsonDocument LoadApiProxyAppSettings()
     {
         var directory = new DirectoryInfo(AppContext.BaseDirectory);

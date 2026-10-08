@@ -117,6 +117,16 @@ When you add or change a controller route, update the matching route case file
   `*-apisite-route` host lists.
 - `Roblox/Roblox.ApiProxy/appsettings.json` is committed (routes for
   `*.vedora.xyz`). Keep secrets in server-local `appsettings.Production.json`.
+- Internal services build a request context in `ProxyForwardedAuthMiddleware`
+  and hash the caller IP, which requires `RobloxIpHasher` to be initialized
+  first. That call lives in `UseRobloxServiceDefaults`, so it runs for every
+  exposure. If a new service bypasses that extension and hashes an IP, requests
+  fail with "IP hash setup is not initialized" and the endpoint returns 500.
+- The api proxy only forwards its internal auth/identity headers for paths
+  listed in `InternalServiceRoutes`. Any `/apisite/<service>/` route that is
+  missing reaches its service with no session and returns 401. When you add an
+  apisite route, add the matching `InternalServiceRoutes` entry and the
+  `ApiProxyUsersConfigurationTests` prefix assertion.
 - Do not restyle the frontend. Branding/domain replacements must not change
   layouts, CSS, or component structure.
 - `Roblox.ApiProxy` must call `app.UseWebSockets()` before

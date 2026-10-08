@@ -6,6 +6,10 @@ const toCsv = (str) => {
   return encodeURIComponent(str.join(','));
 }
 
+// An empty id list would produce `?userIds=`/`?assetIds=`, which the backend
+// rejects with 400. Callers poll these endpoints, so short-circuit instead.
+const hasIds = (ids) => Array.isArray(ids) ? ids.length > 0 : Boolean(ids);
+
 const addBaseUrl = (arrayOfThumbs) => {
   return arrayOfThumbs.map(v => {
     if (typeof v.imageUrl === 'string' && !v.imageUrl.startsWith('http')) {
@@ -22,6 +26,7 @@ const addBaseUrl = (arrayOfThumbs) => {
  * @returns {Promise<ThumbnailEntry[]>}
  */
 export const multiGetUserThumbnails = ({ userIds, size = '420x420', format = 'png' }) => {
+  if (!hasIds(userIds)) return Promise.resolve([]);
   return request('GET', getFullUrl('thumbnails', `/v1/users/avatar?userIds=${toCsv(userIds)}&size=${size}&format=${format}`)).then(d => d.data.data).then(addBaseUrl);
 }
 
@@ -32,10 +37,12 @@ export const multiGetUserThumbnails = ({ userIds, size = '420x420', format = 'pn
  * @returns {Promise<ThumbnailEntry[]>}
  */
 export const multiGetUserHeadshots2 = ({ userIds, size = '420x420', format = 'png' }) => {
+  if (!hasIds(userIds)) return Promise.resolve([]);
   return request('GET', getFullUrl('thumbnails', `/v1/users/avatar-headshot?userIds=${toCsv(userIds)}&size=${size}&format=${format}`)).then(d => d.data.data).then(addBaseUrl);
 }
 
 export const multiGetUserThumbnails3D = ({ userIds, size = '420x420', format = 'png' }) => {
+  if (!hasIds(userIds)) return Promise.resolve([]);
   return request('GET', getFullUrl('thumbnails', `/v1/users/avatar-3d?userIds=${toCsv(userIds)}&size=${size}&format=${format}`)).then(d => d.data.data).then(addBaseUrl);
 }
 
@@ -113,6 +120,7 @@ export const multiGetUserHeadshots = ({ userIds, size = '420x420', format = 'png
  * @returns {Promise<ThumbnailEntry[]>}
  */
 export const multiGetOutfitThumbnails = ({ userOutfitIds, size = '420x420', format = 'png' }) => {
+  if (!hasIds(userOutfitIds)) return Promise.resolve([]);
   return request('GET', getFullUrl('thumbnails', `/v1/users/outfits?userOutfitIds=${toCsv(userOutfitIds)}&size=${size}&format=${format}`)).then(d => d.data.data);
 }
 
@@ -121,6 +129,7 @@ export const multiGetOutfitThumbnails = ({ userOutfitIds, size = '420x420', form
  * @returns {Promise<ThumbnailEntry[]>}
  */
 export const multiGetGroupIcons = ({ groupIds }) => {
+  if (!hasIds(groupIds)) return Promise.resolve([]);
   return request('get', getFullUrl('thumbnails', `/v1/groups/icons?groupIds=${toCsv(groupIds)}&format=png&size=420x420`)).then(d => d.data.data).then(addBaseUrl);
 }
 
@@ -136,6 +145,7 @@ export const multiGetGroupIcons = ({ groupIds }) => {
  * @returns {Promise<ThumbnailEntry[]>}
  */
 export const multiGetAssetThumbnails = ({ assetIds }) => {
+  if (!hasIds(assetIds)) return Promise.resolve([]);
   return request('get', getFullUrl('thumbnails', `/v1/assets?assetIds=${toCsv(assetIds)}&format=png&size=420x420`)).then(d => d.data.data).then(addBaseUrl);
 }
 
@@ -144,10 +154,12 @@ export const multiGetAssetThumbnails = ({ assetIds }) => {
  * @returns {Promise<ThumbnailEntry[]>}
  */
 export const multiGetUniverseIcons2 = ({ universeIds }) => {
+  if (!hasIds(universeIds)) return Promise.resolve([]);
   return request('get', getFullUrl('thumbnails', `/v1/games/icons?universeIds=${toCsv(universeIds)}&format=png&size=420x420`)).then(d => d.data.data).then(addBaseUrl);
 }
 
 export const multiGetUniverseIcons = ({ universeIds, size }) => {
+  if (!hasIds(universeIds)) return Promise.resolve([]);
   let all = [];
   let c = chunk(universeIds, 100);
   for (const item of c) {

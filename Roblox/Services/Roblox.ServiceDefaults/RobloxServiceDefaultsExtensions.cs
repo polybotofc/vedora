@@ -7,6 +7,7 @@ using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Roblox.Web.Infrastructure;
 using Roblox.Web.Infrastructure.Extensions;
+using Roblox.Web.Infrastructure.Http;
 using Roblox.Web.Infrastructure.Middleware;
 
 namespace Roblox.ServiceDefaults;
@@ -42,12 +43,18 @@ public static class RobloxServiceDefaultsExtensions
         return builder;
     }
 
-    public static WebApplication UseRobloxServiceDefaults(this WebApplication app, ServiceExposure exposure)
+    public static async Task<WebApplication> UseRobloxServiceDefaults(this WebApplication app, ServiceExposure exposure)
     {
         Roblox.Services.ServiceProvider.Initialize(app.Services);
         app.UseRouting();
         app.UseRobloxRequestServicesScope();
         app.UseExceptionHandler();
+
+        // Every service builds a request context and hashes the caller IP: internal
+        // services through ProxyForwardedAuthMiddleware, the api proxy through
+        // ApiProxyForwardedAuthMiddleware. The hasher needs its Redis-backed setup
+        // loaded first, so initialize it here instead of relying on each Program.cs.
+        await RobloxIpHasher.InitializeIpHashSetupAsync();
 
         if (exposure == ServiceExposure.InternalService)
         {

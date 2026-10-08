@@ -3,12 +3,10 @@ using Roblox.ApiProxy.Middleware;
 using Roblox.ServiceDefaults;
 using Roblox.Web.Infrastructure.Admin;
 using Roblox.Web.Infrastructure;
-using Roblox.Web.Infrastructure.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddRobloxServiceDefaults("Roblox.ApiProxy", ServiceExposure.PublicService);
-await RobloxIpHasher.InitializeIpHashSetupAsync();
 builder.Services.AddSingleton<IAdminSessionResolver, AdminSessionResolver>();
 builder.Services.AddSingleton<IAdminStaffAuthorizationService, AdminStaffAuthorizationService>();
 builder.Services.AddSingleton<IAdminTwoFactorStore, AdminTwoFactorStore>();
@@ -24,7 +22,7 @@ builder.Services.AddReverseProxy()
 
 var app = builder.Build();
 
-app.UseRobloxServiceDefaults(ServiceExposure.PublicService);
+await app.UseRobloxServiceDefaults(ServiceExposure.PublicService);
 // Next.js serves its dev HMR channel as a WebSocket at /_next/webpack-hmr.
 // YARP's frontend forwarder can only tunnel that upgrade when the pipeline has
 // the WebSocket middleware; without it every HMR upgrade fails with 502.
