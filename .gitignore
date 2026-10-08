@@ -4,6 +4,8 @@
 **/config.json
 # env files
 **/*.env
+.env.prod
+.env.local
 # js files (in src)
 src/*.js
 # language server cache | i need it -david
