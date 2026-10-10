@@ -1,6 +1,10 @@
 @echo off
+rem Legacy standalone RCC launcher from the upstream RCCService2020 build.
+rem Vedora does NOT use this: the RCC arbiter (vedora.bat) starts RCCService.exe
+rem directly on a port it allocates from Arbiter:Ports:Rcc. Keep this only for
+rem manually poking a single RCC instance outside Vedora.
 :loop
-echo "Starting Player Render RCC"
+echo "Starting Vedora Player Render RCC (standalone)"
 RCCService.exe -console -verbose -port 1621
 echo Restarting this RCC, Control+C to cancel restart!
 timeout 10

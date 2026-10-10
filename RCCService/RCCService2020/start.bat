@@ -1,8 +1,13 @@
-echo "Starting Player Render RCC"
+@echo off
+rem Legacy standalone launcher from the upstream RCCService2020 build. It fires
+rem the four render helpers below on fixed ports. Vedora does NOT use this: the
+rem RCC arbiter (vedora.bat) manages RCCService instances itself, on ports
+rem allocated from Arbiter:Ports:Rcc.
+echo "Starting Vedora Player Render RCC"
 start /b RCCPlayerRender.bat
-echo "Starting Image Render RCC"
+echo "Starting Vedora Image Render RCC"
 start /b RCCImageRender.bat
-echo "Starting Game Render RCC"
+echo "Starting Vedora Game Render RCC"
 start /b RCCGameRender.bat
-echo "Starting Catalog Render RCC"
+echo "Starting Vedora Catalog Render RCC"
 start /b RCCCatalogRender.bat
