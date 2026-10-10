@@ -1,8 +1,7 @@
 # Vedora
 
-Vedora is a Roblox revival that runs **2021 only**. Game servers use the bundled
-`RCCService2021` build; thumbnails/renders use the `RCCService2020` build (the
-build Vedora renders with, since it ships the full modern thumbnail scripts).
+Vedora is a Roblox revival that runs **2021 only**. Game servers and
+thumbnails/renders both use the bundled `RCCService2021` build.
 
 > [!CAUTION]
 > Some parts of the source code are AI-generated (or vibecoded). Use at your own risk.
@@ -11,10 +10,9 @@ build Vedora renders with, since it ships the full modern thumbnail scripts).
 
 - `Roblox/` - .NET backend (website, api proxy, extracted services).
 - `Roblox/Vedora.RccServiceArbiter` - the RCC arbiter. It launches
-  `RCCService/RCCService2021/RCCService.exe` for game servers and
-  `RCCService/RCCService2020/RCCService.exe` for renders.
-- `RCCService/RCCService2021` - the 2021 RCCService install (game servers).
-- `RCCService/RCCService2020` - the 2020 RCCService install (renders/thumbnails).
+  `RCCService/RCCService2021/RCCService.exe` for both game servers and renders.
+- `RCCService/RCCService2021` - the 2021 RCCService install (game servers and
+  renders/thumbnails).
 - `frontend/` - Next.js web frontend (the 2021 theme).
 - `api/` - database migrations and legacy public assets.
 - `admin/` - Svelte admin panel.
@@ -27,8 +25,8 @@ every component:
 
 - the Docker stack (Postgres, Redis, migrations, the .NET services, the
   frontend, the admin panel, the asset validation service)
-- the RCC arbiter, which launches `RCCService2021` for game servers and
-  `RCCService2020` for renders
+- the RCC arbiter, which launches `RCCService2021` for both game servers and
+  renders
 
 The first run builds the Docker images and the .NET projects, so it can take a
 few minutes. Run `vedora.bat down` to stop the Docker stack, then close the
@@ -73,23 +71,21 @@ The arbiter starts `RCCService.exe` with launch flags from configuration
   upstream `true` value RCC crashes with `RBXCRASH:
   LoadClientSettingsFailure (HttpError: ConnectFail)` before it opens its port.
 
-- Renders use `Arbiter:Render:LaunchArguments`, which drives the
-  `RCCService2020` build. The default mirrors the flags Vedora's render batch
-  files use:
+- Renders use `Arbiter:Render:LaunchArguments`, which drives the same
+  `RCCService2021` build, so it needs the same 2021 flags:
 
   ```
-  -console -verbose -port {port}
+  -Console -Verbose -SettingsFile "DevSettingsFile.json" -port {port}
   ```
 
-  `-SettingsFile` is not passed here because the RCCService2020 install has no
-  `DevSettingsFile.json`.
+  `-SettingsFile` keeps RCC from crashing on a failed client-settings fetch, the
+  same as the game-server case above.
 
 If your build needs the port differently, change the matching configuration
 value instead of the code.
 
 RCC reads its base URL from the `AppSettings.xml` next to the running binary
-(`RCCService/RCCService2021/AppSettings.xml` for game servers,
-`RCCService/RCCService2020/AppSettings.xml` for renders). Both point at
+(`RCCService/RCCService2021/AppSettings.xml`). It points at
 `<BaseUrl>https://vedora.xyz</BaseUrl>`, so settings and assets resolve
 against the Vedora domain instead of `localhost:2015`.
 

@@ -33,7 +33,7 @@ public sealed class ArbiterOptions
 
     // RCCService launch arguments for game servers. "{port}" is replaced with
     // the allocated SOAP port. Game servers use the RCCService2021 build, which
-    // needs "-port"; renders use the RCCService2020 build (see Render.LaunchArguments).
+    // needs "-port" and "-SettingsFile DevSettingsFile.json" (see Render.LaunchArguments).
     public string GameServerLaunchArguments { get; set; } = "-Console -Verbose -SettingsFile \"DevSettingsFile.json\" -port {port}";
 
     public string GlobalMessageTopic { get; set; } = "GlobalMessage_VEDORA";
@@ -57,10 +57,11 @@ public sealed class ArbiterOptions
 
 public sealed class ArbiterRenderOptions
 {
-    // Renders use the RCCService2020 build (the build Vedora renders with); only
-    // 2020 ships the full modern thumbnail scripts (Image.lua, AnimationSilhouette.lua).
-    // Game servers stay on RCCService2021 (see GameServerYear).
-    [Range(2000, 2100)] public int DefaultYear { get; set; } = 2020;
+    // Vedora is 2021-only, so renders use the RCCService2021 build too. That
+    // build ships the same full modern thumbnail script set (Image.lua,
+    // AnimationSilhouette.lua, modules/) as the old 2020 install, so a single
+    // year covers both game servers and renders.
+    [Range(2000, 2100)] public int DefaultYear { get; set; } = 2021;
     [Range(1, 256)] public int MaxWorkers { get; set; } = 8;
     [Range(0, 256)] public int MinimumWarmWorkers { get; set; } = 3;
     [Range(1, 256)] public int MaximumIdleWorkers { get; set; } = 8;
@@ -80,10 +81,10 @@ public sealed class ArbiterRenderOptions
     public bool UseBinaryTransport { get; set; } = true;
 
     // RCCService launch arguments for render workers. "{port}" is replaced with
-    // the allocated SOAP port. Matches the flags the RCCService2020 render batch
-    // files use ("-console -verbose -port"); the 2021 "-SettingsFile" flag is
-    // not needed here because the 2020 install has no DevSettingsFile.json.
-    public string LaunchArguments { get; set; } = "-console -verbose -port {port}";
+    // the allocated SOAP port. Renders use the same RCCService2021 build as game
+    // servers, so they need the 2021 flags: "-SettingsFile DevSettingsFile.json"
+    // (RCC crashes on a failed client-settings fetch otherwise) plus "-port".
+    public string LaunchArguments { get; set; } = "-Console -Verbose -SettingsFile \"DevSettingsFile.json\" -port {port}";
 }
 
 public sealed class ArbiterPortOptions
