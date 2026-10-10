@@ -12,10 +12,8 @@ solution lives in `Roblox/Roblox.sln`.
 
 - `Roblox/` - .NET backend (website, api proxy, extracted services).
 - `Roblox/Vedora.RccServiceArbiter` - RCC arbiter. Launches
-  `RCCService/RCCService2021/RCCService.exe` for game servers and
-  `RCCService/RCCService2020/RCCService.exe` for renders.
-- `RCCService/RCCService2021` - the bundled 2021 RCCService install (committed, game servers).
-- `RCCService/RCCService2020` - the bundled 2020 RCCService install (committed, renders).
+  `RCCService/RCCService2021/RCCService.exe` for game servers and renders.
+- `RCCService/RCCService2021` - the bundled 2021 RCCService install (committed, game servers + renders).
 - `frontend/` - Next.js web frontend (2021 theme).
 - `api/` - database migrations and legacy public assets.
 - `admin/` - Svelte admin panel.
@@ -53,10 +51,9 @@ When you add or change a controller route, update the matching route case file
 
 - 2021-only: `AllowedGameYears` (Games.cs), the `asset_place` year default, the
   arbiter `GameServerYear`, and frontend year selectors are all pinned to 2021.
-  Do not reintroduce other years. Renders are the one exception: game servers
-  run `RCCService2021` (`Arbiter:GameServerYear`), but renders run
-  `RCCService2020` (`Arbiter:Render:DefaultYear`) because only the 2020 build
-  ships the full modern thumbnail scripts. See "Render build" below.
+  Do not reintroduce other years. Renders use the same build: game servers and
+  renders both run `RCCService2021` (`Arbiter:GameServerYear=2021`,
+  `Arbiter:Render:DefaultYear=2021`). See "Render build" below.
 - The RCC arbiter resolves relative paths via
   `Vedora.RccServiceArbiter/Configuration/RccPathResolver.cs` so it works
   regardless of the working directory.
@@ -73,25 +70,24 @@ When you add or change a controller route, update the matching route case file
   `-SettingsFile "DevSettingsFile.json"`, which sets
   `DebugCrashOnFailToLoadClientSettings: false` so RCC does not crash when it
   cannot fetch Roblox client settings over the network. Keep that flag false;
-  do not hardcode the command line again. Renders use
-  `Arbiter:Render:LaunchArguments` (RCCService2020) with
-  `-console -verbose -port {port}`; the 2020 install has no
-  `DevSettingsFile.json`.
+  do not hardcode the command line again. Renders use the same
+  `Arbiter:Render:LaunchArguments` shape (RCCService2021):
+  `-Console -Verbose -SettingsFile "DevSettingsFile.json" -port {port}` — the
+  2021 build needs `-SettingsFile` too, or it crashes with
+  `LoadClientSettingsFailure` before opening its port.
 - `Arbiter:SoapServiceUrl` must stay `roblox.com`; RCCService dispatches SOAP
   in the `http://roblox.com/` WSDL namespace. Changing it makes RCC return
   HTTP 500 for every SOAP call.
-- `RCCService/RCCService2021/AppSettings.xml` and
-  `RCCService/RCCService2020/AppSettings.xml` `<BaseUrl>` point at
+- `RCCService/RCCService2021/AppSettings.xml` `<BaseUrl>` points at
   `https://vedora.xyz`. Each RCC binary reads its base URL from the
-  `AppSettings.xml` beside it, and the relocatable asset URLs hardcoded in the
-  2020 Lua scripts (Package.lua, Model.lua) point at `roblox.com` to match the
-  2021 install.
+  `AppSettings.xml` beside it, and any relocatable asset URLs hardcoded in the
+  Lua scripts point at `roblox.com` to match the install.
 - Renders do **not** use the JSON in `RenderScripts/Modern`. RCC loads a
   Lua script named after the thumbnail `Type` from
-  `RCCService/RCCService2020/internalscripts/thumbnails/<Type>.lua` and passes
-  the arbiter's `Arguments` as `...`. Only the 2020 build ships the full modern
+  `RCCService/RCCService2021/internalscripts/thumbnails/<Type>.lua` and passes
+  the arbiter's `Arguments` as `...`. The 2021 build ships the full modern
   script set (`Image.lua`, `AnimationSilhouette.lua`, `PlaceValidation.lua`,
-  `modules/`); the 2021 build ships none, which is why renders use 2020. If a
+  `modules/`), the same set the old 2020 install had, so renders use it too. If a
   `Type` has no matching `.lua`, that render fails with `Failed to open script
   file` and the website shows the generic "3D Render not available" message. Add
   a script for any new `Type`, and run `RCCService/diagnose-render.bat`
@@ -102,8 +98,8 @@ When you add or change a controller route, update the matching route case file
   path therefore affects 2D and 3D together.
 - The `Avatar3D` OBJ token is case-sensitive per build and picked from
   `Arbiter:Render:DefaultYear` in `RenderScriptCatalog.ObjFormatToken()`: the
-  RCCService2020 render build expects uppercase `OBJ` (`exportScene` when
-  `fileType == "OBJ"`), while the 2021 build only matches lowercase `obj`. A
+  RCCService2021 build only matches lowercase `obj`, while older builds expect
+  uppercase `OBJ` (`exportScene` when `fileType == "OBJ"`). A
   wrong token matches neither the OBJ path nor the `JPG`/`JPEG`/`TGA`/`PNG`
   encoders, so RCC returns no data and `thumbnail_3d_url` stays `NULL` while 2D
   renders still work.
@@ -169,11 +165,6 @@ When you add or change a controller route, update the matching route case file
   Beware of blind `pekora.zip`/`vedora.xyz` substitutions in minified JS.
 - `Roblox/Roblox.Website/Controllers/RobloxApi/Asset.cs` serves `FixJitter`
   models; they are copied to the output/publish dir from `Roblox/FixJitter`.
-- Vedora is 2021-only for gameplay. Game servers always launch
-  `RCCService/RCCService2021/RCCService.exe` (arbiter `RccServiceRoot=RCCService`,
-  `Arbiter:GameServerYear=2021`). Renders use the 2020 build via
-  `Arbiter:Render:DefaultYear=2020` (see the render conventions above). The
-  website year (`WebsiteYear`) is a legacy per-user theme switch; `Users.GetYear`
 - Vedora is 2021-only. The RCCService binary is always
   `RCCService/RCCService2021/RCCService.exe` (arbiter `RccServiceRoot=RCCService`,
   `Arbiter:GameServerYear=2021`, `Arbiter:Render:DefaultYear=2021`). The website
@@ -185,6 +176,16 @@ When you add or change a controller route, update the matching route case file
   .NET service must share one directory and application name or antiforgery
   tokens/cookies fail to decrypt ("key was not found in the key ring"). The dev
   and prod compose files both set these and mount a shared volume.
+- The .NET services need two runtime packages that the stock
+  `mcr.microsoft.com/dotnet/aspnet:10.0` image does not ship:
+  `libgssapi-krb5-2` (Npgsql's GSSAPI P/Invoke; without it a service that opens
+  a Postgres connection can crash with `libgssapi_krb5.so.2: cannot open shared
+  object file`) and `ffmpeg`/`ffprobe` (audio and video upload validation plus
+  audio -> MP3/WAV conversion go through FFMpegCore/FFProbe; without them every
+  audio/video upload is rejected). Production installs both in
+  `Roblox/Dockerfile.dotnet-service`; the dev stack, which runs the stock image
+  directly, installs them in `scripts/docker-dotnet-run.sh` (idempotent, skipped
+  once present). Keep both paths in sync.
 - The `economy` bridge network in this sandbox has no egress, so the in-compose
   `dotnet-build`/`dotnet-watch` restore hangs on `api.nuget.org`. To build or
   test here, run the SDK image with `--network host`, e.g.

@@ -12,7 +12,7 @@ public sealed class RenderScriptCatalogTests
 {
     [Theory]
     [InlineData(RenderKind.Avatar, "Avatar_R15_Action", "PNG")]
-    [InlineData(RenderKind.Avatar3D, "Avatar_R15_Action", "OBJ")]
+    [InlineData(RenderKind.Avatar3D, "Avatar_R15_Action", "obj")]
     [InlineData(RenderKind.AvatarHeadshot, "Closeup", "PNG")]
     [InlineData(RenderKind.MeshPart, "MeshPart", "PNG")]
     [InlineData(RenderKind.Animation, "AvatarAnimation", "PNG")]
@@ -155,16 +155,15 @@ public sealed class RenderScriptCatalogTests
         Assert.Equal(10, arguments.GetArrayLength());
     }
 
-    // The render build (RCCService2020) must ship a thumbnail script for every
-    // render kind; 2021 lacks Image/AnimationSilhouette, which is why renders
-    // use 2020. RCCService loads <Type>.lua from RCCService<Year>/internalscripts/thumbnails.
+    // The render build (RCCService2021) must ship a thumbnail script for every
+    // render kind. RCCService loads <Type>.lua from RCCService<Year>/internalscripts/thumbnails.
     [Fact]
     public void EveryRenderKindHasThumbnailScript()
     {
         var repoRoot = FindRepositoryRoot();
         if (repoRoot == null) return; // Repository layout is not available (packaged test run).
 
-        var thumbnails = Path.Combine(repoRoot, "RCCService", "RCCService2020", "internalscripts", "thumbnails");
+        var thumbnails = Path.Combine(repoRoot, "RCCService", "RCCService2021", "internalscripts", "thumbnails");
         Assert.True(Directory.Exists(thumbnails), $"Missing RCC thumbnail scripts at {thumbnails}");
 
         var available = Directory.GetFiles(thumbnails, "*.lua")
@@ -173,11 +172,11 @@ public sealed class RenderScriptCatalogTests
 
         var missing = CreateCatalog().KindsWithMissingScripts(available).ToList();
 
-        Assert.True(missing.Count == 0, "RCC 2020 has no thumbnail script for: " + string.Join(", ", missing));
+        Assert.True(missing.Count == 0, "RCC 2021 has no thumbnail script for: " + string.Join(", ", missing));
     }
 
-    // The OBJ output token is case-sensitive per build: 2020 render build uses
-    // "OBJ", the 2021 build only matches lowercase "obj".
+    // The OBJ output token is case-sensitive per build: the 2021 build matches
+    // lowercase "obj", older builds use "OBJ".
     [Fact]
     public void ObjFormatToken_MatchesRenderBuild()
     {
@@ -204,7 +203,7 @@ public sealed class RenderScriptCatalogTests
         var directory = new DirectoryInfo(AppContext.BaseDirectory);
         while (directory != null)
         {
-            if (Directory.Exists(Path.Combine(directory.FullName, "RCCService", "RCCService2020", "internalscripts")))
+            if (Directory.Exists(Path.Combine(directory.FullName, "RCCService", "RCCService2021", "internalscripts")))
                 return directory.FullName;
             directory = directory.Parent;
         }
@@ -212,5 +211,5 @@ public sealed class RenderScriptCatalogTests
     }
 
     private static RenderScriptCatalog CreateCatalog() => new(Options.Create(new ArbiterOptions
-    { BaseUrl = "https://example.test", Render = new ArbiterRenderOptions { DefaultYear = 2020 } }));
+    { BaseUrl = "https://example.test", Render = new ArbiterRenderOptions { DefaultYear = 2021 } }));
 }

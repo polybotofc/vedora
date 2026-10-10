@@ -2,6 +2,32 @@
 
 set -u
 
+# The dev stack runs services directly on the stock mcr.microsoft.com/dotnet/aspnet
+# image (no Dockerfile), so two runtime dependencies are missing:
+#
+#  * libgssapi-krb5-2: Npgsql's GSSAPI path P/Invokes libgssapi_krb5.so.2, and
+#    without it a service that opens a Postgres connection can crash with
+#    "libgssapi_krb5.so.2: cannot open shared object file".
+#  * ffmpeg/ffprobe: audio and video upload validation (and audio -> MP3/WAV
+#    conversion) shell out to these through FFMpegCore/FFProbe. Without them
+#    every audio/video upload fails validation and is rejected.
+#
+# The production image installs both in Roblox/Dockerfile.dotnet-service. These
+# installs are idempotent and skipped once the packages are present, so they are
+# a no-op on an image that already provides them.
+missing=''
+if ! ldconfig -p | grep -q 'libgssapi_krb5\.so\.2'; then missing="$missing libgssapi-krb5-2"; fi
+if ! command -v ffmpeg >/dev/null 2>&1 || ! command -v ffprobe >/dev/null 2>&1; then missing="$missing ffmpeg"; fi
+
+if [ -n "$missing" ] && command -v apt-get >/dev/null 2>&1; then
+  echo "[dotnet] Installing missing runtime dependencies:$missing"
+  if apt-get update -qq && apt-get install -y --no-install-recommends $missing; then
+    rm -rf /var/lib/apt/lists/*
+  else
+    echo "[dotnet] WARNING: could not install runtime dependencies:$missing" >&2
+  fi
+fi
+
 assembly="${1:?service assembly name is required}"
 shift
 

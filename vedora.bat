@@ -23,7 +23,6 @@ rem only loads for the Development environment.
 set "ASPNETCORE_ENVIRONMENT=Development"
 set "RCC_ROOT=%ROOT%\RCCService"
 set "RCC2021=%RCC_ROOT%\RCCService2021"
-set "RCC2020=%RCC_ROOT%\RCCService2020"
 set "PUBLIC_BASE_URL=https://vedora.xyz"
 
 rem ---------------------------------------------------------------
@@ -97,7 +96,7 @@ if not defined DOTNET_SDK10 (
 for %%d in ("%DOTNET_EXE%") do set "PATH=%%~dpd;%PATH%"
 
 rem ---------------------------------------------------------------
-rem 2. RCCService2021 (game servers) + RCCService2020 (renders)
+rem 2. RCCService2021 (game servers + renders)
 rem ---------------------------------------------------------------
 if not exist "%RCC2021%\RCCService.exe" (
     echo [ERROR] RCCService2021 was not found at:
@@ -105,15 +104,7 @@ if not exist "%RCC2021%\RCCService.exe" (
     echo         Add the RCCService2021 build before starting Vedora.
     goto :fail
 )
-echo [ok] RCCService2021 found ^(game servers^).
-
-if not exist "%RCC2020%\RCCService.exe" (
-    echo [ERROR] RCCService2020 was not found at:
-    echo         %RCC2020%\RCCService.exe
-    echo         Add the RCCService2020 build before starting Vedora.
-    goto :fail
-)
-echo [ok] RCCService2020 found ^(renders^).
+echo [ok] RCCService2021 found ^(game servers + renders^).
 
 rem ---------------------------------------------------------------
 rem 3. Quilkin proxy (game server traffic)
