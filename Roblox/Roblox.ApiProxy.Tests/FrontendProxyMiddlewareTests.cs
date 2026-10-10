@@ -64,6 +64,53 @@ public class FrontendProxyMiddlewareTests
         Assert.Equal(1, forwarder.ForwardCount);
     }
 
+    [Theory]
+    [InlineData("/api/validate-and-add-cookie")]
+    [InlineData("/api/proxy")]
+    public async Task NextJsApiRoute_WithOkSession_ForwardsToFrontend(string path)
+    {
+        var (context, forwarder) = await InvokeAsync(CreateSession(AccountStatus.Ok), path: path);
+
+        Assert.Equal(StatusCodes.Status200OK, context.Response.StatusCode);
+        Assert.Equal("forwarded", await ReadBodyAsync(context));
+        Assert.Equal(1, forwarder.ForwardCount);
+    }
+
+    [Fact]
+    public async Task NextJsApiRoute_WithoutSession_RedirectsToRootInsteadOfBackend()
+    {
+        var nextCalled = false;
+        var (context, forwarder) = await InvokeAsync(
+            path: "/api/validate-and-add-cookie",
+            next: _ =>
+            {
+                nextCalled = true;
+                return Task.CompletedTask;
+            });
+
+        Assert.Equal(StatusCodes.Status302Found, context.Response.StatusCode);
+        Assert.Equal("/", context.Response.Headers.Location.ToString());
+        Assert.Equal(0, forwarder.ForwardCount);
+        Assert.False(nextCalled);
+    }
+
+    [Fact]
+    public async Task BackendOwnedApiPath_WithoutSession_ContinuesToNextMiddleware()
+    {
+        var nextCalled = false;
+        var (context, forwarder) = await InvokeAsync(
+            path: "/api/economy-chat/v1/messages",
+            next: _ =>
+            {
+                nextCalled = true;
+                return Task.CompletedTask;
+            });
+
+        Assert.Equal(StatusCodes.Status200OK, context.Response.StatusCode);
+        Assert.Equal(0, forwarder.ForwardCount);
+        Assert.True(nextCalled);
+    }
+
     [Fact]
     public async Task BackendOwnedJsPath_WithoutSession_ContinuesToNextMiddleware()
     {
