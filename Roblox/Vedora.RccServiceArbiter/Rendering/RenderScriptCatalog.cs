@@ -51,8 +51,8 @@ public sealed class RenderScriptCatalog : IRenderScriptCatalog
             ? Correlate($"{baseUrl}v1.1/avatar-fetch?placeId=0&userId={request.UserId}", request)
             : PrivateDependencyUrl(request.CharacterAppearanceUrl, request);
         // The OBJ output token is matched case-sensitively and differs by build:
-        // RCC 2020 (renders) accepts "OBJ"; the 2021 build only matches lowercase
-        // "obj". Pick the token for the configured render year.
+        // the 2021 build only matches lowercase "obj" (older builds accept
+        // "OBJ"). Pick the token for the configured render year.
         var format = request.Kind == RenderKind.Avatar3D
             ? ObjFormatToken()
             : "PNG";
@@ -219,8 +219,8 @@ public sealed class RenderScriptCatalog : IRenderScriptCatalog
         if (string.IsNullOrWhiteSpace(request.CorrelationId)) return url;
         return url + (url.Contains('?') ? "&" : "?") + "renderCorrelationId=" + Uri.EscapeDataString(request.CorrelationId);
     }
-    // RCC 2020 (render build) expects uppercase "OBJ"; RCC 2021 only matches
-    // lowercase "obj". Chosen from the configured render year.
+    // The 2021 build only matches lowercase "obj"; older builds expect
+    // uppercase "OBJ". Chosen from the configured render year.
     private string ObjFormatToken() => _options.Render.DefaultYear >= 2021 ? "obj" : "OBJ";
 
     private string OriginBaseUrl() => (string.IsNullOrWhiteSpace(_options.Render.OriginBaseUrl)

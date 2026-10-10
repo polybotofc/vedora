@@ -8,6 +8,17 @@ RUN dotnet publish "$PROJECT_PATH" -c Release -o /app/publish /p:UseAppHost=fals
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 
+# Runtime dependencies:
+#  * libgssapi-krb5-2: Npgsql's GSSAPI path needs libgssapi_krb5.so.2; the
+#    aspnet base ships no Kerberos runtime, so every service that opens a
+#    Postgres connection can crash with "libgssapi_krb5.so.2: cannot open shared
+#    object file".
+#  * ffmpeg: provides ffmpeg/ffprobe, which audio and video upload validation
+#    (and audio -> MP3/WAV conversion) invoke through FFMpegCore/FFProbe.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libgssapi-krb5-2 ffmpeg \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 ARG ASSEMBLY_NAME
