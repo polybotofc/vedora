@@ -45,7 +45,11 @@ Requirements:
 ## Configuration
 
 - Website/services: environment variables are read directly (see
-  `docker-compose.yml` and `.env.prod.example`).
+  `docker-compose.yml` and `.env.prod.example`). Copy the template to `.env`
+  (dev, used by `vedora.bat`) or `.env.prod` (production) and fill it in. Docker
+  Compose only auto-loads a file named exactly `.env`, so an edited
+  `.env.prod.example` is ignored — that is why "Verify with Discord" keeps
+  saying it is not configured. `vedora.bat` reads `.env`, then `.env.prod`.
 - Frontend: copy `frontend/config.docker-dev.json` to `frontend/config.json`, or
   run `node frontend/util/create_config.js`.
 - Arbiter: `Roblox/Vedora.RccServiceArbiter/appsettings.json` holds the local

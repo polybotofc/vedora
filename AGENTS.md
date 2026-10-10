@@ -174,6 +174,10 @@ When you add or change a controller route, update the matching route case file
   `Arbiter:GameServerYear=2021`). Renders use the 2020 build via
   `Arbiter:Render:DefaultYear=2020` (see the render conventions above). The
   website year (`WebsiteYear`) is a legacy per-user theme switch; `Users.GetYear`
+- Vedora is 2021-only. The RCCService binary is always
+  `RCCService/RCCService2021/RCCService.exe` (arbiter `RccServiceRoot=RCCService`,
+  `Arbiter:GameServerYear=2021`, `Arbiter:Render:DefaultYear=2021`). The website
+  year (`WebsiteYear`) is a legacy per-user theme switch; `Users.GetYear`
   defaults every account to `Year2021`, so it does not select another RCC build.
 - The ASP.NET DataProtection key ring is persisted through
   `AddVedoraDataProtection` (`Roblox.Web.Infrastructure/Extensions`), configured

@@ -27,6 +27,23 @@ set "RCC2020=%RCC_ROOT%\RCCService2020"
 set "PUBLIC_BASE_URL=https://vedora.xyz"
 
 rem ---------------------------------------------------------------
+rem 0a. Environment file (Discord, hCaptcha, secrets, ...)
+rem  Docker Compose only auto-loads a file literally named `.env` from the
+rem  project directory. `.env.prod.example` is a template and is ignored, so
+rem  `docker compose -f docker-compose.yml up` sees an empty environment and
+rem  every keyed integration (Discord OAuth, hCaptcha, ...) stays unset.
+rem  Pick up, in order: an explicit VEDORA_ENV_FILE, `.env`, then `.env.prod`.
+rem ---------------------------------------------------------------
+set "ENV_FILE="
+set "ENV_ARGS="
+if defined VEDORA_ENV_FILE (
+    if exist "%VEDORA_ENV_FILE%" set "ENV_FILE=%VEDORA_ENV_FILE%"
+)
+if not defined ENV_FILE if exist "%ROOT%\.env" set "ENV_FILE=%ROOT%\.env"
+if not defined ENV_FILE if exist "%ROOT%\.env.prod" set "ENV_FILE=%ROOT%\.env.prod"
+if defined ENV_FILE set "ENV_ARGS=--env-file "%ENV_FILE%""
+
+rem ---------------------------------------------------------------
 rem 0b. Arguments: "down" / "stop" stops the Docker stack
 rem ---------------------------------------------------------------
 if /i "%~1"=="down" goto :shutdown
@@ -128,7 +145,13 @@ rem    frontend, admin, asset validation)
 rem ---------------------------------------------------------------
 echo.
 echo [..] Starting the Docker stack (this can take a few minutes on the first run)...
-docker compose -f "%ROOT%\docker-compose.yml" up -d --build
+if defined ENV_FILE (
+    echo [ok] Using environment file: %ENV_FILE%
+) else (
+    echo [warn] No .env or .env.prod found. Discord OAuth, hCaptcha and other keyed
+    echo       integrations will stay unset. Copy .env.prod.example to .env and fill it in.
+)
+docker compose %ENV_ARGS% -f "%ROOT%\docker-compose.yml" up -d --build
 if errorlevel 1 (
     echo [ERROR] docker compose failed to start the stack.
     goto :fail
@@ -186,7 +209,7 @@ goto :eof
 
 :shutdown
 echo [..] Stopping the Vedora Docker stack...
-docker compose -f "%ROOT%\docker-compose.yml" down
+docker compose %ENV_ARGS% -f "%ROOT%\docker-compose.yml" down
 echo [ok] Docker stack stopped.
 
 rem Stop the arbiter too: it is a plain `dotnet run` window, not a container,
