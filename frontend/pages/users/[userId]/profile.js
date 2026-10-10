@@ -36,9 +36,10 @@ const UserProfilePage = ({ username, userId, description, ...props }) => {
 
 export async function getServerSideProps(context) {
     const { userId } = context.query;
+    const cookie = context.req?.headers?.cookie || '';
     // we will get the username, desc
     try {
-        const info = await getUserInfo({ userId });
+        const info = await getUserInfo({ userId, cookie });
         const username = info.name || "Vedora";
         const description = info.description || "No description available";
         return {

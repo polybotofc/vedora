@@ -474,9 +474,11 @@ public class AssetsService : ServiceBase, IService
     public async Task<bool> RobloxFileValidation(Stream stream)
     {
         byte[] buffer = new byte[7];
-        await stream.ReadAsync(buffer, 0, buffer.Length);
-        string startOfFile = Encoding.UTF8.GetString(buffer);
+        var read = await stream.ReadAtLeastAsync(buffer, buffer.Length, throwOnEndOfStream: false);
         stream.Position = 0;
+        if (read < buffer.Length)
+            return false;
+        string startOfFile = Encoding.UTF8.GetString(buffer);
         return startOfFile == "<roblox";
     }
 
@@ -657,13 +659,15 @@ public class AssetsService : ServiceBase, IService
     public async Task<bool> IsMeshValid(Stream content)
     {
         byte[] buffer = new byte[8];
-        await content.ReadAsync(buffer, 0, buffer.Length);
+        if (await content.ReadAtLeastAsync(buffer, buffer.Length, throwOnEndOfStream: false) < buffer.Length)
+            return false;
         string header = Encoding.UTF8.GetString(buffer);
         if (header != "version ")
             return false;
 
         buffer = new byte[4];
-        await content.ReadAsync(buffer, 0, buffer.Length);
+        if (await content.ReadAtLeastAsync(buffer, buffer.Length, throwOnEndOfStream: false) < buffer.Length)
+            return false;
         string version = Encoding.UTF8.GetString(buffer);
         content.Position = 0;
         switch (version)

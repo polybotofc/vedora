@@ -126,7 +126,7 @@ const Friends = props => {
         <ul className={'flex pt-3 pb-3 pe-3 ps-3 me-0 ms-0 ' + s.sideRow}>
           {
             store.friends && store.friends.slice(0, 10).map(v => {
-              return <li className={s.listItemFriend}>
+              return <li className={s.listItemFriend} key={v.id}>
                 <div className={s.avatarContainer}>
                   <Link href={`/users/${v.id}/profile`}>
                     <a className={s.friendLink}>

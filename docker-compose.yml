@@ -60,6 +60,9 @@ x-dotnet-dev-env: &dotnet-dev-env
 
 x-dotnet-dev-service: &dotnet-dev-service
   image: mcr.microsoft.com/dotnet/aspnet:10.0
+  # The stock runtime image lacks libgssapi_krb5-2, which Npgsql's GSSAPI path
+  # needs. The entrypoint installs it before running the service command.
+  entrypoint: ["sh", "/srv/app/scripts/docker-dotnet-entrypoint.sh"]
   volumes:
     - .:/srv/app
     - dotnet_artifacts:/tmp/vedora-artifacts:ro

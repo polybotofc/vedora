@@ -2,7 +2,7 @@
 
 Vedora is a Roblox revival that runs **2021 only**. Game servers use the bundled
 `RCCService2021` build; thumbnails/renders use the `RCCService2020` build (the
-build korone renders with, since it ships the full modern thumbnail scripts).
+build Vedora renders with, since it ships the full modern thumbnail scripts).
 
 > [!CAUTION]
 > Some parts of the source code are AI-generated (or vibecoded). Use at your own risk.
@@ -74,7 +74,7 @@ The arbiter starts `RCCService.exe` with launch flags from configuration
   LoadClientSettingsFailure (HttpError: ConnectFail)` before it opens its port.
 
 - Renders use `Arbiter:Render:LaunchArguments`, which drives the
-  `RCCService2020` build. The default mirrors the flags korone's render batch
+  `RCCService2020` build. The default mirrors the flags Vedora's render batch
   files use:
 
   ```

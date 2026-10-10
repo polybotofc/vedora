@@ -29,8 +29,9 @@ const UserInventoryPage = ({ username, userId }) => {
 
 export async function getServerSideProps(context) {
   const { userId } = context.query;
+  const cookie = context.req?.headers?.cookie || '';
   try {
-    const info = await getUserInfo({ userId });
+    const info = await getUserInfo({ userId, cookie });
     const username = info.name || null; 
     return {
       props: {

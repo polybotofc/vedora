@@ -7,8 +7,9 @@ export const getMyInfo = () => {
   return request('GET', baseUrl + '/v1/users/authenticated').then(d => d.data)
 }
 
-export const getUserInfo = ({ userId }) => {
-  return request('GET', baseUrl + '/v1/users/' + userId).then(d => d.data)
+export const getUserInfo = ({ userId, cookie }) => {
+  const extraHeaders = cookie ? { Cookie: cookie } : undefined;
+  return request('GET', baseUrl + '/v1/users/' + userId, undefined, false, extraHeaders).then(d => d.data)
 }
 
 export const getUserStatus = ({ userId }) => {

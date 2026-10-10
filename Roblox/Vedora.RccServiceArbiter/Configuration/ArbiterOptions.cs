@@ -57,7 +57,7 @@ public sealed class ArbiterOptions
 
 public sealed class ArbiterRenderOptions
 {
-    // Renders use the RCCService2020 build (the build korone renders with); only
+    // Renders use the RCCService2020 build (the build Vedora renders with); only
     // 2020 ships the full modern thumbnail scripts (Image.lua, AnimationSilhouette.lua).
     // Game servers stay on RCCService2021 (see GameServerYear).
     [Range(2000, 2100)] public int DefaultYear { get; set; } = 2020;

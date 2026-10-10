@@ -8,6 +8,14 @@ RUN dotnet publish "$PROJECT_PATH" -c Release -o /app/publish /p:UseAppHost=fals
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 
+# Npgsql pulls in System.Net.Security's GSSAPI (Kerberos) P/Invoke, which needs
+# libgssapi_krb5.so.2. The aspnet base image ships no Kerberos runtime, so every
+# service that opens a Postgres connection crashes at startup with
+# "libgssapi_krb5.so.2: cannot open shared object file" unless it is installed.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libgssapi-krb5-2 \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 ARG ASSEMBLY_NAME

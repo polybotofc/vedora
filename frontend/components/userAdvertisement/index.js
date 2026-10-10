@@ -52,6 +52,11 @@ const UserAdvertisement = props => {
         let cancelled = false;
         fetchAd(props.type).then(data => {
             if (cancelled) return;
+            // A missing or empty sponsorship response means the user simply has
+            // no active ad; render the placeholder instead of logging an error.
+            if (!data || typeof data !== 'string') {
+                return;
+            }
             let doc;
             try {
                 doc = new DOMParser().parseFromString(data, 'text/html');
@@ -61,8 +66,9 @@ const UserAdvertisement = props => {
             }
             const imageElements = doc.getElementsByTagName('img');
             const aTags = doc.getElementsByTagName('a');
+            // Same as above: no `<img>`/`<a>` is a valid "no ad" response, not a
+            // failure. Only the render below depends on these elements.
             if (!imageElements.length || !aTags.length) {
-                console.error('[error] could not get an element from iframe:', imageElements, aTags);
                 return;
             }
             const imageUrl = imageElements[0].getAttribute('src');

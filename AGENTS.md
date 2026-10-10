@@ -79,7 +79,11 @@ When you add or change a controller route, update the matching route case file
   `DevSettingsFile.json`.
 - `Arbiter:SoapServiceUrl` must stay `roblox.com`; RCCService dispatches SOAP
   in the `http://roblox.com/` WSDL namespace. Changing it makes RCC return
-  HTTP 500 for every SOAP call.
+  HTTP 500 for every SOAP call. The bundled `RCCService2020/RCCService.exe` was
+  rebranded from its original `pekora.zip` domain to `vedora.xyz`; the only
+  strings left as `roblox.com` in that binary are the three SOAP service URLs
+  (`http://roblox.com/RCCServiceSoap[12]?` and the single-arg service URL) that
+  must match this namespace.
 - `RCCService/RCCService2021/AppSettings.xml` and
   `RCCService/RCCService2020/AppSettings.xml` `<BaseUrl>` point at
   `https://vedora.xyz`. Each RCC binary reads its base URL from the
@@ -150,6 +154,12 @@ When you add or change a controller route, update the matching route case file
   is a WebSocket; without the middleware YARP cannot tunnel the upgrade and logs
   a repeating 502 (`The response ended prematurely`). Normal page/API traffic is
   unaffected by the middleware.
+- `FrontendProxyMiddleware` must forward upgrades with its
+  `UpgradeRequestConfig` (no `ActivityTimeout`). The normal `RequestConfig`
+  cancels the response copy after 100s of inactivity, which kills an idle HMR
+  socket and logs `UpgradeResponseCanceled` for `/_next/webpack-hmr`. Also keep
+  `/_next/` under `IsFrontendPublicAsset` so the HMR handshake does not require a
+  session; redirecting it to `/` breaks the upgrade and forces a full reload.
 
 ## Gotchas
 
@@ -166,7 +176,7 @@ When you add or change a controller route, update the matching route case file
 - Legacy bundles in `api/public/js/*.js` were previously corrupted by a bad
   domain search/replace. The correct namespace is `Roblox.CatalogShared` /
   `Roblox.CatalogValues` (see `api/public/js/46776eac503b939a2fd9146d77d735a3.js`).
-  Beware of blind `pekora.zip`/`vedora.xyz` substitutions in minified JS.
+  Beware of blind domain substitutions in minified JS.
 - `Roblox/Roblox.Website/Controllers/RobloxApi/Asset.cs` serves `FixJitter`
   models; they are copied to the output/publish dir from `Roblox/FixJitter`.
 - Vedora is 2021-only for gameplay. Game servers always launch

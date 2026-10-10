@@ -48,6 +48,8 @@ public class FrontendProxyMiddlewareTests
 
     [Theory]
     [InlineData("/_next/static/chunks/main.js")]
+    [InlineData("/_next/webpack-hmr")]
+    [InlineData("/_next/on-demand-entries-ping")]
     [InlineData("/period-styles/early-2018.example.css")]
     [InlineData("/theme-assets/source-sans-pro.example.woff2")]
     [InlineData("/js/bootstrap.min.css")]
@@ -128,16 +130,45 @@ public class FrontendProxyMiddlewareTests
         Assert.True(nextCalled);
     }
 
+    [Fact]
+    public async Task WebSocketUpgrade_WithoutSession_ForwardsWithoutActivityTimeout()
+    {
+        var (context, forwarder) = await InvokeAsync(
+            path: "/_next/webpack-hmr",
+            configureRequest: request =>
+            {
+                request.Headers.Upgrade = "websocket";
+                request.Headers.Connection = "Upgrade";
+            });
+
+        Assert.Equal(StatusCodes.Status200OK, context.Response.StatusCode);
+        Assert.Equal(1, forwarder.ForwardCount);
+        Assert.NotNull(forwarder.LastRequestConfig);
+        Assert.Null(forwarder.LastRequestConfig!.ActivityTimeout);
+    }
+
+    [Fact]
+    public async Task NormalRequest_ForwardsWithActivityTimeout()
+    {
+        var (context, forwarder) = await InvokeAsync(CreateSession(AccountStatus.Ok));
+
+        Assert.Equal(1, forwarder.ForwardCount);
+        Assert.NotNull(forwarder.LastRequestConfig);
+        Assert.Equal(TimeSpan.FromSeconds(100), forwarder.LastRequestConfig!.ActivityTimeout);
+    }
+
     private static async Task<(DefaultHttpContext Context, FakeForwarder Forwarder)> InvokeAsync(
         UserSession? session = null,
         string path = "/home",
-        RequestDelegate? next = null)
+        RequestDelegate? next = null,
+        Action<HttpRequest>? configureRequest = null)
     {
         var context = new DefaultHttpContext();
         context.Response.Body = new MemoryStream();
         context.Request.Host = new HostString("vedora.xyz");
         context.Request.Path = path;
         context.Connection.RemoteIpAddress = IPAddress.Parse("127.0.0.1");
+        configureRequest?.Invoke(context.Request);
         context.SetRobloxRequestContext(new RobloxRequestContext
         {
             Session = session,
@@ -174,6 +205,7 @@ public class FrontendProxyMiddlewareTests
     private sealed class FakeForwarder : IHttpForwarder
     {
         public int ForwardCount { get; private set; }
+        public ForwarderRequestConfig? LastRequestConfig { get; private set; }
 
         public ValueTask<ForwarderError> SendAsync(
             HttpContext context,
@@ -194,6 +226,7 @@ public class FrontendProxyMiddlewareTests
             CancellationToken cancellationToken)
         {
             ForwardCount++;
+            LastRequestConfig = requestConfig;
             context.Response.StatusCode = StatusCodes.Status200OK;
             await context.Response.WriteAsync("forwarded", cancellationToken);
             return ForwarderError.None;

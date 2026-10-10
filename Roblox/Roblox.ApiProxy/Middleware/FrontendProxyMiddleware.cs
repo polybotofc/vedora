@@ -30,6 +30,16 @@ public sealed class FrontendProxyMiddleware
         ActivityTimeout = TimeSpan.FromSeconds(100),
     };
 
+    // WebSockets and other upgrades are long-lived and idle for long stretches
+    // (a dev HMR socket can sit quiet for minutes between edits). The 100s
+    // ActivityTimeout above cancels the response copy as soon as the socket goes
+    // idle, which is exactly the "UpgradeResponseCanceled" logged for
+    // /_next/webpack-hmr. Upgrades therefore forward with no activity timeout.
+    private static readonly ForwarderRequestConfig UpgradeRequestConfig = new()
+    {
+        ActivityTimeout = null,
+    };
+
     // These paths are still handled by Roblox.Website on the public website hosts.
     // Specific YARP routes also bypass this middleware before this list is checked.
     private static readonly string[] BackendPathPrefixes =
@@ -172,11 +182,13 @@ public sealed class FrontendProxyMiddleware
         }
 
         context.Response.OnStarting(UpdateCacheHeaders, context);
+        var isUpgrade = context.WebSockets.IsWebSocketRequest ||
+                        context.Request.Headers.ContainsKey(HeaderNames.Upgrade);
         var error = await _forwarder.SendAsync(
             context,
             _destinationPrefix,
             HttpClient,
-            RequestConfig,
+            isUpgrade ? UpgradeRequestConfig : RequestConfig,
             HttpTransformer.Default,
             context.RequestAborted);
 
@@ -303,7 +315,12 @@ public sealed class FrontendProxyMiddleware
 
     private static bool IsFrontendPublicAsset(string path)
     {
-        if (path.StartsWith("/_next/static/", StringComparison.OrdinalIgnoreCase))
+        // Everything under /_next/ is built by Next: static chunks plus the dev
+        // endpoints (/_next/webpack-hmr, /_next/on-demand-entries-ping). The
+        // backend owns none of it, and the HMR WebSocket must not require a
+        // session — redirecting it to "/" breaks the upgrade and makes the dev
+        // client fall back to a full reload.
+        if (path.StartsWith("/_next/", StringComparison.OrdinalIgnoreCase))
         {
             return true;
         }
