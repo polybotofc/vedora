@@ -275,7 +275,7 @@ public sealed class RccProcessPool : IRccProcessPool
         try
         {
             var exe = Path.Combine(_options.RccServiceRoot, $"RCCService{year}", "RCCService.exe");
-            process = _launcher.Start(exe, RccLaunchArguments.Build(_options.Render.LaunchArguments, rccPort),
+            process = _launcher.Start(exe, RccLaunchArguments.Build(_options.GameServerLaunchArguments, rccPort),
                 Path.GetDirectoryName(exe));
             await _readinessProbe.WaitUntilAvailableAsync(
                 rccPort,

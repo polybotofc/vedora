@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Vedora.RccServiceArbiter.Configuration;
+using Vedora.RccServiceArbiter.Rcc;
 using Vedora.RccServiceArbiter.Rendering;
 using Microsoft.Extensions.Options;
 using Roblox.Rendering;
@@ -11,7 +12,7 @@ public sealed class RenderScriptCatalogTests
 {
     [Theory]
     [InlineData(RenderKind.Avatar, "Avatar_R15_Action", "PNG")]
-    [InlineData(RenderKind.Avatar3D, "Avatar_R15_Action", "obj")]
+    [InlineData(RenderKind.Avatar3D, "Avatar_R15_Action", "OBJ")]
     [InlineData(RenderKind.AvatarHeadshot, "Closeup", "PNG")]
     [InlineData(RenderKind.MeshPart, "MeshPart", "PNG")]
     [InlineData(RenderKind.Animation, "AvatarAnimation", "PNG")]
@@ -154,16 +155,16 @@ public sealed class RenderScriptCatalogTests
         Assert.Equal(10, arguments.GetArrayLength());
     }
 
-    // RCCService loads <Type>.lua from RCCService<Year>/internalscripts/thumbnails,
-    // not the JSON in this assembly. A 2021 build ships no scripts, so a missing
-    // file makes every render of that kind fail with "Failed to open script file".
+    // The render build (RCCService2020) must ship a thumbnail script for every
+    // render kind; 2021 lacks Image/AnimationSilhouette, which is why renders
+    // use 2020. RCCService loads <Type>.lua from RCCService<Year>/internalscripts/thumbnails.
     [Fact]
     public void EveryRenderKindHasThumbnailScript()
     {
         var repoRoot = FindRepositoryRoot();
         if (repoRoot == null) return; // Repository layout is not available (packaged test run).
 
-        var thumbnails = Path.Combine(repoRoot, "RCCService", "RCCService2021", "internalscripts", "thumbnails");
+        var thumbnails = Path.Combine(repoRoot, "RCCService", "RCCService2020", "internalscripts", "thumbnails");
         Assert.True(Directory.Exists(thumbnails), $"Missing RCC thumbnail scripts at {thumbnails}");
 
         var available = Directory.GetFiles(thumbnails, "*.lua")
@@ -172,7 +173,30 @@ public sealed class RenderScriptCatalogTests
 
         var missing = CreateCatalog().KindsWithMissingScripts(available).ToList();
 
-        Assert.True(missing.Count == 0, "RCC 2021 has no thumbnail script for: " + string.Join(", ", missing));
+        Assert.True(missing.Count == 0, "RCC 2020 has no thumbnail script for: " + string.Join(", ", missing));
+    }
+
+    // The OBJ output token is case-sensitive per build: 2020 render build uses
+    // "OBJ", the 2021 build only matches lowercase "obj".
+    [Fact]
+    public void ObjFormatToken_MatchesRenderBuild()
+    {
+        var catalog2020 = new RenderScriptCatalog(Options.Create(new ArbiterOptions
+        { BaseUrl = "https://example.test", Render = new ArbiterRenderOptions { DefaultYear = 2020 } }));
+        var execution2020 = catalog2020.Create(new RenderRequest { Kind = RenderKind.Avatar3D, UserId = 1, Width = 352, Height = 352 });
+        AssertAdaptedFormat(execution2020, "OBJ");
+
+        var catalog2021 = new RenderScriptCatalog(Options.Create(new ArbiterOptions
+        { BaseUrl = "https://example.test", Render = new ArbiterRenderOptions { DefaultYear = 2021 } }));
+        var execution2021 = catalog2021.Create(new RenderRequest { Kind = RenderKind.Avatar3D, UserId = 1, Width = 352, Height = 352 });
+        AssertAdaptedFormat(execution2021, "obj");
+    }
+
+    private static void AssertAdaptedFormat(ScriptExecution execution, string expectedFormat)
+    {
+        using var document = JsonDocument.Parse(execution.Script);
+        var arguments = document.RootElement.GetProperty("Settings").GetProperty("Arguments");
+        Assert.Contains(arguments.EnumerateArray(), value => value.ValueKind == JsonValueKind.String && value.GetString() == expectedFormat);
     }
 
     private static string? FindRepositoryRoot()
@@ -180,7 +204,7 @@ public sealed class RenderScriptCatalogTests
         var directory = new DirectoryInfo(AppContext.BaseDirectory);
         while (directory != null)
         {
-            if (Directory.Exists(Path.Combine(directory.FullName, "RCCService", "RCCService2021", "internalscripts")))
+            if (Directory.Exists(Path.Combine(directory.FullName, "RCCService", "RCCService2020", "internalscripts")))
                 return directory.FullName;
             directory = directory.Parent;
         }

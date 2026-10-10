@@ -31,6 +31,11 @@ public sealed class ArbiterOptions
     [Range(2000, 2100)]
     public int GameServerYear { get; set; } = 2021;
 
+    // RCCService launch arguments for game servers. "{port}" is replaced with
+    // the allocated SOAP port. Game servers use the RCCService2021 build, which
+    // needs "-port"; renders use the RCCService2020 build (see Render.LaunchArguments).
+    public string GameServerLaunchArguments { get; set; } = "-Console -Verbose -SettingsFile \"DevSettingsFile.json\" -port {port}";
+
     public string GlobalMessageTopic { get; set; } = "GlobalMessage_VEDORA";
 
     [Range(0, 300)]
@@ -52,7 +57,10 @@ public sealed class ArbiterOptions
 
 public sealed class ArbiterRenderOptions
 {
-    [Range(2000, 2100)] public int DefaultYear { get; set; } = 2021;
+    // Renders use the RCCService2020 build (the build korone renders with); only
+    // 2020 ships the full modern thumbnail scripts (Image.lua, AnimationSilhouette.lua).
+    // Game servers stay on RCCService2021 (see GameServerYear).
+    [Range(2000, 2100)] public int DefaultYear { get; set; } = 2020;
     [Range(1, 256)] public int MaxWorkers { get; set; } = 8;
     [Range(0, 256)] public int MinimumWarmWorkers { get; set; } = 3;
     [Range(1, 256)] public int MaximumIdleWorkers { get; set; } = 8;
@@ -71,11 +79,11 @@ public sealed class ArbiterRenderOptions
     public string OriginBaseUrl { get; set; } = string.Empty;
     public bool UseBinaryTransport { get; set; } = true;
 
-    // RCCService launch arguments. "{port}" is replaced with the SOAP port
-    // allocated for the worker. Different RCCService builds take the port
-    // differently (the 2021E build uses "-port", older builds accept it
-    // positionally after "-Console"), so this is configurable.
-    public string LaunchArguments { get; set; } = "-Console -Verbose -SettingsFile \"DevSettingsFile.json\" -port {port}";
+    // RCCService launch arguments for render workers. "{port}" is replaced with
+    // the allocated SOAP port. Matches the flags the RCCService2020 render batch
+    // files use ("-console -verbose -port"); the 2021 "-SettingsFile" flag is
+    // not needed here because the 2020 install has no DevSettingsFile.json.
+    public string LaunchArguments { get; set; } = "-console -verbose -port {port}";
 }
 
 public sealed class ArbiterPortOptions
