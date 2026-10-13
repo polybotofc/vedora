@@ -87,7 +87,7 @@ When you add or change a controller route, update the matching route case file
   `RCCService/RCCService2021/internalscripts/thumbnails/<Type>.lua` and passes
   the arbiter's `Arguments` as `...`. The 2021 build ships the full modern
   script set (`Image.lua`, `AnimationSilhouette.lua`, `PlaceValidation.lua`,
-  `modules/`), the same set the old 2020 install had, so renders use it too. If a
+  `modules/`), so renders use it too. If a
   `Type` has no matching `.lua`, that render fails with `Failed to open script
   file` and the website shows the generic "3D Render not available" message. Add
   a script for any new `Type`, and run `RCCService/diagnose-render.bat`

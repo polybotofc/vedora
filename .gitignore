@@ -47,8 +47,6 @@ Roblox/.vs/Roblox/FileContentIndex/8db56259-e33c-44fa-85b4-e7edf638ffa6.vsidx
 /Roblox/.vs
 Roblox/.vs/Roblox/FileContentIndex/5a30b269-bd6e-4330-817a-5c2a989f26e0.vsidx
 services.7z
-RCCService/RCCService2020.rar
-RCCService/RCCService2020.zip
 game-renderer/src/controllers/gameServerRCC.js
 game-renderer/src/routers/gameServerRouter.js
 
@@ -61,13 +59,11 @@ yarn.lock
 Roblox/.editorconfig
 /Roblox/.idea/.idea.Roblox/.idea/dataSources
 /Roblox/.idea/.idea.Roblox
-/RCCService2020
 /2016-roblox-main.old
 /22
 /api/public/img/setup
 /game-arbiter
 /Roblox.Goob
-/RCCService2020
 /Roblox.Goob
 /Roblox/.idea
 /game-arbiter
@@ -77,7 +73,6 @@ Roblox/.editorconfig
 2016-roblox-main/package-lock.json
 /game-renderer/dist
 /game-renderer/RCCService
-/RCCService2020.Vedora
 game-renderer/themeparktycoon2.rbxl
 game-renderer/package-lock.json
 game-renderer/package-lock.json
