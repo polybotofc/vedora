@@ -1,9 +1,9 @@
 # Vedora
 
 Vedora is a Roblox revival that runs **2021 only**. Game servers and
-thumbnails/renders both use the bundled `RCCService2021` build: it ships the
-same full modern thumbnail script set (`Image.lua`, `AnimationSilhouette.lua`,
-`modules/`) as the older 2020 install, so one build covers everything.
+thumbnails/renders both use the single bundled `RCCService2021` build: it ships
+the full modern thumbnail script set (`Image.lua`, `AnimationSilhouette.lua`,
+`modules/`), so one build covers everything.
 
 > [!CAUTION]
 > Some parts of the source code are AI-generated (or vibecoded). Use at your own risk.
