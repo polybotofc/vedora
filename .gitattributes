@@ -5,3 +5,9 @@
 # archives (GitHub ZIP), so cmd.exe does not mis-parse them.
 *.bat -text
 *.cmd -text
+
+# Shell scripts are executed by /bin/sh inside the Linux containers, which bind
+# mount this working tree. Force LF so a Windows checkout (core.autocrlf=true)
+# cannot turn them into CRLF, which makes sh fail with
+# "line 2: : not found" and "set: Illegal option -".
+*.sh text eol=lf
