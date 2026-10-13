@@ -186,6 +186,12 @@ When you add or change a controller route, update the matching route case file
   `Roblox/Dockerfile.dotnet-service`; the dev stack, which runs the stock image
   directly, installs them in `scripts/docker-dotnet-run.sh` (idempotent, skipped
   once present). Keep both paths in sync.
+- Shell scripts (`scripts/*.sh`) are run by `/bin/sh` inside the Linux
+  containers, which bind-mount this working tree (`- .:/srv/app`). On Windows
+  (`core.autocrlf=true`) a CRLF checkout makes `sh` fail on every service with
+  `docker-dotnet-run.sh: 2: : not found` and `3: set: Illegal option -`, so the
+  containers exit immediately. `.gitattributes` pins `*.sh text eol=lf`; keep
+  that rule (and avoid `text=auto` alone for scripts) so they stay LF.
 - The `economy` bridge network in this sandbox has no egress, so the in-compose
   `dotnet-build`/`dotnet-watch` restore hangs on `api.nuget.org`. To build or
   test here, run the SDK image with `--network host`, e.g.
