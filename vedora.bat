@@ -12,13 +12,16 @@ echo.
 
 rem ---------------------------------------------------------------
 rem 0. Repository layout
+rem   NOTE: inside ( ... ) blocks, paths are read with !VAR! (delayed
+rem   expansion) instead of %VAR%, so folders like "Program Files (x86)"
+rem   or a repo path containing ")" cannot break the block.
 rem ---------------------------------------------------------------
 set "ROOT=%~dp0"
 if "%ROOT:~-1%"=="\" set "ROOT=%ROOT:~0,-1%"
 set "ROBLOX_DIR=%ROOT%\Roblox"
 set "ARBITER_PROJECT=%ROBLOX_DIR%\Vedora.RccServiceArbiter\Vedora.RccServiceArbiter.csproj"
 set "ARBITER_URLS=http://127.0.0.1:3521"
-rem The arbiter is launched with `dotnet run` so it uses appsettings.json, which
+rem The arbiter is launched with "dotnet run" so it uses appsettings.json, which
 rem only loads for the Development environment.
 set "ASPNETCORE_ENVIRONMENT=Development"
 set "RCC_ROOT=%ROOT%\RCCService"
@@ -27,20 +30,13 @@ set "PUBLIC_BASE_URL=https://vedora.xyz"
 
 rem ---------------------------------------------------------------
 rem 0a. Environment file (Discord, hCaptcha, secrets, ...)
-rem  Docker Compose only auto-loads a file literally named `.env` from the
-rem  project directory. `.env.prod.example` is a template and is ignored, so
-rem  `docker compose -f docker-compose.yml up` sees an empty environment and
-rem  every keyed integration (Discord OAuth, hCaptcha, ...) stays unset.
-rem  Pick up, in order: an explicit VEDORA_ENV_FILE, `.env`, then `.env.prod`.
+rem  Docker Compose only auto-loads a file literally named ".env".
+rem  Pick up, in order: VEDORA_ENV_FILE, .env, then .env.prod.
 rem ---------------------------------------------------------------
 set "ENV_FILE="
-set "ENV_ARGS="
-if defined VEDORA_ENV_FILE (
-    if exist "%VEDORA_ENV_FILE%" set "ENV_FILE=%VEDORA_ENV_FILE%"
-)
+if defined VEDORA_ENV_FILE if exist "%VEDORA_ENV_FILE%" set "ENV_FILE=%VEDORA_ENV_FILE%"
 if not defined ENV_FILE if exist "%ROOT%\.env" set "ENV_FILE=%ROOT%\.env"
 if not defined ENV_FILE if exist "%ROOT%\.env.prod" set "ENV_FILE=%ROOT%\.env.prod"
-if defined ENV_FILE set "ENV_ARGS=--env-file "%ENV_FILE%""
 
 rem ---------------------------------------------------------------
 rem 0b. Arguments: "down" / "stop" stops the Docker stack
@@ -55,18 +51,25 @@ where docker >nul 2>nul
 if errorlevel 1 (
     echo [ERROR] Docker was not found in PATH.
     echo         Install Docker Desktop, start it, then close and reopen this
-    echo         window so PATH is refreshed. If Docker is installed but not
-    echo         running, start Docker Desktop and retry.
+    echo         window so PATH is refreshed.
+    goto :fail
+)
+
+docker info >nul 2>nul
+if errorlevel 1 (
+    echo [ERROR] Docker is installed but its engine is not running.
+    echo         Start Docker Desktop and wait until the engine is running.
+    echo         If WSL2 reports virtualization errors, enable virtualization in BIOS/UEFI.
+    goto :fail
+)
+docker compose version >nul 2>nul
+if errorlevel 1 (
+    echo [ERROR] Docker Compose v2 was not found.
     goto :fail
 )
 
 rem ---------------------------------------------------------------
 rem 1b. .NET SDK
-rem  Resolve `dotnet` from PATH first, then from the standard install
-rem  locations, so a freshly installed SDK is picked up even when the
-rem  current shell has a stale PATH (or was installed per-user).
-rem  `PF86` is captured up front because `%ProgramFiles(x86)%` breaks
-rem  parenthesized blocks in batch.
 rem ---------------------------------------------------------------
 set "PF86=%ProgramFiles(x86)%"
 set "DOTNET_EXE="
@@ -78,19 +81,16 @@ if not defined DOTNET_EXE if exist "%LOCALAPPDATA%\Microsoft\dotnet\dotnet.exe" 
 if not defined DOTNET_EXE (
     echo [ERROR] The .NET SDK was not found.
     echo         Install the .NET 10 SDK from https://dotnet.microsoft.com/download
-    echo         then close and reopen this window (or reboot) so PATH is refreshed.
+    echo         then close and reopen this window ^(or reboot^) so PATH is refreshed.
     goto :fail
 )
 
-rem The runtime alone cannot build or run the arbiter, and Vedora targets
-rem net10.0 (Roblox/global.json), so require a 10.x SDK.
 set "DOTNET_SDK10="
-for /f "tokens=1 delims=. " %%v in ('"%DOTNET_EXE%" --list-sdks 2^>nul') do if "%%v"=="10" set "DOTNET_SDK10=1"
+for /f "tokens=1 delims=. " %%v in ('""%DOTNET_EXE%" --list-sdks 2^>nul"') do if "%%v"=="10" set "DOTNET_SDK10=1"
 if not defined DOTNET_SDK10 (
-    echo [ERROR] `dotnet` was found at "%DOTNET_EXE%" but no .NET 10 SDK is installed.
-    echo         Vedora targets net10.0; the .NET Runtime or an older SDK is not
-    echo         enough. Install the .NET 10 SDK from
-    echo         https://dotnet.microsoft.com/download
+    echo [ERROR] dotnet was found at "!DOTNET_EXE!" but no .NET 10 SDK is installed.
+    echo         Vedora targets net10.0; the runtime or an older SDK is not enough.
+    echo         Install the .NET 10 SDK from https://dotnet.microsoft.com/download
     goto :fail
 )
 for %%d in ("%DOTNET_EXE%") do set "PATH=%%~dpd;%PATH%"
@@ -100,7 +100,7 @@ rem 2. RCCService2021 (game servers + renders)
 rem ---------------------------------------------------------------
 if not exist "%RCC2021%\RCCService.exe" (
     echo [ERROR] RCCService2021 was not found at:
-    echo         %RCC2021%\RCCService.exe
+    echo         !RCC2021!\RCCService.exe
     echo         Add the RCCService2021 build before starting Vedora.
     goto :fail
 )
@@ -113,16 +113,17 @@ if not exist "%RCC_ROOT%\quilkin.exe" (
     echo [..] quilkin.exe not found. Downloading the proxy...
     powershell -NoProfile -ExecutionPolicy Bypass -Command ^
         "$ErrorActionPreference='Stop';" ^
+        "[Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12;" ^
         "$zip=Join-Path $env:TEMP 'quilkin.zip';" ^
         "$dst=Join-Path $env:TEMP 'quilkin-extract';" ^
-        "Invoke-WebRequest -Uri 'https://github.com/EmbarkStudios/quilkin/releases/download/v0.9.0/quilkin-0.9.0.zip' -OutFile $zip;" ^
+        "Invoke-WebRequest -UseBasicParsing -Uri 'https://github.com/EmbarkStudios/quilkin/releases/download/v0.9.0/quilkin-0.9.0.zip' -OutFile $zip;" ^
         "if (Test-Path $dst) { Remove-Item $dst -Recurse -Force };" ^
         "Expand-Archive -Path $zip -DestinationPath $dst -Force;" ^
-        "Copy-Item (Join-Path $dst 'x86_64-pc-windows-gnu\release\quilkin.exe') '%RCC_ROOT%\quilkin.exe' -Force;"
+        "Copy-Item (Join-Path $dst 'x86_64-pc-windows-gnu\release\quilkin.exe') '!RCC_ROOT!\quilkin.exe' -Force;"
     if errorlevel 1 (
         echo [ERROR] Could not download quilkin.exe.
         echo         Download the Windows build manually and place it at:
-        echo         %RCC_ROOT%\quilkin.exe
+        echo         !RCC_ROOT!\quilkin.exe
         goto :fail
     )
     echo [ok] quilkin.exe installed.
@@ -131,25 +132,29 @@ if not exist "%RCC_ROOT%\quilkin.exe" (
 )
 
 rem ---------------------------------------------------------------
-rem 4. Docker stack (Postgres, Redis, migrations, .NET services,
-rem    frontend, admin, asset validation)
+rem 4. Docker stack
+rem  Normalize scripts/*.sh to LF so the Linux containers can run them.
 rem ---------------------------------------------------------------
-rem The stack bind-mounts this folder into Linux containers and runs
-rem scripts/*.sh with /bin/sh. A CRLF checkout (Windows core.autocrlf=true)
-rem breaks every .NET service with "docker-dotnet-run.sh: 2: : not found".
-rem Normalize the scripts to LF first so the stack starts regardless of how
-rem the repository was checked out.
-powershell -NoProfile -ExecutionPolicy Bypass -File "%ROOT%\scripts\windows\Normalize-ShLineEndings.ps1" -Root "%ROOT%" >nul 2>nul
+if not exist "%ROOT%\scripts\windows\Normalize-ShLineEndings.ps1" (
+    echo [ERROR] Normalize-ShLineEndings.ps1 is missing. Update the repository first.
+    goto :fail
+)
+powershell -NoProfile -ExecutionPolicy Bypass -File "%ROOT%\scripts\windows\Normalize-ShLineEndings.ps1" -Root "%ROOT%"
+if errorlevel 1 (
+    echo [ERROR] Failed to normalize shell script line endings.
+    goto :fail
+)
 
 echo.
-echo [..] Starting the Docker stack (this can take a few minutes on the first run)...
+echo [..] Starting the Docker stack ^(this can take a few minutes on the first run^)...
 if defined ENV_FILE (
-    echo [ok] Using environment file: %ENV_FILE%
+    echo [ok] Using environment file: !ENV_FILE!
+    docker compose --env-file "!ENV_FILE!" -f "!ROOT!\docker-compose.yml" up -d --build
 ) else (
     echo [warn] No .env or .env.prod found. Discord OAuth, hCaptcha and other keyed
-    echo       integrations will stay unset. Copy .env.prod.example to .env and fill it in.
+    echo        integrations will stay unset. Copy .env.prod.example to .env and fill it in.
+    docker compose -f "!ROOT!\docker-compose.yml" up -d --build
 )
-docker compose %ENV_ARGS% -f "%ROOT%\docker-compose.yml" up -d --build
 if errorlevel 1 (
     echo [ERROR] docker compose failed to start the stack.
     goto :fail
@@ -159,10 +164,12 @@ echo [..] Waiting for the API proxy to accept connections...
 set "API_READY="
 for /l %%i in (1,1,60) do (
     if not defined API_READY (
-        powershell -NoProfile -Command ^
-            "try { $c = New-Object Net.Sockets.TcpClient; $c.Connect('127.0.0.1',5200); $c.Close(); exit 0 } catch { exit 1 }" >nul 2>nul
-        if not errorlevel 1 set "API_READY=1"
-        if not defined API_READY timeout /t 3 /nobreak >nul
+        powershell -NoProfile -Command "try { $c = New-Object Net.Sockets.TcpClient; $c.Connect('127.0.0.1',5200); $c.Close(); exit 0 } catch { exit 1 }" >nul 2>nul
+        if not errorlevel 1 (
+            set "API_READY=1"
+        ) else (
+            timeout /t 3 /nobreak >nul
+        )
     )
 )
 if not defined API_READY (
@@ -174,9 +181,6 @@ rem ---------------------------------------------------------------
 rem 5. RCC arbiter (game servers + thumbnails/renders)
 rem ---------------------------------------------------------------
 echo.
-rem Port 3521 is reserved for the arbiter. If something is already bound to
-rem it, a previous arbiter is still running; starting a second one crashes
-rem this window with AddressInUseException and tears down the RCC warm pool.
 call :find_port_pid 3521 ARBITER_PID
 if defined ARBITER_PID (
     echo [..] %ARBITER_URLS% is already in use ^(PID !ARBITER_PID!^).
@@ -186,8 +190,6 @@ if defined ARBITER_PID (
 )
 
 echo [..] Building and starting the Vedora RCC arbiter...
-rem Run from the repository root so the relative RCCService paths in
-rem appsettings.json resolve to <root>\RCCService.
 start "Vedora RCC Arbiter" /d "%ROOT%" cmd /k ""%DOTNET_EXE%" run --project "%ARBITER_PROJECT%" --configuration Release --urls %ARBITER_URLS%"
 :arbiter_ready
 
@@ -207,11 +209,14 @@ goto :eof
 
 :shutdown
 echo [..] Stopping the Vedora Docker stack...
-docker compose %ENV_ARGS% -f "%ROOT%\docker-compose.yml" down
+if defined ENV_FILE (
+    docker compose --env-file "!ENV_FILE!" -f "!ROOT!\docker-compose.yml" down
+) else (
+    docker compose -f "!ROOT!\docker-compose.yml" down
+)
+if errorlevel 1 goto :fail
 echo [ok] Docker stack stopped.
 
-rem Stop the arbiter too: it is a plain `dotnet run` window, not a container,
-rem so leaving it alive would block port 3521 on the next start.
 call :find_port_pid 3521 ARBITER_PID
 if defined ARBITER_PID (
     echo [..] Stopping the RCC arbiter ^(PID !ARBITER_PID!^)...
@@ -220,13 +225,9 @@ if defined ARBITER_PID (
 ) else (
     echo [ok] No RCC arbiter was running.
 )
-echo Close the "Vedora RCC Arbiter" window if it is still open.
 goto :eof
 
-rem ---------------------------------------------------------------
-rem :find_port_pid <port> <outVar>
-rem  Sets <outVar> to the PID owning a LISTENING socket on <port>, if any.
-rem ---------------------------------------------------------------
+rem :find_port_pid <port> <outVar> - PID listening on <port>, if any
 :find_port_pid
 set "%~2="
 for /f "tokens=5" %%p in ('netstat -ano -p tcp ^| findstr /r /c:"LISTENING" ^| findstr /r /c:":%~1 "') do (
