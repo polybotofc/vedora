@@ -134,6 +134,13 @@ rem ---------------------------------------------------------------
 rem 4. Docker stack (Postgres, Redis, migrations, .NET services,
 rem    frontend, admin, asset validation)
 rem ---------------------------------------------------------------
+rem The stack bind-mounts this folder into Linux containers and runs
+rem scripts/*.sh with /bin/sh. A CRLF checkout (Windows core.autocrlf=true)
+rem breaks every .NET service with "docker-dotnet-run.sh: 2: : not found".
+rem Normalize the scripts to LF first so the stack starts regardless of how
+rem the repository was checked out.
+powershell -NoProfile -ExecutionPolicy Bypass -File "%ROOT%\scripts\windows\Normalize-ShLineEndings.ps1" -Root "%ROOT%" >nul 2>nul
+
 echo.
 echo [..] Starting the Docker stack (this can take a few minutes on the first run)...
 if defined ENV_FILE (
