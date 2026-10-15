@@ -129,6 +129,19 @@ When you add or change a controller route, update the matching route case file
   `*-apisite-route` host lists.
 - `Roblox/Roblox.ApiProxy/appsettings.json` is committed (routes for
   `*.vedora.xyz`). Keep secrets in server-local `appsettings.Production.json`.
+- The arbiter is a **host** process, not a Compose service, and every rendering
+  service reaches it through `Render__BaseUrl=http://host.docker.internal:3521`.
+  It must therefore bind `0.0.0.0` (a container cannot reach the host's
+  `127.0.0.1`); `vedora.bat` and `scripts/start-render-server.sh|.bat` use
+  `--urls http://0.0.0.0:3521`. `x-dotnet-dev-service` sets
+  `extra_hosts: ["host.docker.internal:host-gateway"]` so the name resolves on
+  Linux too (Docker Desktop resolves it natively). A `Connection refused
+  (host.docker.internal:3521)` in a service log means the arbiter is not up.
+- `RenderArbiterProbe` (`Roblox.Roblox.Rendering`) caches a recent transport
+  failure for a few seconds so the asset render queue fails fast with a single
+  `RenderUnavailableException` (logged once at Warning) instead of opening a
+  socket and logging a full stack trace per job while the arbiter is cold. The
+  window is short, so the queue recovers on its own once the arbiter answers.
 - Internal services build a request context in `ProxyForwardedAuthMiddleware`
   and hash the caller IP, which requires `RobloxIpHasher` to be initialized
   first. That call lives in `UseRobloxServiceDefaults`, so it runs for every

@@ -10,8 +10,14 @@ using Xunit;
 
 namespace Roblox.Rendering.Test;
 
-public sealed class RenderHttpClientTests
+public sealed class RenderHttpClientTests : IDisposable
 {
+    // The probe keeps a short-lived "unreachable" window in static state so real
+    // callers fail fast. Tests must not inherit that window from each other.
+    public RenderHttpClientTests() => RenderArbiterProbe.Reset();
+
+    public void Dispose() => RenderArbiterProbe.Reset();
+
     [Fact]
     public async Task CommandHandler_UsesTypedHttpContractAndReturnsDecodedStream()
     {
@@ -78,6 +84,50 @@ public sealed class RenderHttpClientTests
 
         Assert.Equal(2, calls);
         Assert.Equal("/render", handler.Request!.RequestUri!.AbsolutePath);
+    }
+
+    [Fact]
+    public async Task UnreachableArbiter_FailsFastWithoutAnotherSocketAttempt()
+    {
+        RenderArbiterProbe.Reset();
+        var calls = 0;
+        var handler = new RecordingHandler(_ =>
+        {
+            calls++;
+            throw new HttpRequestException("Connection refused");
+        });
+        RenderHttpClient.Configure(new HttpClient(handler) { BaseAddress = new Uri("http://arbiter.test/") });
+
+        await Assert.ThrowsAsync<HttpRequestException>(() => CommandHandler.RequestAssetThumbnail(1, TestContext.Current.CancellationToken));
+        await Assert.ThrowsAsync<RenderUnavailableException>(() => CommandHandler.RequestAssetThumbnail(1, TestContext.Current.CancellationToken));
+
+        Assert.Equal(1, calls);
+    }
+
+    [Fact]
+    public async Task UnreachableArbiter_RecoversOnceWindowExpires()
+    {
+        RenderArbiterProbe.Reset();
+        var previousTtl = RenderArbiterProbe.UnreachableTtl;
+        RenderArbiterProbe.UnreachableTtl = TimeSpan.Zero;
+        try
+        {
+            var handler = new RecordingHandler(_ => new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new ByteArrayContent("png"u8.ToArray()) { Headers = { ContentType = new("image/png") } },
+            });
+            RenderHttpClient.Configure(new HttpClient(handler) { BaseAddress = new Uri("http://arbiter.test/") });
+
+            RenderArbiterProbe.ReportUnreachable(new Uri("http://arbiter.test/"));
+            await using var stream = await CommandHandler.RequestAssetThumbnail(1, TestContext.Current.CancellationToken);
+            Assert.NotNull(stream);
+            Assert.False(RenderArbiterProbe.IsUnreachable);
+        }
+        finally
+        {
+            RenderArbiterProbe.UnreachableTtl = previousTtl;
+            RenderArbiterProbe.Reset();
+        }
     }
 
     private sealed class RecordingHandler(Func<HttpRequestMessage, HttpResponseMessage> response) : HttpMessageHandler

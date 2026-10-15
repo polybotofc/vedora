@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Roblox.Cache;
 using Roblox.Metrics;
 using Roblox.Models.Assets;
+using Roblox.Rendering;
 using StackExchange.Redis;
 using AssetType = Roblox.Models.Assets.Type;
 
@@ -316,9 +317,20 @@ public sealed class AssetRenderQueueWorker(ILogger<AssetRenderQueueWorker> logge
         catch (Exception ex)
         {
             var category = Classify(ex);
-            logger.LogError(ex,
-                "Asset render failed for asset {AssetId}, version {VersionId}, attempt {Attempt}, consumer {Consumer}, category {Category}",
-                job.AssetId, job.AssetVersionId, job.Attempt, consumer, category);
+            if (ex is RenderUnavailableException)
+            {
+                // The render server is down, not the asset. Keep the message
+                // single-line at Warning and let the normal retry/backoff carry
+                // it, so a cold arbiter start does not spam a stack trace per job.
+                logger.LogWarning("Render server unavailable for asset {AssetId}, version {VersionId}, attempt {Attempt}, " +
+                    "consumer {Consumer}: {Message}", job.AssetId, job.AssetVersionId, job.Attempt, consumer, ex.Message);
+            }
+            else
+            {
+                logger.LogError(ex,
+                    "Asset render failed for asset {AssetId}, version {VersionId}, attempt {Attempt}, consumer {Consumer}, category {Category}",
+                    job.AssetId, job.AssetVersionId, job.Attempt, consumer, category);
+            }
             try
             {
                 if (category == AssetRenderFailure.Transient && job.Attempt + 1 < _options.MaximumAttempts)
@@ -435,6 +447,8 @@ public sealed class AssetRenderQueueWorker(ILogger<AssetRenderQueueWorker> logge
 
     private static AssetRenderFailure Classify(Exception exception)
     {
+        if (exception is RenderUnavailableException)
+            return AssetRenderFailure.Transient;
         if (exception is HttpRequestException { StatusCode: HttpStatusCode.BadRequest or HttpStatusCode.UnprocessableEntity })
             return AssetRenderFailure.Terminal;
         if (exception is ArgumentException or InvalidDataException or NotSupportedException)
