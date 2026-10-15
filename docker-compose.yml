@@ -66,6 +66,12 @@ x-dotnet-dev-service: &dotnet-dev-service
     - data_protection_keys:/srv/app/DataProtection-Keys
   networks:
     - economy
+  # The RCC arbiter runs on the host (started by vedora.bat), not in Compose, so
+  # every service that renders reaches it through Render__BaseUrl =
+  # http://host.docker.internal:3521. Docker Desktop resolves that name already;
+  # on Linux it must be mapped explicitly or renders fail with connection refused.
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
   depends_on:
     dotnet-build:
       condition: service_completed_successfully

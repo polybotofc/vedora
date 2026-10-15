@@ -23,6 +23,17 @@ const useStyles = createUseStyles({
 // effect (mount, unmount, remount) from firing two requests.
 const adRequestCache = {};
 
+// This component is mounted on many pages. On a private server the ad endpoint
+// usually has nothing to serve, so a per-mount log would flood the console
+// (hundreds of identical lines). Warn at most once per ad type instead.
+const warnedAdTypes = new Set();
+
+const warnOnce = (type, message, detail) => {
+    if (warnedAdTypes.has(type)) return;
+    warnedAdTypes.add(type);
+    console.warn(`[userAdvertisement] ${message} (type ${type})`, detail ?? '');
+};
+
 const fetchAd = (type) => {
     if (!adRequestCache[type]) {
         adRequestCache[type] = request('GET', `${getBaseUrl()}/user-sponsorship/${type}`)
@@ -50,40 +61,51 @@ const UserAdvertisement = props => {
 
     useEffect(() => {
         let cancelled = false;
+        // A type change replaces the previous ad; drop its state so a stale
+        // image is never shown for the new slot.
+        setImageUrl(null);
+        setLink(null);
+        setTitle(null);
+        setImageLoaded(false);
+
         fetchAd(props.type).then(data => {
             if (cancelled) return;
             let doc;
             try {
                 doc = new DOMParser().parseFromString(data, 'text/html');
             } catch (e) {
-                console.error('[error] could not parse user ad document:', e);
+                warnOnce(props.type, 'could not parse user ad document', e);
                 return;
             }
             const imageElements = doc.getElementsByTagName('img');
             const aTags = doc.getElementsByTagName('a');
-            if (!imageElements.length || !aTags.length) {
-                console.error('[error] could not get an element from iframe:', imageElements, aTags);
+            const imageElement = imageElements[0];
+            const aTag = aTags[0];
+            const nextImageUrl = imageElement && imageElement.getAttribute('src');
+            const nextLink = aTag && aTag.getAttribute('href');
+            const nextTitle = aTag && aTag.getAttribute('title');
+            if (!nextImageUrl || !nextLink || !nextTitle) {
+                // No ad was served for this slot (the endpoint returns an empty
+                // document when there is nothing to show). Stay on the reserved
+                // placeholder instead of logging an error per mount.
+                warnOnce(props.type, 'no user ad available');
                 return;
             }
-            const imageUrl = imageElements[0].getAttribute('src');
-            const link = aTags[0].getAttribute('href');
-            const adTitle = aTags[0].getAttribute('title');
-            if (!imageUrl || !link || !adTitle) {
-                console.error('[error] could not get an attribute from iframe: ', imageUrl, link, adTitle);
-                return;
-            }
-            setImageUrl(imageUrl);
-            setTitle(adTitle);
-            setLink(link);
+            setImageUrl(nextImageUrl);
+            setTitle(nextTitle);
+            setLink(nextLink);
         }).catch(e => {
-            console.error('[error] could not load user ad:', e);
+            if (cancelled) return;
+            // 404/503 (advertising disabled) and transient network errors are
+            // expected here; warn once, keep the placeholder, do not spam.
+            warnOnce(props.type, 'could not load user ad', e?.message || e);
         });
 
         return () => {
             cancelled = true;
         };
     }, [props.type]);
-    
+
     // TODO: calculate correct height of ad when current screen width is smaller than ad width. The height is way too big on mobile.
     if (!info) throw new Error(`unexpected adType: ${props.type}`);
     if (!imageUrl) {

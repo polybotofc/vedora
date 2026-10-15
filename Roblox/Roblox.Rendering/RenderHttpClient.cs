@@ -43,10 +43,28 @@ public static class RenderHttpClient
         HttpClient client;
         bool useBinary;
         lock (Gate) { client = _client; useBinary = _useBinaryTransport; }
-        try { return await SendOnceAsync(client, request, useBinary, cancellationToken); }
+        // The arbiter is a host process, so a cold start has a window where every
+        // queued render gets a connection refused. Skip the socket while that is
+        // known to be the case instead of logging the same failure per job.
+        RenderArbiterProbe.EnsureReachable(client.BaseAddress);
+        try
+        {
+            var output = await SendOnceAsync(client, request, useBinary, cancellationToken);
+            RenderArbiterProbe.ReportReachable();
+            return output;
+        }
         catch (HttpRequestException ex) when (useBinary && ex.StatusCode is System.Net.HttpStatusCode.NotFound or System.Net.HttpStatusCode.MethodNotAllowed)
         {
-            return await SendOnceAsync(client, request, false, cancellationToken);
+            var output = await SendOnceAsync(client, request, false, cancellationToken);
+            RenderArbiterProbe.ReportReachable();
+            return output;
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode is null)
+        {
+            // A transport failure (no HTTP response) means the server is not
+            // listening; an HTTP error status means it is up and answering.
+            RenderArbiterProbe.ReportUnreachable(client.BaseAddress, ex);
+            throw;
         }
     }
 
