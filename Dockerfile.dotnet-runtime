@@ -1,0 +1,36 @@
+# Dev runtime image for the .NET services in docker-compose.yml.
+#
+# The stock mcr.microsoft.com/dotnet/aspnet:10.0 image has neither of the two
+# runtime dependencies the dev stack needs:
+#   * libgssapi-krb5-2 - Npgsql's GSSAPI path P/Invokes libgssapi_krb5.so.2, so
+#     a service that opens a Postgres connection crashes without it.
+#   * ffmpeg (ffmpeg/ffprobe) - audio and video upload validation and audio ->
+#     MP3/WAV conversion shell out to these through FFMpegCore/FFProbe.
+#
+# Installing them here keeps scripts/docker-dotnet-run.sh from running apt-get on
+# every container start. That per-start install raced across ~12 services and
+# failed whenever the apt mirror was slow or unreachable ("Temporary failure
+# resolving archive.ubuntu.com"), leaving the service without libgssapi.
+#
+# Build: docker compose build (the x-dotnet-dev-service anchor points here).
+FROM mcr.microsoft.com/dotnet/aspnet:10.0
+
+# Retry the apt install a few times so a flaky mirror does not fail the build,
+# then fail the build if either dependency is still missing.
+RUN set -eux; \
+    ok=0; \
+    for attempt in 1 2 3; do \
+        if apt-get update -qq \
+           && apt-get install -y --no-install-recommends libgssapi-krb5-2 ffmpeg; then \
+            ok=1; \
+            break; \
+        fi; \
+        echo "apt-get attempt ${attempt} failed; retrying in $((attempt * 5))s" >&2; \
+        rm -rf /var/lib/apt/lists/*; \
+        sleep $((attempt * 5)); \
+    done; \
+    [ "$ok" = 1 ]; \
+    rm -rf /var/lib/apt/lists/*; \
+    ldconfig -p | grep -q 'libgssapi_krb5\.so\.2'; \
+    ffmpeg -version >/dev/null; \
+    ffprobe -version >/dev/null
