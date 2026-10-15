@@ -59,7 +59,13 @@ x-dotnet-dev-env: &dotnet-dev-env
   DataProtection__ApplicationName: "vedora"
 
 x-dotnet-dev-service: &dotnet-dev-service
-  image: mcr.microsoft.com/dotnet/aspnet:10.0
+  # Dev runtime image built from Dockerfile.dotnet-runtime. It is the stock
+  # aspnet:10.0 image plus libgssapi-krb5-2 (Npgsql) and ffmpeg (upload
+  # validation), so the services no longer install those on every start.
+  build:
+    context: .
+    dockerfile: Dockerfile.dotnet-runtime
+  image: vedora-dotnet-runtime:10.0
   volumes:
     - .:/srv/app
     - dotnet_artifacts:/tmp/vedora-artifacts:ro
