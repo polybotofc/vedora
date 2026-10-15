@@ -20,7 +20,12 @@ set "ROOT=%~dp0"
 if "%ROOT:~-1%"=="\" set "ROOT=%ROOT:~0,-1%"
 set "ROBLOX_DIR=%ROOT%\Roblox"
 set "ARBITER_PROJECT=%ROBLOX_DIR%\Vedora.RccServiceArbiter\Vedora.RccServiceArbiter.csproj"
-set "ARBITER_URLS=http://127.0.0.1:3521"
+rem The Docker services reach the arbiter through
+rem Render__BaseUrl=http://host.docker.internal:3521. A container cannot reach
+rem the host's 127.0.0.1, so the arbiter must bind 0.0.0.0. Keep port 3521 to
+rem match Render__BaseUrl in docker-compose.yml.
+set "ARBITER_URLS=http://0.0.0.0:3521"
+set "ARBITER_URLS_LOCAL=http://localhost:3521"
 rem The arbiter is launched with "dotnet run" so it uses appsettings.json, which
 rem only loads for the Development environment.
 set "ASPNETCORE_ENVIRONMENT=Development"
@@ -183,7 +188,7 @@ rem ---------------------------------------------------------------
 echo.
 call :find_port_pid 3521 ARBITER_PID
 if defined ARBITER_PID (
-    echo [..] %ARBITER_URLS% is already in use ^(PID !ARBITER_PID!^).
+    echo [..] %ARBITER_URLS_LOCAL% is already in use ^(PID !ARBITER_PID!^).
     echo      An RCC arbiter is already running, so a second one is not started.
     echo      Run "vedora.bat down" first to restart it with the latest code.
     goto :arbiter_ready
@@ -199,7 +204,7 @@ echo   Vedora is starting.
 echo.
 echo   Website   : %PUBLIC_BASE_URL%
 echo   Local API : http://localhost:5200
-echo   Arbiter   : %ARBITER_URLS%
+echo   Arbiter   : %ARBITER_URLS_LOCAL%
 echo.
 echo   The arbiter runs in its own window. Close it to stop
 echo   game servers and renders.
