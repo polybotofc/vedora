@@ -196,9 +196,16 @@ When you add or change a controller route, update the matching route case file
   object file`) and `ffmpeg`/`ffprobe` (audio and video upload validation plus
   audio -> MP3/WAV conversion go through FFMpegCore/FFProbe; without them every
   audio/video upload is rejected). Production installs both in
-  `Roblox/Dockerfile.dotnet-service`; the dev stack, which runs the stock image
-  directly, installs them in `scripts/docker-dotnet-run.sh` (idempotent, skipped
-  once present). Keep both paths in sync.
+  `Roblox/Dockerfile.dotnet-service`. The dev stack builds `Dockerfile.dotnet-runtime`
+  (the stock image plus both packages) and the `x-dotnet-dev-service` anchor
+  uses it, so no service installs anything at start. `scripts/docker-dotnet-run.sh`
+  keeps a guarded fallback install for a stock image (skipped once present).
+  Keep all three paths in sync.
+- The dev runtime image must be built before the services start; `vedora.bat`
+  runs `docker compose up -d --build`, which builds it. If you start services
+  with a plain `docker compose up` on a machine that has never built it, run
+  `docker compose build` first (or the anchor's `image: vedora-dotnet-runtime:10.0`
+  is missing and the pull fails).
 - Shell scripts (`scripts/*.sh`) are run by `/bin/sh` inside the Linux
   containers, which bind-mount this working tree (`- .:/srv/app`). On Windows
   (`core.autocrlf=true`) a CRLF checkout makes `sh` fail on every service with

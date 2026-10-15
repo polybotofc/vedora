@@ -2,8 +2,10 @@
 
 set -u
 
-# The dev stack runs services directly on the stock mcr.microsoft.com/dotnet/aspnet
-# image (no Dockerfile), so two runtime dependencies are missing:
+# The dev stack runs services on vedora-dotnet-runtime:10.0, which already
+# installs both runtime dependencies (see Dockerfile.dotnet-runtime). The checks
+# below only cover the case of an older/stock image, and are a no-op when the
+# packages are present:
 #
 #  * libgssapi-krb5-2: Npgsql's GSSAPI path P/Invokes libgssapi_krb5.so.2, and
 #    without it a service that opens a Postgres connection can crash with
